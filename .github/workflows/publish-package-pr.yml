@@ -106,14 +106,14 @@ jobs:
         run: git push origin "${{ steps.branch.outputs.name }}"
 
       # Create the pull request (if the branch was created)
-      - name: Create pull request
-        if: steps.branch.outputs.action == 'Add'
-        working-directory: upstream-repo
-        env:
-          GH_TOKEN: ${{ steps.bot_auth.outputs.token }}
-        run: |
-          gh pr create \
-            --title "Add package \`${{ steps.package.outputs.name }}\` version ${{ steps.package.outputs.version }}" \
-            --body "Automated package publication from ${{ github.repository }}" \
-            --base main \
-            --head "${{ steps.branch.outputs.name }}"
+      #- name: Create pull request
+      #  if: steps.branch.outputs.action == 'Add'
+      #  working-directory: upstream-repo
+      #  env:
+      #    GH_TOKEN: ${{ steps.bot_auth.outputs.token }}
+      #  run: |
+      #    gh pr create \
+      #      --title "Add package \`${{ steps.package.outputs.name }}\` version ${{ steps.package.outputs.version }}" \
+      #      --body "Automated package publication from ${{ github.repository }}" \
+      #      --base main \
+      #      --head "${{ steps.branch.outputs.name }}"
