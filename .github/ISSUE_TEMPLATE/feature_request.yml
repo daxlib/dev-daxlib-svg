@@ -1,0 +1,31 @@
+﻿name: 💡 Feature Request
+labels: ["enhancement", "untriaged"]
+description: Suggest an idea or improvement
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for submitting a feature request!
+        
+        ---
+  - type: textarea
+    id: the-feature-request
+    attributes:
+      label: Feature Request
+      description:
+        Write a clear and concise description of the feature or problem you would like to see addressed.
+    validations:
+      required: true
+  - type: textarea
+    id: proposed-solution
+    attributes:
+      label: Proposed Solution
+      description: Describe your proposed solution and its benefits for the project and its users.
+    validations:
+      required: true
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      description:
+        Please include any other relevant context, such as screenshots or mockups, if applicable.

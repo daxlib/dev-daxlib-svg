@@ -1,0 +1,11 @@
+{
+  "$schema": "https://raw.githubusercontent.com/daxlib/daxlib/refs/heads/main/schemas/manifest/1.0.0/manifest.1.0.0.schema.json",
+  "id": "[ID]",
+  "version": "[VERSION]",
+  "authors": "DAXLIB",
+  "description": "[DESCRIPTION]",
+  "tags": "[TAGS]",
+  "releaseNotes": "",
+  "projectUrl": "https://github.com/daxlib/[REPO]",
+  "repositoryUrl": "https://github.com/daxlib/[REPO]"
+}

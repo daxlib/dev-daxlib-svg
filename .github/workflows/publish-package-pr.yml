@@ -1,0 +1,119 @@
+# GitHub Actions workflow for publishing DaxLib packages 
+#
+# This workflow automates the publication of a new package version to the daxlib/daxlib repository.
+# Maintainers can trigger it manually via the "Run workflow" button in the Actions tab.
+# 
+# Steps:
+#   - Extracts the package name and version from the manifest file
+#   - Creates or updates a release branch in the upstream repository
+#   - Copies the package files to the appropriate folder structure
+#   - Commits and pushes the changes
+#   - Creates a pull request for new releases
+
+name: publish-package-pr
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      # Checkout the current repository
+      - name: Checkout source
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.repository }}
+          path: source-repo
+      
+      # Generate the app token
+      - name: Generate app token
+        id: bot_auth
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ vars.DAXLIBDEVBOT_APPID }}
+          private-key: ${{ secrets.DAXLIBDEVBOT_APPKEY }}
+          owner: daxlib
+          repositories: daxlib
+
+      # Checkout the upstream repository daxlib/daxlib
+      - name: Checkout upstream
+        uses: actions/checkout@v4
+        with:
+          repository: daxlib/daxlib
+          path: upstream-repo
+          token: ${{ steps.bot_auth.outputs.token }}
+
+      # Configure Git
+      - name: Git config
+        working-directory: upstream-repo
+        run: |
+          git config user.name "${{ github.actor }}"
+          git config user.email "${{ github.actor }}@users.noreply.github.com"
+
+      # Read the package version from the manifest
+      - name: Read package manifest
+        id: package
+        working-directory: source-repo
+        run: |
+          PACKAGE_NAME=$(jq -r '.id' src/manifest.daxlib)
+          echo "name=${PACKAGE_NAME}" >> $GITHUB_OUTPUT
+          echo "Package name: ${PACKAGE_NAME}"
+          PACKAGE_VERSION=$(jq -r '.version' src/manifest.daxlib)
+          echo "version=${PACKAGE_VERSION}" >> $GITHUB_OUTPUT
+          echo "Package version: ${PACKAGE_VERSION}"
+          PACKAGE_FOLDER="packages/$(echo "${PACKAGE_NAME}" | cut -c1 | tr '[:upper:]' '[:lower:]')/$(echo "${PACKAGE_NAME}" | tr '[:upper:]' '[:lower:]')/${PACKAGE_VERSION}"
+          echo "folder=${PACKAGE_FOLDER}" >> $GITHUB_OUTPUT
+          echo "Package folder: ${PACKAGE_FOLDER}"
+
+      # Checkout the branch (or create it if it doesn't exist)
+      - name: Checkout branch
+        id: branch
+        working-directory: upstream-repo
+        run: |
+          BRANCH_NAME="${{ github.event.repository.name }}/publish-${{ steps.package.outputs.name }}-${{ steps.package.outputs.version }}"
+          echo "name=${BRANCH_NAME}" >> $GITHUB_OUTPUT
+          echo "Branch name: ${BRANCH_NAME}"
+          git fetch origin
+          if git show-ref --verify --quiet "refs/remotes/origin/${BRANCH_NAME}"; then
+            echo "action=Update" >> $GITHUB_OUTPUT
+            git checkout "${BRANCH_NAME}"
+          else
+            echo "action=Add" >> $GITHUB_OUTPUT
+            git checkout -b "${BRANCH_NAME}"
+          fi
+              
+      # Create the package folder if it doesn't exist
+      - name: Create package folder
+        working-directory: upstream-repo
+        run: mkdir -p "${{ steps.package.outputs.folder }}"
+
+      # Copy package files to the new folder
+      - name: Copy package files
+        run: cp -rv source-repo/src/* "upstream-repo/${{ steps.package.outputs.folder }}/"
+
+      # Commit changes
+      - name: Git commit changes
+        working-directory: upstream-repo
+        run: git add -A && git commit -m "${{ steps.branch.outputs.action }} package ${{ steps.package.outputs.name }} version ${{ steps.package.outputs.version }}"
+
+      # Push to upstream
+      - name: Git push upstream
+        working-directory: upstream-repo
+        run: git push origin "${{ steps.branch.outputs.name }}"
+
+      # Create the pull request (if the branch was created)
+      - name: Create pull request
+        if: steps.branch.outputs.action == 'Add'
+        working-directory: upstream-repo
+        env:
+          GH_TOKEN: ${{ steps.bot_auth.outputs.token }}
+        run: |
+          gh pr create \
+            --title "Add package \`${{ steps.package.outputs.name }}\` version ${{ steps.package.outputs.version }}" \
+            --body "Automated package publication from ${{ github.repository }}" \
+            --base main \
+            --head "${{ steps.branch.outputs.name }}"
