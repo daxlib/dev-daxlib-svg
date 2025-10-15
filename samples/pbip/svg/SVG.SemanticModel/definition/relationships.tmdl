@@ -1,0 +1,39 @@
+relationship 897057e4-b826-d313-8564-78284c464a5f
+	fromColumn: Inventory.ProductKey
+	toColumn: Products.ProductKey
+
+relationship 7806b868-20de-d046-0019-7da22300f2b7
+	fromColumn: Inventory.SnapshotDateKey
+	toColumn: Dates.DateKey
+
+relationship eb1b11b9-c25a-b426-3008-1f2def9fc017
+	fromColumn: Orders.CustomerKey
+	toColumn: Customers.CustomerKey
+
+relationship fe30f283-c6f4-633e-8e6a-60e30be95fcf
+	fromColumn: Orders.ProductKey
+	toColumn: Products.ProductKey
+
+relationship 742da557-4690-d533-12b0-abbbf0772f42
+	fromColumn: Orders.StoreKey
+	toColumn: Stores.StoreKey
+
+relationship defec942-592e-b919-2f41-8e1c07a38bc6
+	fromColumn: Orders.OrderDate
+	toColumn: Dates.Date
+
+relationship 3b749645-46b8-cfe8-e49a-ea0ca943f4be
+	isActive: false
+	fromColumn: Orders.ApprovedDate
+	toColumn: Dates.Date
+
+relationship 7224cee5-31ac-41fa-ddd9-258d203dcd36
+	isActive: false
+	fromColumn: Orders.FulfilledDate
+	toColumn: Dates.Date
+
+relationship 9fcea753-b9d3-a435-7cbc-a67b7efe48fd
+	isActive: false
+	fromColumn: Orders.DeliveredDate
+	toColumn: Dates.Date
+

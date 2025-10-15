@@ -1,0 +1,23 @@
+table Variant
+	lineageTag: 7b2aff17-738f-4c6e-b686-c70501c00c84
+
+	column Variant
+		formatString: 0
+		lineageTag: be363f0e-c7b1-4f2d-a6f5-7113476533e0
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Variant]
+
+		annotation SummarizationSetBy = User
+
+	partition Variant = calculated
+		mode: import
+		source =
+				
+				SELECTCOLUMNS(
+				    GENERATESERIES( 1, 41, 1 ),
+				    "Variant", [Value]
+				)
+
+	annotation PBI_Id = 8a212f2a5eba40559a9e157ac30d36ee
+

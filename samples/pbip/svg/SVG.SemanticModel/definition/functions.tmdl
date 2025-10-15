@@ -1,0 +1,3947 @@
+function 'DataGoblins.SampleData.Orders' = ```
+		
+		-- Generate Goblin Marketplace orders fact table
+		-- Tracks order lines with SAP-style numbering and realistic line-level variations
+		(
+		    -- Number of orders to generate
+		    num_orders : INT64,
+		    
+		    -- Start date for orders
+		    start_date : DATETIME,
+		    
+		    -- End date for orders
+		    end_date : DATETIME,
+		    
+		    -- Number of unique customers
+		    num_customers : INT64,
+		    
+		    -- Number of unique products
+		    num_products : INT64,
+		    
+		    -- Number of store locations
+		    num_stores : INT64,
+		    
+		    -- Random seed for reproducibility
+		    seed : INT64
+		)
+		=>
+		    -- Configuration
+		    VAR _BaseAmount = 100
+		    VAR _MaxLinesPerOrder = 5
+		    
+		    VAR _OrderKeys = 
+		        GENERATESERIES( 1, num_orders, 1 )
+		    
+		    VAR _DateRange = 
+		        INT( end_date - start_date ) + 1
+		    
+		    -- Generate order headers with line count
+		    VAR _OrderHeaders =
+		        ADDCOLUMNS(
+		            _OrderKeys,
+		            "OrderInternalID", [Value],
+		            "OrderNumber", 4500000000 + [Value],
+		            "R1", MOD( [Value] * 7919 + seed, 32749 ),
+		            "R2", MOD( [Value] * 6271 + seed, 32749 ),
+		            "R3", MOD( [Value] * 5413 + seed, 32749 ),
+		            "R4", MOD( [Value] * 4517 + seed, 32749 )
+		        )
+		    
+		    VAR _OrderHeadersWithData =
+		        ADDCOLUMNS(
+		            _OrderHeaders,
+		            "NumLines", MAX( 1, MOD( [R1], _MaxLinesPerOrder ) + 1 ),
+		            "CustomerKey", MOD( [R2], num_customers ) + 1,
+		            "StoreKey", MOD( [R3], num_stores ) + 1,
+		            "OrderDate", start_date + MOD( [R4], _DateRange ),
+		            "DeliverySpeed", 
+		                SWITCH(
+		                    TRUE(),
+		                    MOD( [R1], 100 ) < 20, 2,
+		                    MOD( [R1], 100 ) < 70, 5,
+		                    7
+		                ),
+		            "Currency",
+		                SWITCH(
+		                    MOD( [R3], 7 ),
+		                    0, "EUR",
+		                    1, "CAD",
+		                    2, "GBP",
+		                    3, "SEK",
+		                    4, "NOK",
+		                    5, "AUD",
+		                    6, "NZD",
+		                    "EUR"
+		                )
+		        )
+		    
+		    -- Create line number series
+		    VAR _LineNumbers = SELECTCOLUMNS( GENERATESERIES( 1, _MaxLinesPerOrder, 1 ), "LineSeq", [Value] )
+		    
+		    -- Cross join orders with potential line numbers
+		    VAR _AllOrderLines = CROSSJOIN( _OrderHeadersWithData, _LineNumbers )
+		    
+		    -- Filter to actual number of lines per order
+		    VAR _ActualOrderLines = FILTER( _AllOrderLines, [LineSeq] <= [NumLines] )
+		    
+		    -- Generate order line details with line-specific dates
+		    VAR _OrderLines =
+		        ADDCOLUMNS(
+		            _ActualOrderLines,
+		            "OrderLineNumber", [LineSeq] * 10,
+		            "LineSeed", [OrderInternalID] * 100 + [LineSeq],
+		            "RequestedDeliveryDate", [OrderDate] + [DeliverySpeed]
+		        )
+		    
+		    VAR _OrderLinesWithDates =
+		        ADDCOLUMNS(
+		            _OrderLines,
+		            "LineR1", MOD( [LineSeed] * 2311, 32749 ),
+		            "LineR2", MOD( [LineSeed] * 1993, 32749 ),
+		            "LineR3", MOD( [LineSeed] * 1777, 32749 ),
+		            "LineR4", MOD( [LineSeed] * 1553, 32749 ),
+		            "ProductKey", MOD( [LineSeed] * 3571, num_products ) + 1,
+		            "Quantity", MAX( 1, MOD( [LineSeed] + [R1], 10 ) + 1 ),
+		            "VaryDates", MOD( [LineSeed], 100 ) < 25  -- 25% chance to vary dates
+		        )
+		    
+		    VAR _FinalOrderLines =
+		        SELECTCOLUMNS(
+		            _OrderLinesWithDates,
+		            "OrderNumber", [OrderNumber],
+		            "OrderLineNumber", [OrderLineNumber],
+		            "CustomerKey", [CustomerKey],
+		            "ProductKey", [ProductKey],
+		            "StoreKey", [StoreKey],
+		            "Currency", [Currency],
+		            "OrderDate", [OrderDate],
+		            "RequestedDeliveryDate", [RequestedDeliveryDate],
+		            
+		            -- Approved date - varies by line 25% of time
+		            "ApprovedDate",
+		                VAR _BaseApproved = 
+		                    IF( MOD( [R1], 100 ) > 5,
+		                        [OrderDate] + MOD( [R1], 2 ),
+		                        BLANK()
+		                    )
+		                VAR _LineVariation = 
+		                    IF( [VaryDates] && NOT ISBLANK( _BaseApproved ),
+		                        MOD( [LineR1], 3 ) - 1,  -- -1 to +1 day variation
+		                        0
+		                    )
+		                RETURN 
+		                    IF( ISBLANK( _BaseApproved ), 
+		                        BLANK(), 
+		                        _BaseApproved + _LineVariation 
+		                    ),
+		            
+		            -- Fulfilled date - varies by line
+		            "FulfilledDate",
+		                VAR _BaseApproved = 
+		                    IF( MOD( [R1], 100 ) > 5,
+		                        [OrderDate] + MOD( [R1], 2 ),
+		                        BLANK()
+		                    )
+		                VAR _LineApproved = 
+		                    IF( [VaryDates] && NOT ISBLANK( _BaseApproved ),
+		                        _BaseApproved + MOD( [LineR1], 3 ) - 1,
+		                        _BaseApproved
+		                    )
+		                VAR _BaseFulfilled = 
+		                    IF( NOT ISBLANK( _LineApproved ) && MOD( [R2], 100 ) > 10,
+		                        _LineApproved + MOD( [R2], 3 ) + 1,
+		                        BLANK()
+		                    )
+		                VAR _LineVariation = 
+		                    IF( [VaryDates] && NOT ISBLANK( _BaseFulfilled ),
+		                        MOD( [LineR2], 4 ) - 1,  -- -1 to +2 day variation
+		                        0
+		                    )
+		                RETURN 
+		                    IF( ISBLANK( _BaseFulfilled ), 
+		                        BLANK(), 
+		                        _BaseFulfilled + _LineVariation 
+		                    ),
+		            
+		            -- Shipped date - varies by line
+		            "ShippedDate",
+		                VAR _BaseApproved = 
+		                    IF( MOD( [R1], 100 ) > 5,
+		                        [OrderDate] + MOD( [R1], 2 ),
+		                        BLANK()
+		                    )
+		                VAR _LineApproved = 
+		                    IF( [VaryDates] && NOT ISBLANK( _BaseApproved ),
+		                        _BaseApproved + MOD( [LineR1], 3 ) - 1,
+		                        _BaseApproved
+		                    )
+		                VAR _LineFulfilled = 
+		                    IF( NOT ISBLANK( _LineApproved ) && MOD( [R2], 100 ) > 10,
+		                        _LineApproved + MOD( [R2], 3 ) + 1 + 
+		                        IF( [VaryDates], MOD( [LineR2], 4 ) - 1, 0 ),
+		                        BLANK()
+		                    )
+		                VAR _BaseShipped = 
+		                    IF( NOT ISBLANK( _LineFulfilled ) && MOD( [R3], 100 ) > 15,
+		                        _LineFulfilled + MOD( [R3], 2 ),
+		                        BLANK()
+		                    )
+		                VAR _LineVariation = 
+		                    IF( [VaryDates] && NOT ISBLANK( _BaseShipped ),
+		                        MOD( [LineR3], 3 ),  -- 0 to +2 day variation
+		                        0
+		                    )
+		                RETURN 
+		                    IF( ISBLANK( _BaseShipped ), 
+		                        BLANK(), 
+		                        _BaseShipped + _LineVariation 
+		                    ),
+		            
+		            -- Delivered date - varies by line
+		            "DeliveredDate",
+		                VAR _BaseApproved = 
+		                    IF( MOD( [R1], 100 ) > 5,
+		                        [OrderDate] + MOD( [R1], 2 ),
+		                        BLANK()
+		                    )
+		                VAR _LineApproved = 
+		                    IF( [VaryDates] && NOT ISBLANK( _BaseApproved ),
+		                        _BaseApproved + MOD( [LineR1], 3 ) - 1,
+		                        _BaseApproved
+		                    )
+		                VAR _LineFulfilled = 
+		                    IF( NOT ISBLANK( _LineApproved ) && MOD( [R2], 100 ) > 10,
+		                        _LineApproved + MOD( [R2], 3 ) + 1 + 
+		                        IF( [VaryDates], MOD( [LineR2], 4 ) - 1, 0 ),
+		                        BLANK()
+		                    )
+		                VAR _LineShipped = 
+		                    IF( NOT ISBLANK( _LineFulfilled ) && MOD( [R3], 100 ) > 15,
+		                        _LineFulfilled + MOD( [R3], 2 ) + 
+		                        IF( [VaryDates], MOD( [LineR3], 3 ), 0 ),
+		                        BLANK()
+		                    )
+		                VAR _BaseDelivered = 
+		                    IF( NOT ISBLANK( _LineShipped ) && MOD( [R4], 100 ) > 20,
+		                        _LineShipped + MOD( [R4], 5 ) + 1,
+		                        BLANK()
+		                    )
+		                VAR _LineVariation = 
+		                    IF( [VaryDates] && NOT ISBLANK( _BaseDelivered ),
+		                        MOD( [LineR4], 5 ) - 2,  -- -2 to +2 day variation
+		                        0
+		                    )
+		                RETURN 
+		                    IF( ISBLANK( _BaseDelivered ), 
+		                        BLANK(), 
+		                        _BaseDelivered + _LineVariation 
+		                    ),
+		            
+		            "OrderStatus",
+		                VAR _DeliveredCheck = 
+		                    VAR _BaseApproved = IF( MOD( [R1], 100 ) > 5, [OrderDate] + MOD( [R1], 2 ), BLANK() )
+		                    VAR _LineApproved = IF( [VaryDates] && NOT ISBLANK( _BaseApproved ), _BaseApproved + MOD( [LineR1], 3 ) - 1, _BaseApproved )
+		                    VAR _LineFulfilled = IF( NOT ISBLANK( _LineApproved ) && MOD( [R2], 100 ) > 10, _LineApproved + MOD( [R2], 3 ) + 1 + IF( [VaryDates], MOD( [LineR2], 4 ) - 1, 0 ), BLANK() )
+		                    VAR _LineShipped = IF( NOT ISBLANK( _LineFulfilled ) && MOD( [R3], 100 ) > 15, _LineFulfilled + MOD( [R3], 2 ) + IF( [VaryDates], MOD( [LineR3], 3 ), 0 ), BLANK() )
+		                    VAR _LineDelivered = IF( NOT ISBLANK( _LineShipped ) && MOD( [R4], 100 ) > 20, _LineShipped + MOD( [R4], 5 ) + 1 + IF( [VaryDates], MOD( [LineR4], 5 ) - 2, 0 ), BLANK() )
+		                    RETURN NOT ISBLANK( _LineDelivered )
+		                VAR _ShippedCheck = 
+		                    VAR _BaseApproved = IF( MOD( [R1], 100 ) > 5, [OrderDate] + MOD( [R1], 2 ), BLANK() )
+		                    VAR _LineApproved = IF( [VaryDates] && NOT ISBLANK( _BaseApproved ), _BaseApproved + MOD( [LineR1], 3 ) - 1, _BaseApproved )
+		                    VAR _LineFulfilled = IF( NOT ISBLANK( _LineApproved ) && MOD( [R2], 100 ) > 10, _LineApproved + MOD( [R2], 3 ) + 1 + IF( [VaryDates], MOD( [LineR2], 4 ) - 1, 0 ), BLANK() )
+		                    VAR _LineShipped = IF( NOT ISBLANK( _LineFulfilled ) && MOD( [R3], 100 ) > 15, _LineFulfilled + MOD( [R3], 2 ) + IF( [VaryDates], MOD( [LineR3], 3 ), 0 ), BLANK() )
+		                    RETURN NOT ISBLANK( _LineShipped )
+		                VAR _FulfilledCheck = 
+		                    VAR _BaseApproved = IF( MOD( [R1], 100 ) > 5, [OrderDate] + MOD( [R1], 2 ), BLANK() )
+		                    VAR _LineApproved = IF( [VaryDates] && NOT ISBLANK( _BaseApproved ), _BaseApproved + MOD( [LineR1], 3 ) - 1, _BaseApproved )
+		                    VAR _LineFulfilled = IF( NOT ISBLANK( _LineApproved ) && MOD( [R2], 100 ) > 10, _LineApproved + MOD( [R2], 3 ) + 1 + IF( [VaryDates], MOD( [LineR2], 4 ) - 1, 0 ), BLANK() )
+		                    RETURN NOT ISBLANK( _LineFulfilled )
+		                VAR _ApprovedCheck = 
+		                    VAR _BaseApproved = IF( MOD( [R1], 100 ) > 5, [OrderDate] + MOD( [R1], 2 ), BLANK() )
+		                    RETURN NOT ISBLANK( _BaseApproved )
+		                RETURN
+		                    SWITCH(
+		                        TRUE(),
+		                        _DeliveredCheck, "Delivered",
+		                        _ShippedCheck, "Shipped",
+		                        _FulfilledCheck, "Fulfilled",
+		                        _ApprovedCheck, "Approved",
+		                        "Pending"
+		                    ),
+		            
+		            "DeliverySpeed", [DeliverySpeed],
+		            "Quantity", [Quantity],
+		            "UnitPrice",
+		                VAR _ProdKey = [ProductKey]
+		                VAR _BasePrice = _BaseAmount * ( 0.5 + MOD( _ProdKey * 13, 30 ) / 10 )
+		                VAR _CurrencyMultiplier = 
+		                    SWITCH(
+		                        [Currency],
+		                        "EUR", 1.00,
+		                        "CAD", 1.45,
+		                        "GBP", 0.85,
+		                        "SEK", 11.50,
+		                        "NOK", 11.20,
+		                        "AUD", 1.65,
+		                        "NZD", 1.75,
+		                        1.00
+		                    )
+		                RETURN ROUND( _BasePrice * _CurrencyMultiplier, 2 )
+		        )
+		        
+		    RETURN
+		        _FinalOrderLines
+		```
+	lineageTag: f73dfd5a-6033-4c76-9fec-414442ef943f
+
+	annotation DAXLIB_PackageId = DataGoblins.SampleData
+
+	annotation DAXLIB_PackageVersion = 0.1.0-beta
+
+function 'DataGoblins.SampleData.Inventory' = ```
+		
+		-- Generate Goblin Warehouse inventory snapshot fact table
+		-- Weekly snapshots for past weeks, daily for current week
+		(
+		    -- Number of days to generate
+		    num_days : INT64,
+		    
+		    -- Start date for snapshots
+		    start_date : DATETIME,
+		    
+		    -- Number of products to track
+		    num_products : INT64,
+		    
+		    -- Number of warehouse locations
+		    num_warehouses : INT64,
+		    
+		    -- Random seed
+		    seed : INT64
+		)
+		=>
+		    -- Base configuration (will be varied by product/warehouse)
+		    VAR _BaseInitialStock = 500
+		    VAR _BaseSafetyStock = 100
+		    VAR _BaseReorderPoint = 150
+		    VAR _BaseReorderQuantity = 400
+		    VAR _BaseDailyDemand = 20
+		    
+		    -- Generate all dates then filter for weekly/daily pattern
+		    VAR _AllDates = 
+		        GENERATE(
+		            GENERATESERIES( 0, num_days - 1, 1 ),
+		            VAR _DayOffset = [Value]
+		            VAR _CurrentDate = start_date + _DayOffset
+		            VAR _WeekNum = INT( _DayOffset / 7 )
+		            VAR _DayOfWeek = WEEKDAY( _CurrentDate, 2 )  -- Monday = 1, Sunday = 7
+		            VAR _IsCurrentWeek = _CurrentDate >= TODAY() - WEEKDAY( TODAY(), 2 ) + 1
+		            VAR _IsSunday = _DayOfWeek = 7
+		            
+		            -- Include: Sundays for past weeks OR all days for current week
+		            VAR _IncludeDate = _IsSunday || _IsCurrentWeek
+		            
+		            RETURN 
+		                ROW(
+		                    "SnapshotDate", _CurrentDate,
+		                    "WeekNum", _WeekNum,
+		                    "DayInWeek", _DayOfWeek,
+		                    "IncludeDate", _IncludeDate
+		                )
+		        )
+		    
+		    -- Filter to only snapshot dates we want
+		    VAR _SnapshotDates = FILTER( _AllDates, [IncludeDate] )
+		    
+		    -- Create cartesian product of dates x products x warehouses
+		    VAR _BaseTable = 
+		        CROSSJOIN(
+		            _SnapshotDates,
+		            CROSSJOIN(
+		                SELECTCOLUMNS( GENERATESERIES( 1, num_products, 1 ), "ProductKey", [Value] ),
+		                SELECTCOLUMNS( GENERATESERIES( 1, num_warehouses, 1 ), "WarehouseKey", [Value] )
+		            )
+		        )
+		    
+		    -- Generate inventory data for each combination
+		    VAR _InventorySnapshots =
+		        ADDCOLUMNS(
+		            _BaseTable,
+		            "SnapshotDateKey", INT( [SnapshotDate] ),
+		            "OnHandQuantity",
+		                VAR _Product = [ProductKey]
+		                VAR _Warehouse = [WarehouseKey]
+		                VAR _Week = [WeekNum]
+		                VAR _Day = [DayInWeek]
+		
+		                -- Generate product/warehouse-specific seeds
+		                VAR _ProductSeed = MOD( _Product * 7919 + seed, 32749 )
+		                VAR _WarehouseSeed = MOD( _Warehouse * 6271 + seed, 32749 )
+		                VAR _CombinedSeed = MOD( _ProductSeed + _WarehouseSeed, 32749 )
+		
+		                -- Product-specific characteristics (much more variation)
+		                VAR _ProductType = MOD( _ProductSeed, 5 )  -- 0=Fast, 1=Medium, 2=Slow, 3=Seasonal, 4=Luxury
+		                VAR _DemandMultiplier =
+		                    SWITCH( _ProductType,
+		                        0, 2.0 + MOD( _ProductSeed, 30 ) / 10,     -- Fast movers: 2.0-5.0x
+		                        1, 1.0 + MOD( _ProductSeed, 20 ) / 10,     -- Medium: 1.0-3.0x
+		                        2, 0.2 + MOD( _ProductSeed, 15 ) / 20,     -- Slow: 0.2-0.95x
+		                        3, 0.8 + SIN( _Week * PI() / 6 ) * 1.5,    -- Seasonal: 0.8±1.5x
+		                        4, 0.1 + MOD( _ProductSeed, 8 ) / 20,      -- Luxury: 0.1-0.5x
+		                        1.0
+		                    )
+		
+		                -- Warehouse-specific efficiency
+		                VAR _WarehouseEfficiency = 0.7 + MOD( _WarehouseSeed, 30 ) / 100  -- 0.7-1.0
+		
+		                -- Product-specific stock levels
+		                VAR _InitialStock = ROUND( _BaseInitialStock * (0.3 + MOD( _ProductSeed, 70 ) / 100), 0 )  -- 30%-100% of base
+		                VAR _ReorderQuantity = ROUND( _BaseReorderQuantity * (0.4 + MOD( _ProductSeed + 100, 60 ) / 100), 0 )  -- 40%-100% of base
+		
+		                VAR _DailyDemand = _BaseDailyDemand * _DemandMultiplier * _WarehouseEfficiency
+		                VAR _WeeklyDemand = ROUND( _DailyDemand * 7, 0 )
+		
+		                -- Calculate stock level with weekly cycle and more variation
+		                VAR _BaseStock = _InitialStock + ( _ReorderQuantity * _Week )
+		                VAR _Depletion = _WeeklyDemand * _Week
+		
+		                -- Add realistic variance with product-specific patterns
+		                VAR _SeasonalVariance = SIN( (_Week + _ProductSeed / 100) * PI() / 13 ) * (50 + MOD( _ProductSeed, 100 ))
+		                VAR _DayVariance = COS( _Day * PI() / 7 ) * (10 + MOD( _WarehouseSeed, 30 ))
+		                VAR _RandomVariance = (MOD( _CombinedSeed + _Week, 100 ) - 50) * 2  -- ±100 random variance
+		
+		                RETURN MAX( 0, ROUND( _BaseStock - _Depletion + _SeasonalVariance + _DayVariance + _RandomVariance, 0 ) ),
+		            
+		            "ReservedQuantity",
+		                VAR _Product = [ProductKey]
+		                VAR _Warehouse = [WarehouseKey]
+		                VAR _Week = [WeekNum]
+		                VAR _Day = [DayInWeek]
+		
+		                -- Recalculate OnHandQuantity (same logic as above)
+		                VAR _ProductSeed = MOD( _Product * 7919 + seed, 32749 )
+		                VAR _WarehouseSeed = MOD( _Warehouse * 6271 + seed, 32749 )
+		                VAR _CombinedSeed = MOD( _ProductSeed + _WarehouseSeed, 32749 )
+		                VAR _ProductType = MOD( _ProductSeed, 5 )
+		                VAR _DemandMultiplier =
+		                    SWITCH( _ProductType,
+		                        0, 2.0 + MOD( _ProductSeed, 30 ) / 10,
+		                        1, 1.0 + MOD( _ProductSeed, 20 ) / 10,
+		                        2, 0.2 + MOD( _ProductSeed, 15 ) / 20,
+		                        3, 0.8 + SIN( _Week * PI() / 6 ) * 1.5,
+		                        4, 0.1 + MOD( _ProductSeed, 8 ) / 20,
+		                        1.0
+		                    )
+		                VAR _WarehouseEfficiency = 0.7 + MOD( _WarehouseSeed, 30 ) / 100
+		                VAR _InitialStock = ROUND( _BaseInitialStock * (0.3 + MOD( _ProductSeed, 70 ) / 100), 0 )
+		                VAR _ReorderQuantity = ROUND( _BaseReorderQuantity * (0.4 + MOD( _ProductSeed + 100, 60 ) / 100), 0 )
+		                VAR _DailyDemand = _BaseDailyDemand * _DemandMultiplier * _WarehouseEfficiency
+		                VAR _WeeklyDemand = ROUND( _DailyDemand * 7, 0 )
+		                VAR _BaseStock = _InitialStock + ( _ReorderQuantity * _Week )
+		                VAR _Depletion = _WeeklyDemand * _Week
+		                VAR _SeasonalVariance = SIN( (_Week + _ProductSeed / 100) * PI() / 13 ) * (50 + MOD( _ProductSeed, 100 ))
+		                VAR _DayVariance = COS( _Day * PI() / 7 ) * (10 + MOD( _WarehouseSeed, 30 ))
+		                VAR _RandomVariance = (MOD( _CombinedSeed + _Week, 100 ) - 50) * 2
+		                VAR _OnHandQty = MAX( 0, ROUND( _BaseStock - _Depletion + _SeasonalVariance + _DayVariance + _RandomVariance, 0 ) )
+		
+		                -- Base reservation percentage varies by product type and day
+		                VAR _BaseReservationPct =
+		                    SWITCH( _ProductType,
+		                        0, 0.25,  -- Fast movers: higher reservations
+		                        1, 0.15,  -- Medium
+		                        2, 0.08,  -- Slow movers: lower reservations
+		                        3, 0.12,  -- Seasonal
+		                        4, 0.05,  -- Luxury: very low reservations
+		                        0.15
+		                    )
+		
+		                -- Day-of-week variation (higher on weekdays)
+		                VAR _DayMultiplier = IF( _Day <= 5, 1.0 + (_Day / 10), 0.3 )
+		
+		                -- Warehouse efficiency affects reservations
+		                VAR _WhsMultiplier = 0.8 + MOD( _WarehouseSeed, 40 ) / 100  -- 0.8-1.2
+		
+		                VAR _ReservationPct = _BaseReservationPct * _DayMultiplier * _WhsMultiplier
+		                RETURN MAX( 0, ROUND( _OnHandQty * _ReservationPct, 0 ) ),
+		
+		            "InTransitQuantity",
+		                VAR _ProductSeed = MOD( [ProductKey] * 7919 + seed, 32749 )
+		                VAR _BaseReorderQty = ROUND( _BaseReorderQuantity * (0.4 + MOD( _ProductSeed + 100, 60 ) / 100), 0 )
+		                VAR _HasInTransit = IF( [DayInWeek] >= 5, 1, 0 )  -- Only Friday-Sunday
+		                VAR _InTransitVariation = 0.7 + MOD( _ProductSeed + [WarehouseKey], 60 ) / 100  -- 0.7-1.3
+		                RETURN ROUND( _BaseReorderQty * _InTransitVariation * _HasInTransit, 0 ),
+		
+		            "UnitCost",
+		                VAR _ProductSeed = MOD( [ProductKey] * 7919 + seed, 32749 )
+		                VAR _ProductType = MOD( _ProductSeed, 5 )
+		                VAR _BaseCost =
+		                    SWITCH( _ProductType,
+		                        0, 25,   -- Fast movers: lower cost
+		                        1, 50,   -- Medium
+		                        2, 35,   -- Slow movers
+		                        3, 40,   -- Seasonal
+		                        4, 150,  -- Luxury: higher cost
+		                        50
+		                    )
+		                VAR _CostVariation = 0.6 + MOD( _ProductSeed * 13, 80 ) / 100  -- 0.6-1.4
+		                RETURN ROUND( _BaseCost * _CostVariation, 2 )
+		        )
+		    
+		    -- Add final calculated columns
+		    VAR _FinalSnapshots =
+		        SELECTCOLUMNS(
+		            _InventorySnapshots,
+		            "SnapshotDateKey", [SnapshotDateKey],
+		            "ProductKey", [ProductKey],
+		            "WarehouseKey", [WarehouseKey],
+		            "OnHandQuantity", [OnHandQuantity],
+		            "ReservedQuantity", [ReservedQuantity],
+		            "AvailableQuantity", MAX( 0, [OnHandQuantity] - [ReservedQuantity] ),
+		            "InTransitQuantity", [InTransitQuantity],
+		            "ProjectedQuantity", [OnHandQuantity] + [InTransitQuantity] - [ReservedQuantity],
+		            "ReorderPoint",
+		                VAR _ProductSeed = MOD( [ProductKey] * 7919 + seed, 32749 )
+		                VAR _ProductReorderPoint = ROUND( _BaseReorderPoint * (0.5 + MOD( _ProductSeed + 200, 50 ) / 100), 0 )  -- 50%-100% of base
+		                RETURN _ProductReorderPoint,
+		            "SafetyStockLevel",
+		                VAR _ProductSeed = MOD( [ProductKey] * 7919 + seed, 32749 )
+		                VAR _ProductSafetyStock = ROUND( _BaseSafetyStock * (0.4 + MOD( _ProductSeed + 300, 60 ) / 100), 0 )  -- 40%-100% of base
+		                RETURN _ProductSafetyStock,
+		            "BelowReorderPoint",
+		                VAR _ProductSeed = MOD( [ProductKey] * 7919 + seed, 32749 )
+		                VAR _ProductReorderPoint = ROUND( _BaseReorderPoint * (0.5 + MOD( _ProductSeed + 200, 50 ) / 100), 0 )
+		                RETURN [OnHandQuantity] - [ReservedQuantity] < _ProductReorderPoint,
+		            "BelowSafetyStock",
+		                VAR _ProductSeed = MOD( [ProductKey] * 7919 + seed, 32749 )
+		                VAR _ProductSafetyStock = ROUND( _BaseSafetyStock * (0.4 + MOD( _ProductSeed + 300, 60 ) / 100), 0 )
+		                RETURN [OnHandQuantity] - [ReservedQuantity] < _ProductSafetyStock,
+		            "OutOfStock", [OnHandQuantity] - [ReservedQuantity] = 0,
+		            "UnitCost", [UnitCost],
+		            "InventoryValue", [OnHandQuantity] * [UnitCost]
+		        )
+		        
+		    RETURN
+		        _FinalSnapshots
+		```
+	lineageTag: 5de75e6a-9d4e-4f97-b1f5-2a50a99f9c99
+
+	annotation DAXLIB_PackageId = DataGoblins.SampleData
+
+	annotation DAXLIB_PackageVersion = 0.1.0-beta
+
+function 'DataGoblins.SampleData.Customer' = ```
+		
+		-- Generate Customer dimension table
+		-- Creates customer records based on CustomerKey values + extras
+		(
+		    -- Column containing CustomerKey values
+		    customer_keys : ANYREF,
+		    
+		    -- Number of RI violations (keys to randomly exclude)
+		    RI_violations : INT64,
+		    
+		    -- Whether to include missing values (10-25% per column)
+		    missing_values : BOOLEAN,
+		    
+		    -- Random seed
+		    seed : INT64
+		)
+		=>
+		    -- Generate customer keys based on RI_violations setting
+		    VAR _MaxKey = MAX( customer_keys )
+		    VAR _ExtraKeys = ROUND( _MaxKey * 0.2, 0 )
+		
+		    -- Create tables using FILTER to make them empty when not needed
+		    VAR _FullRangeKeys =
+		        SELECTCOLUMNS(
+		            FILTER(
+		                GENERATESERIES( 1, _MaxKey + _ExtraKeys ),
+		                RI_violations = 0
+		            ),
+		            "CustKey", [Value]
+		        )
+		
+		    VAR _DistinctKeys =
+		        SELECTCOLUMNS(
+		            FILTER(
+		                DISTINCT( customer_keys ),
+		                RI_violations > 0
+		            ),
+		            "CustKey", customer_keys
+		        )
+		
+		    VAR _ExtraKeysTable =
+		        SELECTCOLUMNS(
+		            FILTER(
+		                GENERATESERIES( _MaxKey + 1, _MaxKey + _ExtraKeys ),
+		                RI_violations > 0 && MOD( [Value] * 7919 + seed, 100 ) < 80
+		            ),
+		            "CustKey", [Value]
+		        )
+		
+		    VAR _AllKeys = UNION( _FullRangeKeys, _DistinctKeys, _ExtraKeysTable )
+		    
+		    -- Generate customer attributes
+		    VAR _CustomersBase =
+		        GENERATE(
+		            _AllKeys,
+		            VAR _CustKey = [CustKey]
+		            VAR _R1 = MOD( _CustKey * 7919 + seed, 32749 )
+		            VAR _R2 = MOD( _CustKey * 6271 + seed, 32749 )
+		            VAR _R3 = MOD( _CustKey * 5413 + seed, 32749 )
+		            VAR _R4 = MOD( _CustKey * 4517 + seed, 32749 )
+		            VAR _R5 = MOD( _CustKey * 3571 + seed, 32749 )
+		            VAR _R6 = MOD( _CustKey * 2999 + seed, 32749 )
+		            VAR _IsCompany = MOD( _R1, 100 ) < 30
+		            
+		            VAR _CompanyPrefix = 
+		                SWITCH(
+		                    MOD( _R1, 15 ),
+		                    0, "Goblin", 1, "Dragon", 2, "Mystic", 3, "Shadow", 4, "Crystal",
+		                    5, "Phoenix", 6, "Titan", 7, "Aurora", 8, "Nexus", 9, "Stellar",
+		                    10, "Ethereal", 11, "Cosmic", 12, "Arcane", 13, "Primal", 14, "Eldritch",
+		                    "Generic"
+		                )
+		            
+		            VAR _CompanySuffix = 
+		                SWITCH(
+		                    MOD( _R2, 12 ),
+		                    0, "Industries", 1, "Corp", 2, "Holdings", 3, "Enterprises", 4, "Systems",
+		                    5, "Group", 6, "Solutions", 7, "Tech", 8, "Partners", 9, "Dynamics",
+		                    10, "Ventures", 11, "Labs",
+		                    "Co"
+		                )
+		            
+		            VAR _CompanyName = _CompanyPrefix & " " & _CompanySuffix & " " & FORMAT( _CustKey, "000" )
+		            
+		            VAR _FirstName = 
+		                SWITCH(
+		                    MOD( _R2, 20 ),
+		                    0, "Grax", 1, "Zara", 2, "Finn", 3, "Luna", 4, "Rex",
+		                    5, "Nova", 6, "Kai", 7, "Aria", 8, "Leo", 9, "Sage",
+		                    10, "Raven", 11, "Ash", 12, "Storm", 13, "Vale", 14, "Onyx",
+		                    15, "Echo", 16, "Jade", 17, "Flint", 18, "Dawn", 19, "Crow",
+		                    "Alex"
+		                )
+		            
+		            VAR _LastNameAdj = 
+		                SWITCH(
+		                    MOD( _R3, 20 ),
+		                    0, "Iron", 1, "Gold", 2, "Storm", 3, "Dark", 4, "Bright",
+		                    5, "Swift", 6, "Strong", 7, "Wise", 8, "Silver", 9, "Fire",
+		                    10, "Shadow", 11, "Moon", 12, "Sun", 13, "Star", 14, "Wild",
+		                    15, "Frost", 16, "Thunder", 17, "Crystal", 18, "Ember", 19, "Mist",
+		                    "True"
+		                )
+		            
+		            VAR _LastNameNoun = 
+		                SWITCH(
+		                    MOD( _R5, 20 ),
+		                    0, "foot", 1, "seeker", 2, "wind", 3, "blade", 4, "star",
+		                    5, "arrow", 6, "arm", 7, "heart", 8, "tongue", 9, "forge",
+		                    10, "hammer", 11, "shield", 12, "song", 13, "walker", 14, "rider",
+		                    15, "keeper", 16, "bringer", 17, "caller", 18, "weaver", 19, "dancer",
+		                    "smith"
+		                )
+		            
+		            VAR _LastName = _LastNameAdj & _LastNameNoun
+		            
+		            VAR _CustomerName = IF( _IsCompany, _CompanyName, _FirstName & " " & _LastName )
+		            
+		            VAR _CustomerType = 
+		                IF( _IsCompany, "B2B", IF( MOD( _R1, 100 ) < 80, "B2C", "Partner" ) )
+		            
+		            VAR _CustomerSegment = 
+		                SWITCH(
+		                    MOD( _R2, 4 ),
+		                    0, "Premium",
+		                    1, "Standard",
+		                    2, "Basic",
+		                    3, "Enterprise",
+		                    "Standard"
+		                )
+		            
+		            VAR _Industry = 
+		                IF( _IsCompany,
+		                    SWITCH(
+		                        MOD( _R3, 8 ),
+		                        0, "Technology",
+		                        1, "Manufacturing",
+		                        2, "Retail",
+		                        3, "Healthcare",
+		                        4, "Finance",
+		                        5, "Education",
+		                        6, "Government",
+		                        7, "Services",
+		                        "Other"
+		                    ),
+		                    "Individual"
+		                )
+		            
+		            VAR _Country = 
+		                SWITCH(
+		                    MOD( _R4, 10 ),
+		                    0, "USA",
+		                    1, "Canada",
+		                    2, "UK",
+		                    3, "Germany",
+		                    4, "France",
+		                    5, "Australia",
+		                    6, "Japan",
+		                    7, "Brazil",
+		                    8, "India",
+		                    9, "Mexico",
+		                    "USA"
+		                )
+		            
+		            VAR _Region = 
+		                SWITCH(
+		                    MOD( _R4, 10 ),
+		                    0, "North America",
+		                    1, "North America",
+		                    2, "Europe",
+		                    3, "Europe",
+		                    4, "Europe",
+		                    5, "Asia-Pacific",
+		                    6, "Asia-Pacific",
+		                    7, "South America",
+		                    8, "Asia-Pacific",
+		                    9, "North America",
+		                    "North America"
+		                )
+		            
+		            VAR _City = 
+		                IF( MOD( _R4, 10 ) = 0,
+		                    SWITCH( MOD( _R6, 5 ), 0, "New York", 1, "Los Angeles", 2, "Chicago", 3, "Houston", 4, "Phoenix", "Miami" ),
+		                IF( MOD( _R4, 10 ) = 1,
+		                    SWITCH( MOD( _R6, 5 ), 0, "Toronto", 1, "Vancouver", 2, "Montreal", 3, "Calgary", 4, "Ottawa", "Edmonton" ),
+		                IF( MOD( _R4, 10 ) = 2,
+		                    SWITCH( MOD( _R6, 5 ), 0, "London", 1, "Manchester", 2, "Birmingham", 3, "Glasgow", 4, "Liverpool", "Edinburgh" ),
+		                IF( MOD( _R4, 10 ) = 3,
+		                    SWITCH( MOD( _R6, 5 ), 0, "Berlin", 1, "Munich", 2, "Hamburg", 3, "Frankfurt", 4, "Cologne", "Stuttgart" ),
+		                IF( MOD( _R4, 10 ) = 4,
+		                    SWITCH( MOD( _R6, 5 ), 0, "Paris", 1, "Lyon", 2, "Marseille", 3, "Toulouse", 4, "Nice", "Bordeaux" ),
+		                IF( MOD( _R4, 10 ) = 5,
+		                    SWITCH( MOD( _R6, 5 ), 0, "Sydney", 1, "Melbourne", 2, "Brisbane", 3, "Perth", 4, "Adelaide", "Canberra" ),
+		                IF( MOD( _R4, 10 ) = 6,
+		                    SWITCH( MOD( _R6, 5 ), 0, "Tokyo", 1, "Osaka", 2, "Kyoto", 3, "Yokohama", 4, "Nagoya", "Kobe" ),
+		                IF( MOD( _R4, 10 ) = 7,
+		                    SWITCH( MOD( _R6, 5 ), 0, "São Paulo", 1, "Rio de Janeiro", 2, "Brasília", 3, "Salvador", 4, "Fortaleza", "Belo Horizonte" ),
+		                IF( MOD( _R4, 10 ) = 8,
+		                    SWITCH( MOD( _R6, 5 ), 0, "Mumbai", 1, "Delhi", 2, "Bangalore", 3, "Chennai", 4, "Kolkata", "Hyderabad" ),
+		                "Mexico City" )))))))))
+		            
+		            VAR _LifetimeValue = ROUND( 1000 * ( 1 + MOD( _R1 + _R2, 100 ) / 10 ), 2 )
+		            
+		            VAR _CreditLimit = 
+		                SWITCH(
+		                    MOD( _R2, 4 ),
+		                    0, 100000,
+		                    1, 50000,
+		                    2, 10000,
+		                    3, 500000,
+		                    25000
+		                )
+		            
+		            VAR _AccountOpenDate = DATE( 2020, 1, 1 ) + MOD( _R3, 1825 )
+		            
+		            VAR _Status = 
+		                IF( MOD( _R4, 100 ) < 75, "Active",
+		                IF( MOD( _R4, 100 ) < 90, "Inactive",
+		                IF( MOD( _R4, 100 ) < 95, "Suspended",
+		                "Closed" )))
+		            
+		            RETURN
+		                ROW(
+		                    "CustomerKey", _CustKey,
+		                    "CustomerName", 
+		                        IF( missing_values && MOD( _CustKey * 2311, 100 ) < 15, BLANK(), _CustomerName ),
+		                    "CustomerType", _CustomerType,
+		                    "CustomerSegment", _CustomerSegment,
+		                    "Industry",
+		                        IF( missing_values && MOD( _CustKey * 1993, 100 ) < 20, BLANK(), _Industry ),
+		                    "Country", _Country,
+		                    "Region", _Region,
+		                    "City",
+		                        IF( missing_values && MOD( _CustKey * 1777, 100 ) < 12, BLANK(), _City ),
+		                    "LifetimeValue",
+		                        IF( missing_values && MOD( _CustKey * 1553, 100 ) < 18, BLANK(), _LifetimeValue ),
+		                    "CreditLimit",
+		                        IF( missing_values && MOD( _CustKey * 1319, 100 ) < 25, BLANK(), _CreditLimit ),
+		                    "AccountOpenDate",
+		                        IF( missing_values && MOD( _CustKey * 1117, 100 ) < 10, BLANK(), _AccountOpenDate ),
+		                    "Status", _Status
+		                )
+		        )
+		    
+		    -- Apply RI violations (remove random keys)
+		    VAR _TotalCustomers = COUNTROWS( _CustomersBase )
+		    VAR _FinalCustomers =
+		        FILTER(
+		            _CustomersBase,
+		            RI_violations = 0 || MOD( [CustomerKey] * 3571 + seed, _TotalCustomers ) >= RI_violations
+		        )
+		        
+		    RETURN
+		        _FinalCustomers
+		```
+	lineageTag: 08d1f501-4619-44e8-ab2f-64618e697265
+
+	annotation DAXLIB_PackageId = DataGoblins.SampleData
+
+	annotation DAXLIB_PackageVersion = 0.1.0-beta
+
+function 'DataGoblins.SampleData.Product' = ```
+		
+		-- Generate Product dimension table
+		-- Creates product records based on ProductKey values + extras
+		(
+		    -- Column containing ProductKey values
+		    product_keys : ANYREF,
+		    
+		    -- Number of RI violations (keys to randomly exclude)
+		    RI_violations : INT64,
+		    
+		    -- Whether to include missing values (10-25% per column)
+		    missing_values : BOOLEAN,
+		    
+		    -- Random seed
+		    seed : INT64
+		)
+		=>
+		    -- Generate product keys based on RI_violations setting
+		    VAR _MaxKey = MAX( product_keys )
+		    VAR _ExtraKeys = ROUND( _MaxKey * 0.2, 0 )
+		
+		    -- Create tables using FILTER to make them empty when not needed
+		    VAR _FullRangeKeys =
+		        SELECTCOLUMNS(
+		            FILTER(
+		                GENERATESERIES( 1, _MaxKey + _ExtraKeys ),
+		                RI_violations = 0
+		            ),
+		            "ProdKey", [Value]
+		        )
+		
+		    VAR _DistinctKeys =
+		        SELECTCOLUMNS(
+		            FILTER(
+		                DISTINCT( product_keys ),
+		                RI_violations > 0
+		            ),
+		            "ProdKey", product_keys
+		        )
+		
+		    VAR _ExtraKeysTable =
+		        SELECTCOLUMNS(
+		            FILTER(
+		                GENERATESERIES( _MaxKey + 1, _MaxKey + _ExtraKeys ),
+		                RI_violations > 0 && MOD( [Value] * 7919 + seed, 100 ) < 80
+		            ),
+		            "ProdKey", [Value]
+		        )
+		
+		    VAR _AllKeys = UNION( _FullRangeKeys, _DistinctKeys, _ExtraKeysTable )
+		    
+		    -- Generate product attributes
+		    VAR _ProductsBase =
+		        GENERATE(
+		            _AllKeys,
+		            VAR _ProdKey = [ProdKey]
+		            VAR _R1 = MOD( _ProdKey * 7919 + seed, 32749 )
+		            VAR _R2 = MOD( _ProdKey * 6271 + seed, 32749 )
+		            VAR _R3 = MOD( _ProdKey * 5413 + seed, 32749 )
+		            VAR _R4 = MOD( _ProdKey * 4517 + seed, 32749 )
+		            VAR _R5 = MOD( _ProdKey * 3571 + seed, 32749 )
+		            VAR _R6 = MOD( _ProdKey * 2999 + seed, 32749 )
+		            
+		            -- Product hierarchy: Category > Subcategory > Product
+		            VAR _ProductCategory = 
+		                SWITCH(
+		                    MOD( _R1, 5 ),
+		                    0, "Electronics",
+		                    1, "Clothing",
+		                    2, "Home & Garden",
+		                    3, "Sports & Outdoors",
+		                    4, "Books & Media",
+		                    "General"
+		                )
+		            
+		            VAR _ProductSubcategory = 
+		                IF( MOD( _R1, 5 ) = 0,
+		                    SWITCH( MOD( _R2, 5 ), 0, "Computers", 1, "Mobile Devices", 2, "Audio", 3, "Smart Home", 4, "Gaming", "Accessories" ),
+		                IF( MOD( _R1, 5 ) = 1,
+		                    SWITCH( MOD( _R2, 5 ), 0, "Men's Wear", 1, "Women's Wear", 2, "Kids", 3, "Shoes", 4, "Accessories", "Sportswear" ),
+		                IF( MOD( _R1, 5 ) = 2,
+		                    SWITCH( MOD( _R2, 5 ), 0, "Furniture", 1, "Kitchen", 2, "Garden", 3, "Decor", 4, "Tools", "Lighting" ),
+		                IF( MOD( _R1, 5 ) = 3,
+		                    SWITCH( MOD( _R2, 5 ), 0, "Fitness", 1, "Outdoor Gear", 2, "Team Sports", 3, "Water Sports", 4, "Winter Sports", "Cycling" ),
+		                IF( MOD( _R1, 5 ) = 4,
+		                    SWITCH( MOD( _R2, 5 ), 0, "Fiction", 1, "Non-Fiction", 2, "Music", 3, "Movies", 4, "Games", "Educational" ),
+		                "Miscellaneous" )))))
+		            
+		            -- More varied product names using multiple components
+		            VAR _ProductQuality = 
+		                SWITCH(
+		                    MOD( _R2, 15 ),
+		                    0, "Ultra", 1, "Pro", 2, "Elite", 3, "Premium", 4, "Deluxe",
+		                    5, "Advanced", 6, "Professional", 7, "Master", 8, "Supreme", 9, "Platinum",
+		                    10, "Essential", 11, "Classic", 12, "Standard", 13, "Basic", 14, "Value",
+		                    "Generic"
+		                )
+		            
+		            VAR _ProductModifier = 
+		                SWITCH(
+		                    MOD( _R3, 15 ),
+		                    0, "Turbo", 1, "Max", 2, "Plus", 3, "X", 4, "Z",
+		                    5, "Alpha", 6, "Beta", 7, "Omega", 8, "Quantum", 9, "Fusion",
+		                    10, "Hybrid", 11, "Smart", 12, "Eco", 13, "Compact", 14, "Wireless",
+		                    ""
+		                )
+		            
+		            VAR _ProductType = 
+		                SWITCH(
+		                    MOD( _R5, 20 ),
+		                    0, "Widget", 1, "Gadget", 2, "Device", 3, "Tool", 4, "System",
+		                    5, "Kit", 6, "Set", 7, "Pack", 8, "Unit", 9, "Module",
+		                    10, "Component", 11, "Solution", 12, "Package", 13, "Bundle", 14, "Collection",
+		                    15, "Series", 16, "Edition", 17, "Model", 18, "Version", 19, "Item",
+		                    "Product"
+		                )
+		            
+		            VAR _ProductName = 
+		                _ProductQuality & 
+		                IF( LEN( _ProductModifier ) > 0, " " & _ProductModifier, "" ) &
+		                " " & _ProductType & " " & FORMAT( _ProdKey, "000" )
+		            
+		            VAR _SKU = 
+		                VAR _CatCode = 
+		                    SWITCH( MOD( _R1, 5 ), 
+		                        0, "ELE", 1, "CLO", 2, "HOM", 3, "SPO", 4, "BOO", "GEN" 
+		                    )
+		                RETURN _CatCode & "-" & FORMAT( _ProdKey, "00000" )
+		            
+		            VAR _Brand = 
+		                SWITCH(
+		                    MOD( _R4, 20 ),
+		                    0, "GoblinTech", 1, "DragonForge", 2, "MysticBrand", 3, "TitanWorks", 4, "PhoenixCo",
+		                    5, "StellarMfg", 6, "AuroraPro", 7, "NexusInc", 8, "CrystalCraft", 9, "ShadowWorks",
+		                    10, "EliteBrands", 11, "PrimeTech", 12, "ApexGoods", 13, "NovaProducts", 14, "ZenithCorp",
+		                    15, "VortexMfg", 16, "QuantumBrands", 17, "FusionTech", 18, "OmegaWorks", 19, "AlphaGoods",
+		                    "Generic"
+		                )
+		            
+		            -- Product attributes with more variety
+		            VAR _Color = 
+		                SWITCH(
+		                    MOD( _R2 + _R3, 15 ),
+		                    0, "Black", 1, "White", 2, "Red", 3, "Blue", 4, "Green",
+		                    5, "Yellow", 6, "Silver", 7, "Gold", 8, "Purple", 9, "Orange",
+		                    10, "Gray", 11, "Navy", 12, "Burgundy", 13, "Teal", 14, "Rose Gold",
+		                    "Multi"
+		                )
+		            
+		            VAR _Size = 
+		                SWITCH(
+		                    MOD( _R3, 7 ),
+		                    0, "XS", 1, "S", 2, "M", 3, "L", 4, "XL", 5, "XXL", 6, "XXXL",
+		                    "Standard"
+		                )
+		            
+		            VAR _Weight = ROUND( 0.1 + MOD( _R1 + _R2, 100 ) / 10, 2 )
+		            
+		            VAR _StandardCost = ROUND( 10 + MOD( _R1 * _R2, 500 ), 2 )
+		            
+		            VAR _ListPrice = 
+		                VAR _Markup = 1.5 + MOD( _R3, 10 ) / 10
+		                RETURN ROUND( _StandardCost * _Markup, 2 )
+		            
+		            VAR _ProductStatus = 
+		                IF( MOD( _R4, 100 ) < 70, "Active",
+		                IF( MOD( _R4, 100 ) < 85, "Discontinued",
+		                IF( MOD( _R4, 100 ) < 95, "Out of Stock",
+		                "Pending" )))
+		            
+		            VAR _LaunchDate = DATE( 2020, 1, 1 ) + MOD( _R3, 1825 )
+		            
+		            VAR _DiscontinuedDate = 
+		                IF( _ProductStatus = "Discontinued",
+		                    DATE( 2023, 1, 1 ) + MOD( _R4, 730 ),
+		                    BLANK()
+		                )
+		            
+		            RETURN
+		                ROW(
+		                    "ProductKey", _ProdKey,
+		                    "SKU", _SKU,
+		                    "ProductName",
+		                        IF( missing_values && MOD( _ProdKey * 2311, 100 ) < 15, BLANK(), _ProductName ),
+		                    "ProductCategory", _ProductCategory,
+		                    "ProductSubcategory", _ProductSubcategory,
+		                    "Brand",
+		                        IF( missing_values && MOD( _ProdKey * 1993, 100 ) < 20, BLANK(), _Brand ),
+		                    "Color",
+		                        IF( missing_values && MOD( _ProdKey * 1777, 100 ) < 18, BLANK(), _Color ),
+		                    "Size",
+		                        IF( missing_values && MOD( _ProdKey * 1553, 100 ) < 25, BLANK(), _Size ),
+		                    "Weight",
+		                        IF( missing_values && MOD( _ProdKey * 1319, 100 ) < 12, BLANK(), _Weight ),
+		                    "StandardCost", _StandardCost,
+		                    "ListPrice", _ListPrice,
+		                    "ProductStatus", _ProductStatus,
+		                    "LaunchDate",
+		                        IF( missing_values && MOD( _ProdKey * 1117, 100 ) < 10, BLANK(), _LaunchDate ),
+		                    "DiscontinuedDate", _DiscontinuedDate
+		                )
+		        )
+		    
+		    -- Apply RI violations (remove random keys)
+		    VAR _TotalProducts = COUNTROWS( _ProductsBase )
+		    VAR _FinalProducts =
+		        FILTER(
+		            _ProductsBase,
+		            RI_violations = 0 || MOD( [ProductKey] * 3571 + seed, _TotalProducts ) >= RI_violations
+		        )
+		        
+		    RETURN
+		        _FinalProducts
+		```
+	lineageTag: 8e745fef-a87d-43d2-87ff-53e08b7711a9
+
+	annotation DAXLIB_PackageId = DataGoblins.SampleData
+
+	annotation DAXLIB_PackageVersion = 0.1.0-beta
+
+function 'DataGoblins.SampleData.Store' = ```
+		
+		-- Generate Store dimension table
+		-- Creates store records based on StoreKey values + extras
+		(
+		    -- Column containing StoreKey values
+		    store_keys : ANYREF,
+		    
+		    -- Number of RI violations (keys to randomly exclude)
+		    RI_violations : INT64,
+		    
+		    -- Whether to include missing values (10-25% per column)
+		    missing_values : BOOLEAN,
+		    
+		    -- Random seed
+		    seed : INT64
+		)
+		=>
+		    -- Generate store keys based on RI_violations setting
+		    VAR _MaxKey = MAX( store_keys )
+		    VAR _ExtraKeys = ROUND( _MaxKey * 0.2, 0 )
+		
+		    -- Create tables using FILTER to make them empty when not needed
+		    VAR _FullRangeKeys =
+		        SELECTCOLUMNS(
+		            FILTER(
+		                GENERATESERIES( 1, _MaxKey + _ExtraKeys ),
+		                RI_violations = 0
+		            ),
+		            "StrKey", [Value]
+		        )
+		
+		    VAR _DistinctKeys =
+		        SELECTCOLUMNS(
+		            FILTER(
+		                DISTINCT( store_keys ),
+		                RI_violations > 0
+		            ),
+		            "StrKey", store_keys
+		        )
+		
+		    VAR _ExtraKeysTable =
+		        SELECTCOLUMNS(
+		            FILTER(
+		                GENERATESERIES( _MaxKey + 1, _MaxKey + _ExtraKeys ),
+		                RI_violations > 0 && MOD( [Value] * 7919 + seed, 100 ) < 80
+		            ),
+		            "StrKey", [Value]
+		        )
+		
+		    VAR _AllKeys = UNION( _FullRangeKeys, _DistinctKeys, _ExtraKeysTable )
+		    
+		    -- Generate store attributes
+		    VAR _StoresBase =
+		        GENERATE(
+		            _AllKeys,
+		            VAR _StrKey = [StrKey]
+		            VAR _R1 = MOD( _StrKey * 7919 + seed, 32749 )
+		            VAR _R2 = MOD( _StrKey * 6271 + seed, 32749 )
+		            VAR _R3 = MOD( _StrKey * 5413 + seed, 32749 )
+		            VAR _R4 = MOD( _StrKey * 4517 + seed, 32749 )
+		            VAR _R5 = MOD( _StrKey * 3571 + seed, 32749 )
+		            VAR _R6 = MOD( _StrKey * 2999 + seed, 32749 )
+		            
+		            VAR _StoreCode = "ST" & FORMAT( _StrKey, "000" )
+		            
+		            -- More varied store names
+		            VAR _StoreType = 
+		                SWITCH(
+		                    MOD( _R1, 6 ),
+		                    0, "Flagship",
+		                    1, "Express",
+		                    2, "Outlet",
+		                    3, "Warehouse",
+		                    4, "Boutique",
+		                    5, "Mega",
+		                    "Standard"
+		                )
+		            
+		            VAR _StoreLocationPrefix = 
+		                SWITCH(
+		                    MOD( _R2, 15 ),
+		                    0, "Downtown", 1, "Mall", 2, "Airport", 3, "Station", 4, "Plaza",
+		                    5, "Center", 6, "Square", 7, "Park", 8, "Market", 9, "District",
+		                    10, "Commons", 11, "Crossing", 12, "Heights", 13, "Village", 14, "Gateway",
+		                    "Location"
+		                )
+		            
+		            VAR _StoreLocationSuffix = 
+		                SWITCH(
+		                    MOD( _R5, 10 ),
+		                    0, "North", 1, "South", 2, "East", 3, "West", 4, "Central",
+		                    5, "Upper", 6, "Lower", 7, "Grand", 8, "Royal", 9, "Prime",
+		                    ""
+		                )
+		            
+		            VAR _StoreName = 
+		                _StoreType & " " & 
+		                IF( LEN( _StoreLocationSuffix ) > 0, _StoreLocationSuffix & " ", "" ) &
+		                _StoreLocationPrefix & " #" & FORMAT( _StrKey, "00" )
+		            
+		            -- Store hierarchy: Region > District > Store
+		            VAR _StoreRegion = 
+		                SWITCH(
+		                    MOD( _R3, 5 ),
+		                    0, "North",
+		                    1, "South",
+		                    2, "East",
+		                    3, "West",
+		                    4, "Central",
+		                    "Unknown"
+		                )
+		            
+		            VAR _StoreDistrict = 
+		                VAR _Region = MOD( _R3, 5 )
+		                VAR _District = MOD( _R4, 4 )
+		                RETURN _StoreRegion & "-" & FORMAT( _District + 1, "0" )
+		            
+		            VAR _StoreFormat = 
+		                SWITCH(
+		                    MOD( _R2, 4 ),
+		                    0, "Physical",
+		                    1, "Online",
+		                    2, "Hybrid",
+		                    3, "Pop-up",
+		                    "Physical"
+		                )
+		            
+		            -- Location details with more variety
+		            VAR _Country = 
+		                SWITCH(
+		                    MOD( _R4, 10 ),
+		                    0, "USA",
+		                    1, "Canada",
+		                    2, "UK",
+		                    3, "Germany",
+		                    4, "France",
+		                    5, "Australia",
+		                    6, "Japan",
+		                    7, "Spain",
+		                    8, "Italy",
+		                    9, "Netherlands",
+		                    "USA"
+		                )
+		            
+		            VAR _State = 
+		                IF( MOD( _R4, 10 ) = 0,  -- USA
+		                    SWITCH(
+		                        MOD( _R1 + _R2, 15 ),
+		                        0, "CA", 1, "TX", 2, "NY", 3, "FL", 4, "IL",
+		                        5, "PA", 6, "OH", 7, "GA", 8, "NC", 9, "MI",
+		                        10, "WA", 11, "MA", 12, "AZ", 13, "CO", 14, "VA",
+		                        "CA"
+		                    ),
+		                    "N/A"
+		                )
+		            
+		            VAR _City = 
+		                IF( MOD( _R4, 10 ) = 0,
+		                    SWITCH( MOD( _R6, 8 ), 0, "New York", 1, "Los Angeles", 2, "Chicago", 3, "Houston", 
+		                            4, "Phoenix", 5, "Philadelphia", 6, "San Antonio", 7, "San Diego", "Dallas" ),
+		                IF( MOD( _R4, 10 ) = 1,
+		                    SWITCH( MOD( _R6, 6 ), 0, "Toronto", 1, "Vancouver", 2, "Montreal", 3, "Calgary", 
+		                            4, "Ottawa", 5, "Edmonton", "Winnipeg" ),
+		                IF( MOD( _R4, 10 ) = 2,
+		                    SWITCH( MOD( _R6, 8 ), 0, "London", 1, "Manchester", 2, "Birmingham", 3, "Glasgow", 
+		                            4, "Liverpool", 5, "Edinburgh", 6, "Bristol", 7, "Leeds", "Sheffield" ),
+		                IF( MOD( _R4, 10 ) = 3,
+		                    SWITCH( MOD( _R6, 7 ), 0, "Berlin", 1, "Munich", 2, "Hamburg", 3, "Frankfurt", 
+		                            4, "Cologne", 5, "Stuttgart", 6, "Düsseldorf", "Dresden" ),
+		                IF( MOD( _R4, 10 ) = 4,
+		                    SWITCH( MOD( _R6, 6 ), 0, "Paris", 1, "Lyon", 2, "Marseille", 3, "Toulouse", 
+		                            4, "Nice", 5, "Bordeaux", "Lille" ),
+		                IF( MOD( _R4, 10 ) = 5,
+		                    SWITCH( MOD( _R6, 6 ), 0, "Sydney", 1, "Melbourne", 2, "Brisbane", 3, "Perth", 
+		                            4, "Adelaide", 5, "Gold Coast", "Canberra" ),
+		                IF( MOD( _R4, 10 ) = 6,
+		                    SWITCH( MOD( _R6, 7 ), 0, "Tokyo", 1, "Osaka", 2, "Kyoto", 3, "Yokohama", 
+		                            4, "Nagoya", 5, "Kobe", 6, "Fukuoka", "Sapporo" ),
+		                IF( MOD( _R4, 10 ) = 7,
+		                    SWITCH( MOD( _R6, 5 ), 0, "Madrid", 1, "Barcelona", 2, "Valencia", 3, "Seville", 
+		                            4, "Bilbao", "Málaga" ),
+		                IF( MOD( _R4, 10 ) = 8,
+		                    SWITCH( MOD( _R6, 6 ), 0, "Rome", 1, "Milan", 2, "Naples", 3, "Turin", 
+		                            4, "Florence", 5, "Venice", "Bologna" ),
+		                "Amsterdam" )))))))))
+		            
+		            VAR _PostalCode = FORMAT( 10000 + MOD( _R1 * _R2, 89999 ), "00000" )
+		            
+		            -- Store metrics
+		            VAR _SquareFootage = ROUND( 1000 + MOD( _R1 + _R2, 50 ) * 1000, 0 )
+		            VAR _EmployeeCount = 10 + MOD( _R2, 100 )
+		            VAR _ParkingSpaces = 
+		                IF( _StoreFormat <> "Online", 50 + MOD( _R3, 200 ), 0 )
+		            
+		            -- Manager names with more variety
+		            VAR _ManagerFirstName = 
+		                SWITCH(
+		                    MOD( _R3 + _R4, 20 ),
+		                    0, "John", 1, "Sarah", 2, "Mike", 3, "Emma", 4, "David",
+		                    5, "Lisa", 6, "Tom", 7, "Amy", 8, "Chris", 9, "Kate",
+		                    10, "James", 11, "Maria", 12, "Robert", 13, "Jennifer", 14, "William",
+		                    15, "Patricia", 16, "Richard", 17, "Linda", 18, "Charles", 19, "Barbara",
+		                    "Pat"
+		                )
+		            
+		            VAR _ManagerLastName = 
+		                SWITCH(
+		                    MOD( _R1 + _R5, 20 ),
+		                    0, "Johnson", 1, "Williams", 2, "Brown", 3, "Jones", 4, "Garcia",
+		                    5, "Miller", 6, "Davis", 7, "Rodriguez", 8, "Martinez", 9, "Wilson",
+		                    10, "Anderson", 11, "Taylor", 12, "Thomas", 13, "Moore", 14, "Jackson",
+		                    15, "Martin", 16, "Lee", 17, "Thompson", 18, "White", 19, "Harris",
+		                    "Smith"
+		                )
+		            
+		            VAR _StoreManager = _ManagerFirstName & " " & _ManagerLastName
+		            
+		            VAR _OpenDate = DATE( 2015, 1, 1 ) + MOD( _R3, 3650 )
+		            
+		            VAR _LastRenovationDate = 
+		                IF( MOD( _R4, 100 ) < 40,
+		                    _OpenDate + MOD( _R4, 1825 ),
+		                    BLANK()
+		                )
+		            
+		            VAR _Status = 
+		                IF( MOD( _R1, 100 ) < 85, "Active",
+		                IF( MOD( _R1, 100 ) < 95, "Renovation",
+		                "Closed" ))
+		            
+		            RETURN
+		                ROW(
+		                    "StoreKey", _StrKey,
+		                    "StoreCode", _StoreCode,
+		                    "StoreName",
+		                        IF( missing_values && MOD( _StrKey * 2311, 100 ) < 12, BLANK(), _StoreName ),
+		                    "StoreRegion", _StoreRegion,
+		                    "StoreDistrict", _StoreDistrict,
+		                    "StoreType", _StoreType,
+		                    "StoreFormat", _StoreFormat,
+		                    "Country", _Country,
+		                    "State", _State,
+		                    "City",
+		                        IF( missing_values && MOD( _StrKey * 1777, 100 ) < 15, BLANK(), _City ),
+		                    "PostalCode",
+		                        IF( missing_values && MOD( _StrKey * 1553, 100 ) < 10, BLANK(), _PostalCode ),
+		                    "SquareFootage",
+		                        IF( missing_values && MOD( _StrKey * 1319, 100 ) < 18, BLANK(), _SquareFootage ),
+		                    "EmployeeCount", _EmployeeCount,
+		                    "ParkingSpaces", _ParkingSpaces,
+		                    "StoreManager",
+		                        IF( missing_values && MOD( _StrKey * 1993, 100 ) < 20, BLANK(), _StoreManager ),
+		                    "OpenDate", _OpenDate,
+		                    "LastRenovationDate",
+		                        IF( missing_values && MOD( _StrKey * 1117, 100 ) < 25, BLANK(), _LastRenovationDate ),
+		                    "Status", _Status
+		                )
+		        )
+		    
+		    -- Apply RI violations (remove random keys)
+		    VAR _TotalStores = COUNTROWS( _StoresBase )
+		    VAR _FinalStores =
+		        FILTER(
+		            _StoresBase,
+		            RI_violations = 0 || MOD( [StoreKey] * 3571 + seed, _TotalStores ) >= RI_violations
+		        )
+		        
+		    RETURN
+		        _FinalStores
+		```
+	lineageTag: 30f2bbb4-0f6a-47ec-939e-fd06fb10d73a
+
+	annotation DAXLIB_PackageId = DataGoblins.SampleData
+
+	annotation DAXLIB_PackageVersion = 0.1.0-beta
+
+function 'DataGoblins.SampleData.Dates' = ```
+		
+		-- Generate Date dimension table
+		-- Creates a complete date table from full years based on input date columns
+		(
+		    -- Column containing earliest dates
+		    earliest_date_column : ANYREF,
+		    
+		    -- Column containing latest dates
+		    latest_date_column : ANYREF
+		)
+		=>
+		    -- Determine date range
+		    VAR _EarliestDate = MIN( earliest_date_column )
+		    VAR _LatestDate = MAX( latest_date_column )
+		    VAR _StartYear = YEAR( _EarliestDate )
+		    VAR _EndYear = YEAR( _LatestDate )
+		    VAR _StartDate = DATE( _StartYear, 1, 1 )
+		    VAR _EndDate = DATE( _EndYear, 12, 31 )
+		    
+		    VAR _DateRange = GENERATESERIES( INT( _StartDate ), INT( _EndDate ), 1 )
+		    
+		    VAR _Dates =
+		        GENERATE(
+		            _DateRange,
+		            VAR _DateKey = [Value]
+		            VAR _Date = DATE( 1899, 12, 30 ) + _DateKey  -- Convert back to date
+		            
+		            -- Basic date components
+		            VAR _Year = YEAR( _Date )
+		            VAR _Quarter = QUARTER( _Date )
+		            VAR _Month = MONTH( _Date )
+		            VAR _Week = WEEKNUM( _Date, 2 )  -- Week starts Monday
+		            VAR _Day = DAY( _Date )
+		            VAR _DayOfWeek = WEEKDAY( _Date, 2 )  -- Monday = 1
+		            VAR _DayOfYear = DATEDIFF( DATE( _Year, 1, 1 ), _Date, DAY ) + 1
+		            
+		            -- Names
+		            VAR _MonthName = 
+		                SWITCH(
+		                    _Month,
+		                    1, "January", 2, "February", 3, "March", 4, "April",
+		                    5, "May", 6, "June", 7, "July", 8, "August",
+		                    9, "September", 10, "October", 11, "November", 12, "December",
+		                    "Unknown"
+		                )
+		            
+		            VAR _MonthNameShort = 
+		                SWITCH(
+		                    _Month,
+		                    1, "Jan", 2, "Feb", 3, "Mar", 4, "Apr",
+		                    5, "May", 6, "Jun", 7, "Jul", 8, "Aug",
+		                    9, "Sep", 10, "Oct", 11, "Nov", 12, "Dec",
+		                    "Unk"
+		                )
+		            
+		            VAR _DayName = 
+		                SWITCH(
+		                    _DayOfWeek,
+		                    1, "Monday", 2, "Tuesday", 3, "Wednesday", 4, "Thursday",
+		                    5, "Friday", 6, "Saturday", 7, "Sunday",
+		                    "Unknown"
+		                )
+		            
+		            VAR _DayNameShort = 
+		                SWITCH(
+		                    _DayOfWeek,
+		                    1, "Mon", 2, "Tue", 3, "Wed", 4, "Thu",
+		                    5, "Fri", 6, "Sat", 7, "Sun",
+		                    "Unk"
+		                )
+		            
+		            VAR _QuarterName = "Q" & _Quarter
+		            
+		            -- Formatted strings
+		            VAR _YearMonth = FORMAT( _Date, "yyyy-MM" )
+		            VAR _YearMonthName = _MonthNameShort & " " & FORMAT( _Year, "0000" )
+		            VAR _YearQuarter = FORMAT( _Year, "0000" ) & "-Q" & _Quarter
+		            VAR _YearWeek = FORMAT( _Year, "0000" ) & "-W" & FORMAT( _Week, "00" )
+		            VAR _DateFormatted = FORMAT( _Date, "yyyy-MM-dd" )
+		            
+		            -- Fiscal periods (assuming July 1 fiscal year start)
+		            VAR _FiscalYearOffset = IF( _Month >= 7, 1, 0 )
+		            VAR _FiscalYear = _Year + _FiscalYearOffset
+		            VAR _FiscalMonth = MOD( _Month - 7, 12 ) + 1
+		            VAR _FiscalQuarter = ROUNDUP( _FiscalMonth / 3, 0 )
+		            
+		            -- Flags
+		            VAR _IsWeekend = _DayOfWeek >= 6
+		            VAR _IsWeekday = NOT _IsWeekend
+		            VAR _IsMonthStart = _Day = 1
+		            VAR _IsMonthEnd = _Day = DAY( EOMONTH( _Date, 0 ) )
+		            VAR _IsQuarterStart = _Day = 1 && _Month IN { 1, 4, 7, 10 }
+		            VAR _IsQuarterEnd = _IsMonthEnd && _Month IN { 3, 6, 9, 12 }
+		            VAR _IsYearStart = _Month = 1 && _Day = 1
+		            VAR _IsYearEnd = _Month = 12 && _Day = 31
+		            
+		            -- Relative dates
+		            VAR _Today = TODAY()
+		            VAR _IsToday = _Date = _Today
+		            VAR _IsCurrentMonth = _Month = MONTH( _Today ) && _Year = YEAR( _Today )
+		            VAR _IsCurrentQuarter = _Quarter = QUARTER( _Today ) && _Year = YEAR( _Today )
+		            VAR _IsCurrentYear = _Year = YEAR( _Today )
+		            VAR _IsPast = _Date < _Today
+		            VAR _IsFuture = _Date > _Today
+		            
+		            RETURN
+		                ROW(
+		                    "Date", _Date,
+		                    "DateKey", _DateKey,
+		                    "DateFormatted", _DateFormatted,
+		                    
+		                    -- Calendar periods
+		                    "Year", _Year,
+		                    "Quarter", _Quarter,
+		                    "QuarterName", _QuarterName,
+		                    "Month", _Month,
+		                    "MonthName", _MonthName,
+		                    "MonthNameShort", _MonthNameShort,
+		                    "Week", _Week,
+		                    "Day", _Day,
+		                    "DayOfWeek", _DayOfWeek,
+		                    "DayOfYear", _DayOfYear,
+		                    "DayName", _DayName,
+		                    "DayNameShort", _DayNameShort,
+		                    
+		                    -- Sort columns
+		                    "MonthSort", _Month,
+		                    "DaySort", _DayOfWeek,
+		                    "QuarterSort", _Quarter,
+		                    
+		                    -- Formatted strings
+		                    "YearMonth", _YearMonth,
+		                    "YearMonthName", _YearMonthName,
+		                    "YearQuarter", _YearQuarter,
+		                    "YearWeek", _YearWeek,
+		                    
+		                    -- Fiscal periods
+		                    "FiscalYear", _FiscalYear,
+		                    "FiscalQuarter", _FiscalQuarter,
+		                    "FiscalMonth", _FiscalMonth,
+		                    
+		                    -- Flags
+		                    "IsWeekend", _IsWeekend,
+		                    "IsWeekday", _IsWeekday,
+		                    "IsMonthStart", _IsMonthStart,
+		                    "IsMonthEnd", _IsMonthEnd,
+		                    "IsQuarterStart", _IsQuarterStart,
+		                    "IsQuarterEnd", _IsQuarterEnd,
+		                    "IsYearStart", _IsYearStart,
+		                    "IsYearEnd", _IsYearEnd,
+		                    
+		                    -- Current period flags
+		                    "IsToday", _IsToday,
+		                    "IsCurrentMonth", _IsCurrentMonth,
+		                    "IsCurrentQuarter", _IsCurrentQuarter,
+		                    "IsCurrentYear", _IsCurrentYear,
+		                    "IsPast", _IsPast,
+		                    "IsFuture", _IsFuture
+		                )
+		        )
+		        
+		    RETURN
+		        _Dates
+		```
+	lineageTag: c16259ba-bf17-4293-83e0-ffd2c33f3f16
+
+	annotation DAXLIB_PackageId = DataGoblins.SampleData
+
+	annotation DAXLIB_PackageVersion = 0.1.0-beta
+
+/// Wraps content in SVG container for Power BI visualization
+/// width		STRING		width (pixels or percentage)
+/// height		STRING		height (pixels or percentage)
+/// viewbox		STRING		Optional: viewBox (e.g., "0 0 100 100")
+/// contents	STRING		To include one or more SVG elements (e.g., from DaxLib.SVG.Element functions)
+/// sortValue	NUMERIC		Optional: sort value for ordering in tables
+function 'DaxLib.SVG.SVG' =
+		(
+			width : STRING,
+			height : STRING,
+			viewbox : STRING,
+			contents : STRING,
+			sortValue : NUMERIC
+		) =>
+		
+			"data:image/svg+xml;utf8," &
+			"<svg " &
+			"width='" & width & "' height='" & height & "' " &
+			IF( NOT ISBLANK( viewbox ), "viewBox='" & viewbox & "' " ) &
+			"xmlns='http://www.w3.org/2000/svg'>" &
+			IF( NOT ISBLANK( sortValue ), "<desc>" & FORMAT( sortValue, "000000000000" ) & "</desc>" ) &
+			contents &
+			"</svg>"
+	lineageTag: 1d190399-f67a-4167-b61f-d25fca3748fb
+
+	annotation DAXLIB_PackageId = DaxLib.SVG
+
+	annotation DAXLIB_PackageVersion = 0.1.2-beta
+
+/// Map a value from one value scale to another
+/// Used for scaling values to fit within SVG dimensions
+/// inputValue		NUMERIC	VAL		The value to map
+/// fromMin			NUMERIC	VAL		The minimum value of the original scale
+/// fromMax			NUMERIC	VAL		The maximum value of the original scale
+/// toMin			NUMERIC	VAL		The minimum value of the new scale
+/// toMax			NUMERIC	VAL		The maximum value of the new scale
+function 'DaxLib.SVG.Scale.Normalize' =
+		(
+			inputValue: NUMERIC VAL,
+			fromMin: NUMERIC VAL,
+			fromMax: NUMERIC VAL,
+			toMin: NUMERIC VAL,
+			toMax: NUMERIC VAL
+		) =>
+		
+			( ( inputValue - fromMin ) / ( fromMax - fromMin ) ) * ( toMax - toMin ) + toMin
+	lineageTag: 610403a5-f8d8-4940-b6fd-aada4b894b7d
+
+	annotation DAXLIB_PackageId = DaxLib.SVG
+
+	annotation DAXLIB_PackageVersion = 0.1.2-beta
+
+/// Geneates a STRING of common shape attributes, that can be passed to DaxLib.SVG.Element.* or DaxLib.SVG.Def.* functions
+/// fill             STRING      Fill color or gradient reference
+/// fillOpacity      DOUBLE      Fill opacity (0-1)
+/// fillRule         STRING      Fill rule ("nonzero" or "evenodd")
+/// stroke           STRING      Stroke color
+/// strokeWidth      INT64       Stroke width
+/// strokeOpacity    DOUBLE      Stroke opacity (0-1)
+/// opacity          DOUBLE      Overall opacity (0-1)
+function 'DaxLib.SVG.Attr.Shapes' =
+		(
+			fill: STRING,
+			fillOpacity: DOUBLE,
+			fillRule: STRING,
+			stroke: STRING,
+			strokeWidth: INT64,
+			strokeOpacity: DOUBLE,
+			opacity: DOUBLE
+		) =>
+		
+			IF( NOT ISBLANK( fill ),          "fill='" & fill & "' ") &
+			IF( NOT ISBLANK( fillOpacity ),   "fill-opacity='" & fillOpacity & "' ") &
+			IF( NOT ISBLANK( fillRule ),      "fill-rule='" & fillRule & "' ") &
+			IF( NOT ISBLANK( stroke ),        "stroke='" & stroke & "' ") &
+			IF( NOT ISBLANK( strokeWidth ),   "stroke-width='" & strokeWidth & "' ") &
+			IF( NOT ISBLANK( strokeOpacity ), "stroke-opacity='" & strokeOpacity & "' ") &
+			IF( NOT ISBLANK( opacity ),       "opacity='" & opacity & "' ")
+	lineageTag: 66b23c33-ace5-4a17-8a49-aadac815c4ae
+
+	annotation DAXLIB_PackageId = DaxLib.SVG
+
+	annotation DAXLIB_PackageVersion = 0.1.2-beta
+
+/// Text-specific attributes
+/// fontFamily      STRING      Font family for text
+/// fontSize        INT64       Font size for text
+/// fontWeight      STRING      Weight ("normal", "bold", "lighter", "100-900")
+/// fontStyle       STRING      Style ("normal", "italic", "oblique")
+/// textAnchor      STRING      Anchor ("start", "middle", "end")
+/// baseline        STRING      Dominant baseline
+/// textDecoration  STRING      Decoration ("none", "underline", "overline", "line-through")
+/// letterSpacing   STRING      Space between letters
+/// wordSpacing     STRING      Space between words
+function 'DaxLib.SVG.Attr.Txt' =
+		(
+			fontFamily: STRING,
+			fontSize: INT64,
+			fontWeight: STRING,
+			fontStyle: STRING,
+			textAnchor: STRING,
+			baseline: STRING,
+			textDecoration: STRING,
+			letterSpacing: STRING,
+			wordSpacing: STRING
+		) =>
+		
+			IF( NOT ISBLANK( fontFamily ),     "font-family='" & fontFamily & "' ") &
+			IF( NOT ISBLANK( fontSize ),       "font-size='" & fontSize & "' ") &
+			IF( NOT ISBLANK( fontWeight ),     "font-weight='" & fontWeight & "' ") &
+			IF( NOT ISBLANK( fontStyle ),      "font-style='" & fontStyle & "' ") &
+			IF( NOT ISBLANK( textAnchor ),     "text-anchor='" & textAnchor & "' ") &
+			IF( NOT ISBLANK( baseline ),       "dominant-baseline='" & baseline & "' ") &
+			IF( NOT ISBLANK( textDecoration ), "text-decoration='" & textDecoration & "' ") &
+			IF( NOT ISBLANK( letterSpacing ),  "letter-spacing='" & letterSpacing & "' ") &
+			IF( NOT ISBLANK( wordSpacing ),    "word-spacing='" & wordSpacing & "' ")
+	lineageTag: a8bdcd66-2ca4-4135-9e43-8121efbe873b
+
+	annotation DAXLIB_PackageId = DaxLib.SVG
+
+	annotation DAXLIB_PackageVersion = 0.1.2-beta
+
+/// Comprehensive stroke attributes function
+/// stroke             STRING    Stroke color (e.g., "#FF0000", "red")
+/// strokeWidth        INT64     Stroke width
+/// strokeOpacity      DOUBLE    Stroke opacity (0-1)
+/// strokeDasharray    STRING    Stroke dasharray pattern (e.g., "5,5" for dashed)
+/// strokeDashoffset   STRING    Stroke dashoffset
+/// strokeLinecap      STRING    Stroke linecap ("butt", "round", "square")
+/// strokeLinejoin     STRING    Stroke linejoin ("miter", "round", "bevel")
+/// strokeMiterlimit   STRING    Miter limit for stroke joins
+/// markerStart        STRING    Marker for start of line (e.g., 'url(#arrowStart)')
+/// markerMid          STRING    Marker for middle points of line
+/// markerEnd          STRING    Marker for end of line (e.g., 'url(#arrowEnd)')
+function 'DaxLib.SVG.Attr.Stroke' =
+		(
+			stroke: STRING,
+			strokeWidth: INT64,
+			strokeOpacity: DOUBLE,
+			strokeDasharray: STRING,
+			strokeDashoffset: STRING,
+			strokeLinecap: STRING,
+			strokeLinejoin: STRING,
+			strokeMiterlimit: STRING,
+			markerStart: STRING,
+			markerMid: STRING,
+			markerEnd: STRING
+		) =>
+			VAR _Stroke =           IF(NOT ISBLANK(stroke),           "stroke='" & stroke & "' ")
+			VAR _StrokeWidth =      IF(NOT ISBLANK(strokeWidth),      "stroke-width='" & strokeWidth & "' ")
+			VAR _StrokeOpacity =    IF(NOT ISBLANK(strokeOpacity),    "stroke-opacity='" & strokeOpacity & "' ")
+			VAR _StrokeDasharray =  IF(NOT ISBLANK(strokeDasharray),  "stroke-dasharray='" & strokeDasharray & "' ")
+			VAR _StrokeDashoffset = IF(NOT ISBLANK(strokeDashoffset), "stroke-dashoffset='" & strokeDashoffset & "' ")
+			VAR _StrokeLinecap =    IF(NOT ISBLANK(strokeLinecap),    "stroke-linecap='" & strokeLinecap & "' ")
+			VAR _StrokeLinejoin =   IF(NOT ISBLANK(strokeLinejoin),   "stroke-linejoin='" & strokeLinejoin & "' ")
+			VAR _StrokeMiterlimit = IF(NOT ISBLANK(strokeMiterlimit), "stroke-miterlimit='" & strokeMiterlimit & "' ")
+			VAR _MarkerStart =      IF(NOT ISBLANK(markerStart),      "marker-start='" & markerStart & "' ")
+			VAR _MarkerMid =        IF(NOT ISBLANK(markerMid),        "marker-mid='" & markerMid & "' ")
+			VAR _MarkerEnd =        IF(NOT ISBLANK(markerEnd),        "marker-end='" & markerEnd & "' ")
+		
+			RETURN
+				_Stroke &
+				_StrokeWidth &
+				_StrokeOpacity &
+				_StrokeDasharray &
+				_StrokeDashoffset &
+				_StrokeLinecap &
+				_StrokeLinejoin &
+				_StrokeMiterlimit &
+				_MarkerStart &
+				_MarkerMid &
+				_MarkerEnd
+	lineageTag: 0d35994c-b65f-498f-b60e-21e0590f01ec
+
+	annotation DAXLIB_PackageId = DaxLib.SVG
+
+	annotation DAXLIB_PackageVersion = 0.1.2-beta
+
+/// Generate Transform string for SVG elements
+/// translate 	STRING	Translation coordinates (e.g., "10,20")
+/// rotate    	STRING	Rotation with optional center point (e.g., "45" or "45 50 50")
+/// scale     	STRING	Scale factors (e.g., "2" or "2,1.5")
+/// skewX     	STRING	Horizontal skew angle in degrees
+/// skewY     	STRING	Vertical skew angle in degrees
+function 'DaxLib.SVG.Transforms' =
+		(
+			translate: STRING,
+			rotate: STRING,
+			scale: STRING,
+			skewX: STRING,
+			skewY: STRING
+		) =>
+		
+			IF(NOT ISBLANK(translate), "translate(" & translate & ") ") &
+			IF(NOT ISBLANK(rotate), "rotate(" & rotate & ") ") &
+			IF(NOT ISBLANK(scale), "scale(" & scale & ") ") &
+			IF(NOT ISBLANK(skewX), "skewX(" & skewX & ") ") &
+			IF(NOT ISBLANK(skewY), "skewY(" & skewY & ") ")
+	lineageTag: 89ecbb1c-ac45-453d-8190-800d0924ca22
+
+	annotation DAXLIB_PackageId = DaxLib.SVG
+
+	annotation DAXLIB_PackageVersion = 0.1.2-beta
+
+/// Create a <def> element from one or more DaxLib.SVG.Def.* Elements
+/// defs	STRING	Concatenated lists of def Elements to include in a def block
+function 'DaxLib.SVG.Element.Defs' =
+		(
+			defs: STRING    // concatenated lists of elements to include in a def block
+		) =>
+		
+			"<defs>" &
+			defs &
+			"</defs>"
+	lineageTag: 70ec3bc1-8642-44e8-bb54-4a297a95a496
+
+	annotation DAXLIB_PackageId = DaxLib.SVG
+
+	annotation DAXLIB_PackageVersion = 0.1.2-beta
+
+/// Create a gradient stop element
+/// offset		STRING	Stop position
+/// color		STRING	color value (hex or named color)
+/// opacity		STRING	Optional: opacity value
+function 'DaxLib.SVG.Def.GradientStop' =
+		(
+			offset: STRING,
+			color: STRING,
+			opacity: STRING
+		) =>
+		
+			"<stop offset='" & offset &
+			"' stop-color='" & color & "'" &
+			IF( NOT ISBLANK( opacity ), " stop-opacity='" & opacity & "'" ) &
+			"/>"
+	lineageTag: 9562ba1f-8a4d-459d-ab57-78a2d6eee371
+
+	annotation DAXLIB_PackageId = DaxLib.SVG
+
+	annotation DAXLIB_PackageVersion = 0.1.2-beta
+
+/// Create a linear gradient definition
+/// defId		STRING	The unique identifier for the gradient
+/// stops		STRING	Concatinated list of one or more DaxLib.SVG.Def.GradientStop Elements
+/// x1			STRING	Optional: Start X position
+/// y1			STRING	Optional: Start Y position
+/// x2			STRING	Optional: End X position
+/// y2			STRING	Optional: End Y position
+function 'DaxLib.SVG.Def.LinearGradient' =
+		(
+			defId: STRING,
+			stops: STRING,
+			x1: STRING,
+			y1: STRING,
+			x2: STRING,
+			y2: STRING
+		) =>
+		
+			"<linearGradient" &
+			" id='" & defId & "'" &
+			IF( NOT ISBLANK( x1 ), " x1='" & x1 & "'" ) &
+			IF( NOT ISBLANK( y1 ), " y1='" & y1 & "'" ) &
+			IF( NOT ISBLANK( x2 ), " x2='" & x2 & "'" ) &
+			IF( NOT ISBLANK( y2 ), " y2='" & y2 & "'" ) &
+			">" &
+			stops &
+			"</linearGradient>"
+	lineageTag: 04551e67-daa7-4888-91bb-f331a7851c16
+
+	annotation DAXLIB_PackageId = DaxLib.SVG
+
+	annotation DAXLIB_PackageVersion = 0.1.2-beta
+
+/// Create a radial gradient definition
+/// defId		STRING	The unique identifier for the gradient
+/// stops		STRING	Concatinated list of one or more DaxLib.SVG.Def.GradientStop Elements
+/// cx			STRING	Optional: Center X position
+/// cy			STRING	Optional: Center Y position
+/// r			STRING	Optional: Radius
+/// fx			STRING	Optional: Focus X position
+/// fy			STRING	Optional: Focus Y position
+/// fr			STRING	Optional: Focus radius
+function 'DaxLib.SVG.Def.RadialGradient' =
+		(
+			defId: STRING,
+			stops: STRING,
+			cx: STRING,
+			cy: STRING,
+			r: STRING,
+			fx: STRING,
+			fy: STRING,
+			fr: STRING
+		) =>
+		
+			"<radialGradient" &
+			" id='" & defId & "'" &
+			IF( NOT ISBLANK( cx ), " cx='" & cx & "'" ) &
+			IF( NOT ISBLANK( cy ), " cy='" & cy & "'" ) &
+			IF( NOT ISBLANK( r ),  " r='" & r & "'" ) &
+			IF( NOT ISBLANK( fx ), " fx='" & fx & "'" ) &
+			IF( NOT ISBLANK( fy ), " fy='" & fy & "'" ) &
+			IF( NOT ISBLANK( fr ), " fr='" & fr & "'" ) &
+			">" &
+			stops &
+			"</radialGradient>"
+	lineageTag: 553dcb77-2df9-400c-86b8-ab2be68e2307
+
+	annotation DAXLIB_PackageId = DaxLib.SVG
+
+	annotation DAXLIB_PackageVersion = 0.1.2-beta
+
+/// Creates a clipping mask definition
+/// defId		STRING	The unique identifier for the clip path. (Example: "cut-top", "mask-circle")
+/// contents 	STRING	The SVG element(s) that make up the clipping path (typically a single shape)
+function 'DaxLib.SVG.Def.ClipPath' =
+		(
+			defId : STRING,
+			contents: STRING
+		) =>
+		
+			"<clipPath id='" & defId & "'>" &
+			contents &
+			"</clipPath>"
+	lineageTag: 57b110ed-fc81-4997-b76d-fc46f4de1d19
+
+	annotation DAXLIB_PackageId = DaxLib.SVG
+
+	annotation DAXLIB_PackageVersion = 0.1.2-beta
+
+/// Create a reusable circle definition
+/// defId		STRING	The unique identifier for the circle
+/// cx			STRING	X center coordinate
+/// cy			STRING	Y center coordinate
+/// r			STRING	Radius
+/// attributes	STRING	Optional: Direct SVG attributes to apply (e.g., "fill='none' stroke='blue'"), can generate with DaxLib.SVG.Attr.* or manually
+/// transforms	STRING	Optional: transformation to apply (can be generated with DaxLib.SVG.Transform)
+function 'DaxLib.SVG.Def.Circle' =
+		(
+			defId: STRING,
+			cx: STRING,
+			cy: STRING,
+			r: STRING,
+			attributes: STRING,
+			transforms: STRING
+		) =>
+		
+			"<circle id='" & defId & "'" &
+			" cx='" & cx & "'" &
+			" cy='" & cy & "'" &
+			" r='" & r & "'" &
+			IF( NOT ISBLANK( attributes ), " " & attributes & " " ) &
+			IF( NOT ISBLANK( transforms ), " transform='" & transforms & "'" ) &
+			"/>"
+	lineageTag: 350eb64d-f229-407f-9738-6dad6af393b9
+
+	annotation DAXLIB_PackageId = DaxLib.SVG
+
+	annotation DAXLIB_PackageVersion = 0.1.2-beta
+
+/// Create a reusable rectangle definition
+/// defId		STRING		The unique identifier for the rectangle
+/// width		STRING		The width of the rectangle (pixels or percentage)
+/// height		STRING		The height of the rectangle	(pixels or percentage)
+/// rx			STRING		Optional: x radius for rounded corners
+/// ry			STRING		Optional: y radius for rounded corners
+/// attributes	STRING	Optional: Direct SVG attributes to apply (e.g., "fill='none' stroke='blue'"), can generate with DaxLib.SVG.Attr.* or manually
+/// transforms	STRING		Optional: transformation to apply (can be generated with DaxLib.SVG.Transform)
+function 'DaxLib.SVG.Def.Rect' =
+		(
+			defId: STRING,
+			width: STRING,
+			height: STRING,
+			rx: STRING,
+			ry: STRING,
+			attributes: STRING,
+			transforms: STRING
+		) =>
+		
+			"<rect id='" & defId & "'" &
+			" width='" & width & "'" &
+			" height='" & height & "'" &
+			IF(NOT ISBLANK( rx ), " rx='" & rx & "'" ) &
+			IF(NOT ISBLANK( ry ), " ry='" & ry & "'" ) &
+			IF( NOT ISBLANK( attributes ), " " & attributes & " " ) &
+			IF( NOT ISBLANK( transforms ), " transform='" & transforms & "'" ) &
+			"/>"
+	lineageTag: 879a119a-abf1-4d71-8a14-c84ca4a1f8eb
+
+	annotation DAXLIB_PackageId = DaxLib.SVG
+
+	annotation DAXLIB_PackageVersion = 0.1.2-beta
+
+/// Create a reusable line definition
+/// defId		STRING	The unique identifier for the line
+/// x1			STRING	The x position of the start point
+/// y1			STRING	The y position of the start point
+/// x2			STRING	The x position of the end point
+/// y2			STRING	The y position of the end point
+/// attributes	STRING	Optional: Direct SVG attributes to apply (e.g., "stroke-width='2' stroke='blue'"), can generate with DaxLib.SVG.Attr.* or manually
+/// transforms	STRING	Optional: transformation to apply (can be generated with DaxLib.SVG.Transform)
+function 'DaxLib.SVG.Def.Line' =
+		(
+			defId: STRING,
+			x1: STRING,
+			y1: STRING,
+			x2: STRING,
+			y2: STRING,
+			attributes: STRING,
+			transforms: STRING
+		) =>
+		
+			"<line id='" & defId & "'" &
+			" x1='" & x1 & "'" &
+			" y1='" & y1 & "'" &
+			" x2='" & x2 & "'" &
+			" y2='" & y2 & "'" &
+			IF( NOT ISBLANK( attributes ), " " & attributes & " " ) &
+			IF( NOT ISBLANK( transforms ), " transform='" & transforms & "'" ) &
+			"/>"
+	lineageTag: 0e38ccf0-b8cf-47c2-99ec-da7dd17fc630
+
+	annotation DAXLIB_PackageId = DaxLib.SVG
+
+	annotation DAXLIB_PackageVersion = 0.1.2-beta
+
+/// Create a reusable path definition
+/// defId		STRING	The unique identifier for the path
+/// d			STRING	The path data string (e.g., "M10 10 L90 90")
+/// attributes	STRING	Optional: Direct SVG attributes to apply (e.g., "fill='none' stroke='blue'"), can generate with DaxLib.SVG.Attr.* or manually
+/// transforms	STRING	Optional: transformation to apply (can be generated with DaxLib.SVG.Transform)
+function 'DaxLib.SVG.Def.Paths' =
+		(
+			defId: STRING,
+			d: STRING,
+			attributes: STRING,
+			transforms: STRING
+		) =>
+		
+			"<path id='" & defId & "'" &
+			" d='" & d & "'" &
+			IF( NOT ISBLANK( attributes ), " " & attributes & " " ) &
+			IF( NOT ISBLANK( transforms ), " transform='" & transforms & "'" ) &
+			"/>"
+	lineageTag: e8131387-ef65-4801-a9f5-8869dd28afac
+
+	annotation DAXLIB_PackageId = DaxLib.SVG
+
+	annotation DAXLIB_PackageVersion = 0.1.2-beta
+
+/// Reference a previously defined SVG element with optional positioning and styling
+/// This function is used to reuse elements that have been defined using DaxLib.SVG.Def.* functions
+/// (e.g., DaxLib.SVG.Def.Circle, DaxLib.SVG.Def.Rect, DaxLib.SVG.Def.Paths, etc.). Instead of duplicating element definitions,
+/// use the appropriate DaxLib.SVG.Def.* function once and then reference it multiple times with DaxLib.SVG.Element.UseDef.
+/// defId		STRING	The identifier of the defined element to use
+/// x			STRING	X position where the element should be placed
+/// y			STRING	Y position where the element should be placed
+/// transforms	STRING	Optional: transformation to apply (can be generated with DaxLib.SVG.Transforms)
+function 'DaxLib.SVG.Element.UseDef' =
+		(
+			defId: STRING,
+			x: STRING,
+			y: STRING,
+			transforms: STRING
+		) =>
+		
+			"<use" &
+			" href='#" & defId & "'" &
+			IF( NOT ISBLANK( x ), " x='" & x & "'" ) &
+			IF( NOT ISBLANK( y ), " y='" & y & "'" ) &
+			IF( NOT ISBLANK( transforms ), " transform='" & transforms & "'" ) &
+			"/>"
+	lineageTag: f7cddaa7-7422-4994-947b-eefadb743aef
+
+	annotation DAXLIB_PackageId = DaxLib.SVG
+
+	annotation DAXLIB_PackageVersion = 0.1.2-beta
+
+/// Generates SVG group element
+/// Transformations applied to the <g> element are performed on its child elements, and its attributes are inherited by its children. It can also group multiple elements to be referenced later with the <use> element.
+/// contents	SCALAR VAL	Content to group (recommend including all content in a single _SvgGroup variable defined upstream)
+/// opacity		SCALAR VAL	Optional: Opacity for entire group (0-1, optional)
+/// transforms	SCALAR VAL	Optional: Transform (e.g., "translate(50,50) rotate(45)") (can be generated with DaxLib.SVG.Transform)
+function 'DaxLib.SVG.Element.Group' =
+		(
+			contents : SCALAR VAL,
+			opacity : SCALAR VAL,
+			transforms : SCALAR VAL
+		) =>
+		
+			"<g" &
+			IF( NOT ISBLANK( transforms ), " transform='" & transforms & "'" ) &
+			IF( NOT ISBLANK( opacity ), " opacity='" & opacity & "'" ) &
+			">" & contents & "</g>"
+	lineageTag: fde6ddd6-f1d2-402d-bf61-7548678bb7a3
+
+	annotation DAXLIB_PackageId = DaxLib.SVG
+
+	annotation DAXLIB_PackageVersion = 0.1.2-beta
+
+/// Generates a circle SVG element
+/// cx			STRING	The x position of the center
+/// cy			STRING	The y position of the center
+/// r			STRING	The radius
+/// attributes	STRING	Optional: Direct SVG attributes to apply (e.g., "fill='red' stroke-width='2'"), can generate with DaxLib.SVG.Attr.* or manually
+/// transforms	STRING	Optional: transformation to apply (can be generated with DaxLib.SVG.Transforms)
+function 'DaxLib.SVG.Element.Circle' =
+		(
+			cx: STRING,
+			cy: STRING,
+			r: STRING,
+			attributes: STRING,
+			transforms: STRING
+		) =>
+		
+			"<circle" &
+			" cx='" & cx & "'" &
+			" cy='" & cy & "'" &
+			" r='" & r & "'" &
+			IF( NOT ISBLANK( attributes ), " " & attributes & " " ) &
+			IF( NOT ISBLANK( transforms ), " transform='" & transforms & "'" ) &
+			"/>"
+	lineageTag: 84ca4933-9555-42a6-88e2-c2940a766bea
+
+	annotation DAXLIB_PackageId = DaxLib.SVG
+
+	annotation DAXLIB_PackageVersion = 0.1.2-beta
+
+/// Generates a rectangle SVG element
+/// x			STRING	The x position
+/// y			STRING	The y position
+/// width		STRING	The width (pixels or percentage)
+/// height		STRING	The height (pixels or percentage)
+/// rx			STRING	Optional: x radius for rounded corners
+/// ry			STRING	Optional: y radius for rounded corners
+/// attributes	STRING	Optional: Direct SVG attributes to apply (e.g., "fill='red' stroke-width='2'"), can generate with DaxLib.SVG.Attr.* or manually
+/// transforms	STRING	Optional: transformation to apply (can be generated with DaxLib.SVG.Transforms)
+function 'DaxLib.SVG.Element.Rect' =
+		(
+			x: STRING,
+			y: STRING,
+			width: STRING,
+			height: STRING,
+			rx: STRING,
+			ry: STRING,
+			attributes: STRING,
+			transforms: STRING
+		) =>
+		
+			"<rect" &
+			" x='" & x & "'" &
+			" y='" & y & "'" &
+			" width='" & width & "'" &
+			" height='" & height & "'" &
+			IF( NOT ISBLANK( rx ), " rx='" & rx & "'" ) &
+			IF( NOT ISBLANK( ry ), " ry='" & ry & "'" ) &
+			IF( NOT ISBLANK( attributes ), " " & attributes & " " ) &
+			IF( NOT ISBLANK( transforms ), " transform='" & transforms & "'" ) &
+			"/>"
+	lineageTag: eeb2e6a5-5b05-4375-8c05-7be8c225c04f
+
+	annotation DAXLIB_PackageId = DaxLib.SVG
+
+	annotation DAXLIB_PackageVersion = 0.1.2-beta
+
+/// Generates SVG line element
+/// x1			STRING	Starting X position (left edge is 0)
+/// y1			STRING	Starting Y position (top edge is 0)
+/// x2			STRING	Ending X position (left edge is 0)
+/// y2			STRING	Ending Y position (top edge is 0)
+/// attributes	STRING	Optional: Direct SVG attributes to apply (e.g., "stroke-dasharray='5,5' marker-end='url(#arrow)'"), can generate with DaxLib.SVG.Attr.* or manually
+/// transforms	STRING	Optional: transformation to apply (can be generated with DaxLib.SVG.Transforms)
+function 'DaxLib.SVG.Element.Line' =
+		(
+			x1: STRING,
+			y1: STRING,
+			x2: STRING,
+			y2: STRING,
+			attributes: STRING,
+			transforms: STRING
+		) =>
+		
+			"<line" &
+			" x1='" & x1 & "'" &
+			" y1='" & y1 & "'" &
+			" x2='" & x2 & "'" &
+			" y2='" & y2 & "'" &
+			IF( NOT ISBLANK( attributes ), " " & attributes & " " ) &
+			IF( NOT ISBLANK( transforms ), " transform='" & transforms & "'" ) &
+			"/>"
+	lineageTag: c030a21f-9956-4e53-9880-8e13ef34eaac
+
+	annotation DAXLIB_PackageId = DaxLib.SVG
+
+	annotation DAXLIB_PackageVersion = 0.1.2-beta
+
+/// Create a SVG path element
+/// d			STRING	The path data string (e.g., "M10 10 L90 90")
+/// attributes	STRING	Optional: Direct SVG attributes to apply (e.g., "pathLength='100' fill-rule='evenodd'"), can generate with DaxLib.SVG.Attr.* or manually
+/// transforms	STRING	Optional: transformation to apply (can be generated with DaxLib.SVG.Transforms)
+function 'DaxLib.SVG.Element.Paths' =
+		(
+			d: STRING,
+			attributes: STRING,
+			transforms: STRING
+		) =>
+		
+			"<path d='" & d & "'" &
+			IF( NOT ISBLANK( attributes ), " " & attributes & " " ) &
+			IF( NOT ISBLANK( transforms ), " transform='" & transforms & "'" ) &
+			"/>"
+	lineageTag: c06f70aa-5055-4682-b408-8f27f5879635
+
+	annotation DAXLIB_PackageId = DaxLib.SVG
+
+	annotation DAXLIB_PackageVersion = 0.1.2-beta
+
+/// Generates an ellipse SVG element
+/// cx			STRING	The x position of the center
+/// cy			STRING	The y position of the center
+/// rx			STRING	The x radius
+/// ry			STRING	The y radius
+/// attributes	STRING	Optional: Direct SVG attributes to apply (e.g., "fill='none' stroke='blue'"), can generate with DaxLib.SVG.Attr.* or manually
+/// transforms	STRING	Optional: transformation to apply (can be generated with DaxLib.SVG.Transforms)
+function 'DaxLib.SVG.Element.Ellipse' =
+		(
+			cx: STRING,
+			cy: STRING,
+			rx: STRING,
+			ry: STRING,
+			attributes: STRING,
+			transforms: STRING
+		) =>
+		
+			"<ellipse" &
+			" cx='" & cx & "'" &
+			" cy='" & cy & "'" &
+			" rx='" & rx & "'" &
+			" ry='" & ry & "'" &
+			IF( NOT ISBLANK( attributes ), " " & attributes & " " ) &
+			IF( NOT ISBLANK( transforms ), " transform='" & transforms & "'" ) &
+			"/>"
+	lineageTag: 00ac6568-c081-4dc3-b8e3-6e7dfe8599d9
+
+	annotation DAXLIB_PackageId = DaxLib.SVG
+
+	annotation DAXLIB_PackageVersion = 0.1.2-beta
+
+/// Creates a polygon (closed shape)
+/// points		STRING	Space-separated x,y coordinate pairs (e.g., "0,10 20,30 40,15")
+/// attributes	STRING	Optional: Direct SVG attributes to apply (e.g., "fill-rule='nonzero' vector-effect='non-scaling-stroke'"), can generate with DaxLib.SVG.Attr.* or manually
+/// transforms	STRING	Optional: transformation to apply (can be generated with DaxLib.SVG.Transforms)
+function 'DaxLib.SVG.Element.Polygon' =
+		(
+			points: STRING,
+			attributes: STRING,
+			transforms: STRING
+		) =>
+		
+			"<polygon" &
+			" points='" & points & "'" &
+			IF( NOT ISBLANK( attributes ), " " & attributes & " " ) &
+			IF( NOT ISBLANK( transforms ), " transform='" & transforms & "'" ) &
+			"/>"
+	lineageTag: 921e3805-f47f-4756-90ff-cd38ec499e56
+
+	annotation DAXLIB_PackageId = DaxLib.SVG
+
+	annotation DAXLIB_PackageVersion = 0.1.2-beta
+
+/// Creates a polyline (connected points)
+/// points		STRING	Space-separated x,y coordinate pairs (e.g., "0,10 20,30 40,15")
+/// attributes	STRING	Optional: Direct SVG attributes to apply (e.g., "marker-start='url(#dot)' vector-effect='non-scaling-stroke'"), can generate with DaxLib.SVG.Attr.* or manually
+/// transforms	STRING	Optional: transformation to apply (can be generated with DaxLib.SVG.Transforms)
+function 'DaxLib.SVG.Element.Polyline' =
+		(
+			points: STRING,
+			attributes: STRING,
+			transforms: STRING
+		) =>
+		
+			"<polyline" &
+			" points='" & points & "'" &
+			IF( NOT ISBLANK( attributes ), " " & attributes & " " ) &
+			IF( NOT ISBLANK( transforms ), " transform='" & transforms & "'" ) &
+			"/>"
+	lineageTag: 42db7eb9-3a12-4fb6-8db6-078bb9ab6511
+
+	annotation DAXLIB_PackageId = DaxLib.SVG
+
+	annotation DAXLIB_PackageVersion = 0.1.2-beta
+
+/// Creates a text SVG element
+/// x			STRING	The x position of the text
+/// y			STRING	The y position of the text
+/// txt			STRING	The text content
+/// dx			STRING	Optional: x offset from position
+/// dy			STRING	Optional: y offset from position
+/// attributes	STRING	Optional: Direct SVG attributes to apply (e.g., "text-anchor='middle' dominant-baseline='middle'"), can generate with DaxLib.SVG.Attr.* or manually
+/// transforms	STRING	Optional: additional transforms (e.g. "scale(1.2) translate(10,10)") (can be generated with DaxLib.SVG.Transforms)
+function 'DaxLib.SVG.Element.Txt' =
+		(
+			x: STRING,
+			y: STRING,
+			txt: STRING,
+			dx: STRING,
+			dy: STRING,
+			attributes: STRING,
+			transforms: STRING
+		) =>
+		
+			"<text" &
+			" x='" & x & "'" &
+			" y='" & y & "'" &
+			IF(NOT ISBLANK( dx ), " dx='" & dx & "'" ) &
+			IF(NOT ISBLANK( dy ), " dy='" & dy & "'" ) &
+			IF( NOT ISBLANK( attributes ), " " & attributes & " " ) &
+			IF( NOT ISBLANK( transforms ), " transform='" & transforms & "'" ) &
+			">" & txt &
+			"</text>"
+	lineageTag: 9d92e528-ddd4-435d-b7d7-54a3842c8e47
+
+	annotation DAXLIB_PackageId = DaxLib.SVG
+
+	annotation DAXLIB_PackageVersion = 0.1.2-beta
+
+/// Create a pill SVG compound (rounded rectangle with text centered inside)
+/// x				INT64			The x position of compound
+/// y				INT64			The y position of compound
+/// width			INT64			The width of the compound
+/// height			INT64			The height of the compound
+/// paddingX		DOUBLE			The horizontal padding percentage (0.0-1.0, e.g., 0.1 = 10% padding)
+/// paddingY		DOUBLE			The vertical padding percentage (0.0-1.0, e.g., 0.1 = 10% padding)
+/// txt 			STRING			The text to display
+/// color 			STRING			The Hex color of the pill i.e "#01B8AA80"
+function 'DaxLib.SVG.Compound.Pill' =
+		(
+			x: INT64,
+			y: INT64,
+			width: INT64,
+			height: INT64,
+			paddingX: DOUBLE,
+			paddingY: DOUBLE,
+			txt: STRING,
+			color: STRING
+		) =>
+		
+		// Apply padding to dimensions
+		VAR _X = 			x + (width * (IF(ISBLANK(paddingX), 0, paddingX) / 2))
+		VAR _Y = 			y + (height * (IF(ISBLANK(paddingY), 0, paddingY) / 2))
+		VAR _Width = 		width * (1 - IF(ISBLANK(paddingX), 0, paddingX))
+		VAR _Height = 		height * (1 - IF(ISBLANK(paddingY), 0, paddingY))
+		
+		VAR _Pill =
+			DaxLib.SVG.Element.Rect(
+				1,                 	// x
+				1,                 	// y
+				_Width * 0.98,      // width
+				_Height * 0.92,     // height
+				10,               	// rx
+				10,               	// ry
+				DaxLib.SVG.Attr.Shapes(
+					color,			// fill
+					0.2,			// fillOpacity
+					BLANK(),		// fillRule
+					color,			// stroke
+					1,				// strokeWidth
+					BLANK(),		// strokeOpacity
+					BLANK()			// opacity
+				),         			// attributes
+				BLANK()           	// transforms
+			)
+		
+		VAR _TextElement =
+			DaxLib.SVG.Element.Txt(
+				_Width * 0.50,      // x
+				_Height * 0.58,     // y
+				txt,              	// txt
+				0,                	// dx
+				0,                	// dy
+				DaxLib.SVG.Attr.Shapes(
+					color,			// fill
+					BLANK(),		// fillOpacity
+					BLANK(),		// fillRule
+					BLANK(),		// stroke
+					BLANK(),		// strokeWidth
+					BLANK(),		// strokeOpacity
+					BLANK()			// opacity
+				) &
+				DaxLib.SVG.Attr.Txt(
+					"Segoe UI",		// fontFamily
+					12,				// fontSize
+					BLANK(),		// fontWeight
+					BLANK(),		// fontStyle
+					"middle",		// textAnchor
+					"middle",		// baseline
+					BLANK(),		// textDecoration
+					BLANK(),		// letterSpacing
+					BLANK()			// wordSpacing
+				),         			// attributes
+				BLANK()				// transforms
+			)
+		
+		VAR _CombinedElements =
+			_Pill &
+			_TextElement
+		
+		RETURN
+		
+			IF( NOT ISBLANK( txt ), _CombinedElements )
+	lineageTag: e421a8bd-5aa8-494c-b157-94ae7882e54f
+
+	annotation DAXLIB_PackageId = DaxLib.SVG
+
+	annotation DAXLIB_PackageVersion = 0.1.2-beta
+
+/// Creates a Line compound SVG Visual for a numeric axis
+/// x              	INT64           	The x position of the compound
+/// y              	INT64           	The y position of the compound
+/// width          	INT64           	The width of the compound
+/// height         	INT64           	The height of the compound
+/// paddingX		DOUBLE				The horizontal padding percentage (0.0-1.0, e.g., 0.1 = 10% padding)
+/// paddingY		DOUBLE				The vertical padding percentage (0.0-1.0, e.g., 0.1 = 10% padding)
+/// axisRef        	ANYREF EXPR     	The column that the measure will be evaluated against
+/// measureRef     	NUMERIC EXPR    	The measure to evaluate
+/// lineColor    	STRING          	The Hex color of the line i.e "#01B8AA"
+function 'DaxLib.SVG.Compound.Line' =
+		(
+			x: INT64,
+			y: INT64,
+			width: INT64,
+			height: INT64,
+			paddingX: DOUBLE,
+			paddingY: DOUBLE,
+			axisRef: ANYREF EXPR,
+			measureRef: NUMERIC EXPR,
+			lineColor: STRING
+		) =>
+		
+			// Apply padding to dimensions
+			VAR _X = 			x + (width * (IF(ISBLANK(paddingX), 0, paddingX) / 2))
+			VAR _Y = 			y + (height * (IF(ISBLANK(paddingY), 0, paddingY) / 2))
+			VAR _Width = 		width * (1 - IF(ISBLANK(paddingX), 0, paddingX))
+			VAR _Height = 		height * (1 - IF(ISBLANK(paddingY), 0, paddingY))
+		
+			// Check if Axis is numeric
+			VAR axisSample = 	MAX( axisRef )
+			VAR axisIsNumeric = ISNUMERIC( axisSample ) || ISDATETIME( axisSample )
+		
+			// For totals
+			VAR _Data =
+				ADDCOLUMNS(
+					FILTER(
+						VALUES( axisRef ),
+						NOT ISBLANK( measureRef )
+					),
+					"@AxisIndex",
+						IF(
+							axisIsNumeric,
+							axisRef,
+							RANK( DENSE, CALCULATETABLE( VALUES( axisRef ), ALLSELECTED() ) )
+						),
+					"@Value", measureRef
+				)
+		
+			// Define axis scales
+			VAR _XMin = 	MINX( _Data, [@AxisIndex] )
+			VAR _XMax = 	MAXX( _Data, [@AxisIndex] )
+			VAR _RawYMin = 	MINX( _Data, [@Value] )
+			VAR _YMin = 	IF( _RawYMin > 0, 0, _RawYMin )
+			VAR _YMax = 	MAXX( _Data, [@Value] )
+		
+			//Points
+			VAR _Points =
+				CONCATENATEX(
+					_Data,
+					IF(
+						NOT ISBLANK( [@Value] ),
+						COMBINEVALUES(
+							",",
+							DaxLib.SVG.Scale.Normalize( [@AxisIndex], _XMin, _XMax, _X, _X + _Width ),
+							DaxLib.SVG.Scale.Normalize( [@Value], _YMin, _YMax, _Y + _Height, _Y )
+						)
+					),
+					" ",
+					[@AxisIndex],
+					ASC
+				)
+		
+			// Line Element
+			VAR _LineElement =
+				DaxLib.SVG.Element.Polyline(
+					_Points,		// points
+					DaxLib.SVG.Attr.Shapes(
+						"none",		// fill
+						BLANK(),	// fillOpacity
+						BLANK(),	// fillRule
+						IF( NOT ISBLANK( lineColor ), lineColor, "#01B8AA" ), // stroke
+						1,			// stroke
+						BLANK(),	// strokeOpacity
+						BLANK()		// opacity
+					),
+					BLANK()			// transforms
+				)
+		
+			// Single Point Element
+			VAR _SinglePointElement =
+				DaxLib.SVG.Element.Circle(
+					DaxLib.SVG.Scale.Normalize( MAXX( _Data, [@AxisIndex] ), _XMin, _XMax, _X, _X + _Width ), // cx
+					DaxLib.SVG.Scale.Normalize( MAXX( _Data, [@Value] ), _YMin, _YMax, _Y + _Height, _Y ), // cy
+					2,           	// r
+					DaxLib.SVG.Attr.Shapes(
+						lineColor, 	// fill
+						BLANK(),    // fillOpacity
+						BLANK(),    // fillRule
+						BLANK(),    // stroke
+						BLANK(),    // strokeWidth
+						BLANK(),    // strokeOpacity
+						BLANK()     // opacity
+					),
+					BLANK()         // transforms
+				)
+		
+			// Combined elements
+			VAR _CombinedElement =
+				IF(
+					COUNTROWS( _Data ) = 1,
+					_SinglePointElement,
+					_LineElement
+				)
+		
+			RETURN
+		
+				IF( NOT ISEMPTY( _Data ), _CombinedElement )
+	lineageTag: 4a351186-9c14-44b2-8e15-defc0c276a42
+
+	annotation DAXLIB_PackageId = DaxLib.SVG
+
+	annotation DAXLIB_PackageVersion = 0.1.2-beta
+
+/// Creates an Area compound SVG Visual for a numeric x-axis
+/// x              	INT64           	The x position of the compound
+/// y              	INT64           	The y position of the compound
+/// width          	INT64           	The width of the compound
+/// height         	INT64           	The height of the compound
+/// paddingX		DOUBLE				The horizontal padding percentage (0.0-1.0, e.g., 0.1 = 10% padding)
+/// paddingY		DOUBLE				The vertical padding percentage (0.0-1.0, e.g., 0.1 = 10% padding)
+/// axisRef        	ANYREF EXPR   		The column that the measure will be evaluated against
+/// measureRef     	NUMERIC EXPR    	The measure to evaluate
+/// fillColor     	STRING          	The color of the area fill i.e "#01B8AA"
+/// fillOpacity    	NUMERIC         	The opacity of the fill (0-1), defaults to 0.3
+/// strokeColor   	STRING          	The color of the stroke line
+function 'DaxLib.SVG.Compound.Area' =
+		(
+			x: INT64,
+			y: INT64,
+			width: INT64,
+			height: INT64,
+			paddingX: DOUBLE,
+			paddingY: DOUBLE,
+			axisRef: ANYREF EXPR,
+			measureRef: NUMERIC EXPR,
+			fillColor: STRING,
+			fillOpacity: NUMERIC,
+			strokeColor: STRING
+		) =>
+		
+			// Apply padding to dimensions
+			VAR _X = 			x + (width * (IF(ISBLANK(paddingX), 0, paddingX) / 2))
+			VAR _Y = 			y + (height * (IF(ISBLANK(paddingY), 0, paddingY) / 2))
+			VAR _Width = 		width * (1 - IF(ISBLANK(paddingX), 0, paddingX))
+			VAR _Height = 		height * (1 - IF(ISBLANK(paddingY), 0, paddingY))
+		
+			// Check if Axis is numeric
+			VAR axisSample = 	MAX( axisRef )
+			VAR axisIsNumeric = ISNUMERIC( axisSample ) || ISDATETIME( axisSample )
+		
+			// For totals
+			VAR _Data =
+				ADDCOLUMNS(
+					FILTER(
+						VALUES( axisRef ),
+						NOT ISBLANK( measureRef )
+					),
+					"@AxisIndex",
+						IF(
+							axisIsNumeric,
+							axisRef,
+							RANK( DENSE, CALCULATETABLE( VALUES( axisRef ), ALLSELECTED() ) )
+						),
+					"@Value", measureRef
+				)
+		
+			VAR _XMin = 	MINX( _Data, [@AxisIndex] )
+			VAR _XMax = 	MAXX( _Data, [@AxisIndex] )
+			VAR _RawYMin = 	MINX( _Data, [@Value] )
+			VAR _YMin = 	IF( _RawYMin > 0, 0, _RawYMin )
+			VAR _YMax = 	MAXX( _Data, [@Value] )
+		
+			// Calculate baseline Y position (for zero line or bottom)
+			VAR _BaselineY = DaxLib.SVG.Scale.Normalize( _YMin, _YMin, _YMax, _Y + _Height, _Y )
+		
+			// Get first and last X positions
+			VAR _FirstX =
+				MINX(
+					FILTER( _Data, NOT ISBLANK( [@Value] ) ),
+					DaxLib.SVG.Scale.Normalize( [@AxisIndex], _XMin, _XMax, _X, _X + _Width )
+				)
+		
+			VAR _LastX =
+				MAXX(
+					FILTER( _Data, NOT ISBLANK( [@Value] ) ),
+					DaxLib.SVG.Scale.Normalize( [@AxisIndex], _XMin, _XMax, _X, _X + _Width )
+				)
+		
+			// Generate points for the area polygon
+			// Start at baseline (bottom left), go up the data line, then back down to baseline
+			VAR _PolygonPoints =
+				// Start at first X position at baseline
+				_FirstX & "," & _BaselineY
+				// Add all the data points (the top line)
+				& " " &
+				CONCATENATEX(
+					_Data,
+					IF(
+						NOT ISBLANK( [@Value] ),
+						COMBINEVALUES(
+							",",
+							DaxLib.SVG.Scale.Normalize( [@AxisIndex], _XMin, _XMax, _X, _X + _Width ),
+							DaxLib.SVG.Scale.Normalize( [@Value], _YMin, _YMax, _Y + _Height, _Y )
+						)
+					),
+					" ",
+					[@AxisIndex],
+					ASC
+				)
+				// End at last X position at baseline
+				& " " & _LastX & "," & _BaselineY
+		
+			// Generate points for just the top line (for optional stroke)
+			VAR _TopPoints =
+				CONCATENATEX(
+					_Data,
+					IF(
+						NOT ISBLANK( [@Value] ),
+						COMBINEVALUES(
+							",",
+							DaxLib.SVG.Scale.Normalize( [@AxisIndex], _XMin, _XMax, _X, _X + _Width ),
+							DaxLib.SVG.Scale.Normalize( [@Value], _YMin, _YMax, _Y + _Height, _Y )
+						)
+					),
+					" ",
+					[@AxisIndex],
+					ASC
+				)
+		
+			// Area Element (using polygon for filled area)
+			VAR _AreaElement =
+				DaxLib.SVG.Element.Polygon(
+					_PolygonPoints,		// points
+					DaxLib.SVG.Attr.Shapes(
+						fillColor, 		// fill
+						IF( NOT ISBLANK( fillOpacity ), fillOpacity, 0.3 ), // fillOpacity
+						BLANK(),      	// fillRule
+						"none",         // stroke
+						0,              // strokeWidth
+						BLANK(),        // strokeOpacity
+						BLANK()         // opacity
+					),
+					BLANK()				// transforms
+				)
+		
+			// stroke line on top of the area
+			VAR _StrokeElement =
+				DaxLib.SVG.Element.Polyline(
+					_TopPoints,			// points
+					DaxLib.SVG.Attr.Shapes(
+						"none",			// fill
+						BLANK(),		// fillOpacity
+						BLANK(),		// fillRule
+						strokeColor,	// stroke
+						1,				// strokeWidth
+						BLANK(),		// strokeOpacity
+						BLANK()			// opacity
+					),
+					BLANK()				// transforms
+				)
+		
+			// Circle if only one point
+			VAR _SinglePointElement =
+				DaxLib.SVG.Element.Circle(
+						DaxLib.SVG.Scale.Normalize( MAXX( _Data, [@AxisIndex] ), _XMin, _XMax, _X, _X + _Width ), // cx
+						DaxLib.SVG.Scale.Normalize( MAXX( _Data, [@Value] ), _YMin, _YMax, _Y + _Height, _Y ), // cy
+						2,               	// r
+						DaxLib.SVG.Attr.Shapes(
+							fillColor,     // fill
+							BLANK(),        // fillOpacity
+							BLANK(),        // fillRule
+							BLANK(),        // stroke
+							BLANK(),        // strokeWidth
+							BLANK(),        // strokeOpacity
+							BLANK()         // opacity
+						),
+						BLANK()             // transforms
+					)
+		
+			// Combine elements
+			VAR _CombinedElements =
+				IF(
+					COUNTROWS( _Data ) = 1,
+					_SinglePointElement,
+					_AreaElement &
+					_StrokeElement
+				)
+		
+			RETURN
+		
+				IF( NOT ISEMPTY( _Data ), _CombinedElements )
+	lineageTag: 4ad09039-4a73-43bc-916c-d0015b83e542
+
+	annotation DAXLIB_PackageId = DaxLib.SVG
+
+	annotation DAXLIB_PackageVersion = 0.1.2-beta
+
+/// Creates a Jitter Plot compound SVG Visual showing values as points with x-position based on value and y-position jittered around center
+/// x              	INT64           	The x position of the compound
+/// y              	INT64           	The y position of the compound
+/// width          	INT64           	The width of the compound
+/// height         	INT64           	The height of the compound
+/// paddingX		DOUBLE				The horizontal padding percentage (0.0-1.0, e.g., 0.1 = 10% padding)
+/// paddingY		DOUBLE				The vertical padding percentage (0.0-1.0, e.g., 0.1 = 10% padding)
+/// axisRef        	ANYREF EXPR     	The column that the measure will be evaluated against
+/// measureRef     	NUMERIC EXPR    	The measure to evaluate
+/// pointColor    	STRING          	The Hex color of the points (e.g., "#01B8AA")
+/// jitterAmount   	DOUBLE          	The amount of y-axis jitter as a percentage of height (0.0-1.0, defaults to 0.3)
+function 'DaxLib.SVG.Compound.Jitter' =
+		(
+			x: INT64,
+			y: INT64,
+			width: INT64,
+			height: INT64,
+			paddingX: DOUBLE,
+			paddingY: DOUBLE,
+			axisRef: ANYREF EXPR,
+			measureRef: NUMERIC EXPR,
+			pointColor: STRING,
+			jitterAmount: DOUBLE
+		) =>
+		
+			// Apply padding to dimensions
+			VAR _X = 			x + (width * (IF(ISBLANK(paddingX), 0, paddingX) / 2))
+			VAR _Y = 			y + (height * (IF(ISBLANK(paddingY), 0, paddingY) / 2))
+			VAR _Width = 		width * (1 - IF(ISBLANK(paddingX), 0, paddingX))
+			VAR _Height = 		height * (1 - IF(ISBLANK(paddingY), 0, paddingY))
+		
+			// Check if Axis is numeric
+			VAR axisSample = 	MAX( axisRef )
+			VAR axisIsNumeric = ISNUMERIC( axisSample ) || ISDATETIME( axisSample )
+		
+			// For totals
+			VAR _Data =
+				ADDCOLUMNS(
+					FILTER(
+						VALUES( axisRef ),
+						NOT ISBLANK( measureRef )
+					),
+					"@AxisIndex",
+						IF(
+							axisIsNumeric,
+							axisRef,
+							RANK( DENSE, CALCULATETABLE( VALUES( axisRef ), ALLSELECTED() ) )
+						),
+					"@Value", measureRef
+				)
+		
+			VAR _RawXMin = 	MINX( _Data, [@Value] )
+			VAR _XMin = 	IF( _RawXMin > 0, 0, _RawXMin )
+			VAR _XMax = 	MAXX( _Data, [@Value] )
+		
+			// Points
+			VAR _CenterY = 		_Y + _Height * 0.5
+			VAR _JitterRange = 	_Height * IF( ISBLANK( jitterAmount ), 0.3, jitterAmount )
+			VAR _CircleElements =
+				CONCATENATEX(
+					_Data,
+					IF(
+						NOT ISBLANK( [@Value] ),
+						VAR _Seed = 		ABS( [@Value] * 12345 ) + ABS( [@AxisIndex] * 67890 ) + ABS( LEN( FORMAT( [@Value], "0.000000" ) ) * 9876 )
+						VAR _PseudoRandom = MOD( _Seed, 10000 ) / 10000
+						VAR _JitterY = 		_CenterY + ( _PseudoRandom - 0.5 ) * _JitterRange
+						VAR _ClampedY = 	MAX( _Y, MIN( _Y + _Height, _JitterY ) )
+						RETURN
+							DaxLib.SVG.Element.Circle(
+								DaxLib.SVG.Scale.Normalize( [@Value], _XMin, _XMax, _X, _X + _Width ), // cx
+								_ClampedY,          // cy
+								2,         			// r
+								DaxLib.SVG.Attr.Shapes(
+									pointColor,   	// fill
+									0.5,            // fillOpacity
+									BLANK(),        // fillRule
+									pointColor,   	// stroke
+									1,              // strokeWidth
+									0.9,            // strokeOpacity
+									BLANK()         // opacity
+								),
+								BLANK()             // transforms
+							)
+					),
+					" ",
+					[@AxisIndex],
+					ASC
+				)
+		
+			RETURN
+		
+				IF( NOT ISEMPTY( _Data ), _CircleElements )
+	lineageTag: dfa95e0d-3ff8-464a-8921-37f162c72e27
+
+	annotation DAXLIB_PackageId = DaxLib.SVG
+
+	annotation DAXLIB_PackageVersion = 0.1.2-beta
+
+/// Creates a Box Plot compound SVG Visual showing statistical distribution
+/// x              	INT64           The x position of the compound
+/// y              	INT64           The y position of the compound
+/// width          	INT64           The width of the compound
+/// height         	INT64           The height of the compound
+/// paddingX		DOUBLE			The horizontal padding percentage (0.0-1.0, e.g., 0.1 = 10% padding)
+/// paddingY		DOUBLE			The vertical padding percentage (0.0-1.0, e.g., 0.1 = 10% padding)
+/// axisRef        	ANYREF EXPR    	The column that the measure will be evaluated against
+/// measureRef     	NUMERIC EXPR    The measure to evaluate
+/// fillColor      	STRING          Color for the box fill
+/// strokeColor    	STRING          Color for lines, whiskers, and median
+/// showOutliers   	BOOLEAN         Whether to show outlier points beyond whiskers
+function 'DaxLib.SVG.Compound.Boxplot' =
+		(
+			x: INT64,
+			y: INT64,
+			width: INT64,
+			height: INT64,
+			paddingX: DOUBLE,
+			paddingY: DOUBLE,
+			axisRef: ANYREF EXPR,
+			measureRef: NUMERIC EXPR,
+			fillColor: STRING,
+			strokeColor: STRING,
+			showOutliers: BOOLEAN
+		) =>
+		
+			// Apply padding to dimensions
+			VAR _X = 			x + (width * (IF(ISBLANK(paddingX), 0, paddingX) / 2))
+			VAR _Y = 			y + (height * (IF(ISBLANK(paddingY), 0, paddingY) / 2))
+			VAR _Width = 		width * (1 - IF(ISBLANK(paddingX), 0, paddingX))
+			VAR _Height = 		height * (1 - IF(ISBLANK(paddingY), 0, paddingY))
+		
+			// Check if Axis is numeric
+			VAR axisSample = 	MAX( axisRef )
+			VAR axisIsNumeric = ISNUMERIC( axisSample ) || ISDATETIME( axisSample )
+		
+			// For totals
+			VAR _Data =
+				ADDCOLUMNS(
+					FILTER(
+						VALUES( axisRef ),
+						NOT ISBLANK( measureRef )
+					),
+					"@AxisIndex",
+						IF(
+							axisIsNumeric,
+							axisRef,
+							RANK( DENSE, CALCULATETABLE( VALUES( axisRef ), ALLSELECTED() ) )
+						),
+					"@Value", measureRef
+				)
+		
+			VAR _XMin = 			MINX( _Data, [@Value] )
+			VAR _XMax = 			MAXX( _Data, [@Value] )
+		
+			VAR _Count = 			COUNTROWS( _Data )
+			VAR _Min = 				MINX( _Data, [@Value] )
+			VAR _Max = 				MAXX( _Data, [@Value] )
+		
+			// Calculate quartiles using standard definitions
+			VAR _Q1 = 				PERCENTILEX.INC( _Data, [@Value], 0.25 )
+			VAR _Median = 			PERCENTILEX.INC( _Data, [@Value], 0.5 )
+			VAR _Q3 = 				PERCENTILEX.INC( _Data, [@Value], 0.75 )
+		
+			// Calculate IQR and whisker boundaries (1.5 * IQR rule)
+			VAR _IQR = 				_Q3 - _Q1
+			VAR _LowerWhisker =		MAX( _Min, _Q1 - 1.5 * _IQR )
+			VAR _UpperWhisker = 	MIN( _Max, _Q3 + 1.5 * _IQR )
+		
+			// Scale statistical values to SVG coordinates
+			VAR _Q1X = 				DaxLib.SVG.Scale.Normalize( _Q1, _XMin, _XMax, _X, _X + _Width )
+			VAR _MedianX = 			DaxLib.SVG.Scale.Normalize( _Median, _XMin, _XMax, _X, _X + _Width )
+			VAR _Q3X = 				DaxLib.SVG.Scale.Normalize( _Q3, _XMin, _XMax, _X, _X + _Width )
+			VAR _LowerWhiskerX = 	DaxLib.SVG.Scale.Normalize( _LowerWhisker, _XMin, _XMax, _X, _X + _Width )
+			VAR _UpperWhiskerX = 	DaxLib.SVG.Scale.Normalize( _UpperWhisker, _XMin, _XMax, _X, _X + _Width )
+		
+			// Box dimensions - centered vertically with padding
+			VAR _BoxHeight = 		_Height * 0.6
+			VAR _BoxY = 			_Y + _Height * 0.2
+			VAR _CenterY = 			_Y + _Height * 0.5
+		
+			// Create outlier points beyond whiskers if enabled
+			VAR _Outliers =
+				IF(
+					showOutliers,
+					CONCATENATEX(
+						FILTER(
+							_Data,
+							[@Value] < _LowerWhisker || [@Value] > _UpperWhisker
+						),
+						DaxLib.SVG.Element.Circle(
+							DaxLib.SVG.Scale.Normalize( [@Value], _XMin, _XMax, _X, _X + _Width ), // cx
+							_CenterY,          	// cy
+							2,                  // radius
+							DaxLib.SVG.Attr.Shapes(
+								strokeColor,    // fill
+								BLANK(),        // fillOpacity
+								BLANK(),        // fillRule
+								BLANK(),        // stroke
+								BLANK(),        // strokeWidth
+								BLANK(),        // strokeOpacity
+								BLANK()         // opacity
+							),
+							BLANK()             // transforms
+						),
+						""
+					)
+				)
+		
+			// Lower whisker line from whisker to Q1 (horizontal)
+			VAR _LowerWhiskerLine =
+				DaxLib.SVG.Element.Line(
+					_LowerWhiskerX,         // x1
+					_CenterY,              	// y1
+					_Q1X,                   // x2
+					_CenterY,              	// y2
+					DaxLib.SVG.Attr.Shapes(
+						BLANK(),            // fill
+						BLANK(),            // fillOpacity
+						BLANK(),            // fillRule
+						strokeColor,        // stroke
+						1,                  // strokeWidth
+						BLANK(),            // strokeOpacity
+						BLANK()             // opacity
+					),
+					BLANK()                 // transforms
+				)
+		
+			// Upper whisker line from Q3 to whisker (horizontal)
+			VAR _UpperWhiskerLine =
+				DaxLib.SVG.Element.Line(
+					_Q3X,                   // x1
+					_CenterY,             	// y1
+					_UpperWhiskerX,         // x2
+					_CenterY,             	// y2
+					DaxLib.SVG.Attr.Shapes(
+						BLANK(),            // fill
+						BLANK(),            // fillOpacity
+						BLANK(),            // fillRule
+						strokeColor,        // stroke
+						1,                  // strokeWidth
+						BLANK(),            // strokeOpacity
+						BLANK()             // opacity
+					),
+					BLANK()                 // transforms
+				)
+		
+			// Lower whisker cap (vertical line)
+			VAR _LowerCap =
+				DaxLib.SVG.Element.Line(
+					_LowerWhiskerX,         // x1
+					_BoxY,                  // y1
+					_LowerWhiskerX,         // x2
+					_BoxY + _BoxHeight,     // y2
+					DaxLib.SVG.Attr.Shapes(
+						BLANK(),            // fill
+						BLANK(),            // fillOpacity
+						BLANK(),            // fillRule
+						strokeColor,        // stroke
+						1,                  // strokeWidth
+						BLANK(),            // strokeOpacity
+						BLANK()             // opacity
+					),
+					BLANK()                 // transforms
+				)
+		
+			// Upper whisker cap (vertical line)
+			VAR _UpperCap =
+				DaxLib.SVG.Element.Line(
+					_UpperWhiskerX,         // x1
+					_BoxY,                  // y1
+					_UpperWhiskerX,         // x2
+					_BoxY + _BoxHeight,     // y2
+					DaxLib.SVG.Attr.Shapes(
+						BLANK(),            // fill
+						BLANK(),            // fillOpacity
+						BLANK(),            // fillRule
+						strokeColor,        // stroke
+						1,                  // strokeWidth
+						BLANK(),            // strokeOpacity
+						BLANK()             // opacity
+					),
+					BLANK()                 // transforms
+				)
+		
+			// Main box (Q1 to Q3) - horizontal
+			VAR _Box =
+				DaxLib.SVG.Element.Rect(
+					_Q1X,                   // x (left of box)
+					_BoxY,                  // y
+					_Q3X - _Q1X,            // width (Q3 - Q1)
+					_BoxHeight,             // height
+					2,                      // rx
+					2,                      // ry
+					DaxLib.SVG.Attr.Shapes(
+						fillColor,          // fill
+						0.5,                // fillOpacity
+						BLANK(),            // fillRule
+						strokeColor,        // stroke
+						1,                  // strokeWidth
+						BLANK(),            // strokeOpacity
+						BLANK()             // opacity
+					),
+					BLANK()                 // transforms
+				)
+		
+			// Median line (vertical)
+			VAR _MedianLine =
+				DaxLib.SVG.Element.Line(
+					_MedianX,               // x1
+					_BoxY,                  // y1
+					_MedianX,               // x2
+					_BoxY + _BoxHeight,     // y2
+					DaxLib.SVG.Attr.Shapes(
+						BLANK(),            // fill
+						BLANK(),            // fillOpacity
+						BLANK(),            // fillRule
+						strokeColor,        // stroke
+						2,                  // strokeWidth (thicker for median)
+						BLANK(),            // strokeOpacity
+						BLANK()             // opacity
+					),
+					BLANK()                 // transforms
+				)
+		
+			// Combined elements
+			VAR _CombinedElements =
+				_LowerWhiskerLine &
+				_UpperWhiskerLine &
+				_LowerCap &
+				_UpperCap &
+				_Box &
+				_MedianLine &
+				_Outliers
+		
+			RETURN
+		
+				IF( NOT ISEMPTY( _Data ), _CombinedElements )
+	lineageTag: 14fec1ce-a8cb-4836-be73-4c6a6e2f4d15
+
+	annotation DAXLIB_PackageId = DaxLib.SVG
+
+	annotation DAXLIB_PackageVersion = 0.1.2-beta
+
+/// Creates a Violin Plot compound SVG Visual showing distribution density using Kernel Density Estimation (KDE)
+/// x			  	INT64           The x position of the compound
+/// y			  	INT64           The y position of the compound
+/// width          	INT64           The width of the compound
+/// height         	INT64           The height of the compound
+/// paddingX		DOUBLE			The horizontal padding percentage (0.0-1.0, e.g., 0.1 = 10% padding)
+/// paddingY		DOUBLE			The vertical padding percentage (0.0-1.0, e.g., 0.1 = 10% padding)
+/// axisRef        	ANYREF EXPR     The column that the measure will be evaluated against
+/// measureRef     	NUMERIC EXPR    The measure to evaluate
+/// samples        	INT64           Number of density calculation points (default 30)
+/// bandwidth      	NUMERIC         Kernel bandwidth for smoothing
+/// color      	STRING          Fill color for the violin shape
+function 'DaxLib.SVG.Compound.Violin' =
+		(
+			x: INT64,
+			y: INT64,
+			width: INT64,
+			height: INT64,
+			paddingX: DOUBLE,
+			paddingY: DOUBLE,
+			axisRef: ANYREF EXPR,
+			measureRef: NUMERIC EXPR,
+			samples: INT64,
+			bandwidth: NUMERIC,
+			color: STRING
+		) =>
+		
+			// Apply padding to dimensions
+			VAR _X = 			x + (width * (IF(ISBLANK(paddingX), 0, paddingX) / 2))
+			VAR _Y = 			y + (height * (IF(ISBLANK(paddingY), 0, paddingY) / 2))
+			VAR _Width = 		width * (1 - IF(ISBLANK(paddingX), 0, paddingX))
+			VAR _Height = 		height * (1 - IF(ISBLANK(paddingY), 0, paddingY))
+		
+			// Check if Axis is numeric
+			VAR axisSample = 	MAX( axisRef )
+			VAR axisIsNumeric = ISNUMERIC( axisSample ) || ISDATETIME( axisSample )
+		
+			// For totals
+			VAR _Data =
+				ADDCOLUMNS(
+					FILTER(
+						VALUES( axisRef ),
+						NOT ISBLANK( measureRef )
+					),
+					"@AxisIndex",
+						IF(
+							axisIsNumeric,
+							axisRef,
+							RANK( DENSE, CALCULATETABLE( VALUES( axisRef ), ALLSELECTED() ) )
+						),
+					"@Value", measureRef
+				)
+		
+			VAR _NumValues = 		COUNTROWS( _Data )
+			VAR _Min = 				MINX( _Data, [@Value] )
+			VAR _Max = 				MAXX( _Data, [@Value] )
+			VAR _Range = 			_Max - _Min
+			VAR _RangePerSample = 	_Range / samples
+		
+			// Calculate Kernel Density Estimation using Normal distribution
+			VAR _KDE =
+				ADDCOLUMNS(
+					GENERATESERIES( 0, samples + 1, 1 ),
+					"@InputX", _Min + _RangePerSample * [Value],
+					"@KDE",
+						( 1 / _NumValues ) *
+						SUMX(
+							_Data,
+							NORM.DIST(
+								_Min + _RangePerSample * [Value],
+								[@Value],
+								bandwidth,
+								FALSE
+							)
+						)
+				)
+		
+			VAR _MaxKDE = 		MAXX( _KDE, [@KDE] )
+		
+			// Map KDE values to SVG coordinates using normalize function
+			VAR _Points =
+				ADDCOLUMNS(
+					_KDE,
+					"@X", DaxLib.SVG.Scale.Normalize( [@InputX], _Min, _Max, _X, _X + _Width),
+					"@Y", DaxLib.SVG.Scale.Normalize( [@KDE], 0, _MaxKDE, _Y + _Height * 0.5, _Y )
+				)
+		
+			// Create control points for smooth Bézier curves
+			VAR _PointsWithPrev =
+				NATURALLEFTOUTERJOIN(
+					_Points,
+					SELECTCOLUMNS(
+						_Points,
+						"Value", [Value] + 1,
+						"@PrevX", [@X],
+						"@PrevY", [@Y]
+					)
+				)
+		
+			VAR _WithControlPoints =
+				ADDCOLUMNS(
+					_PointsWithPrev,
+					"@CX", [@prevX] + ( ( [@x] - [@prevX] ) / 2 ),
+					"@CY", [@y]
+				)
+		
+			// Create the violin shape as a single closed path
+			// Start at the center-left, go up the top curve, then down the bottom curve, and close
+			VAR _FirstPoint = MINX( _Points, [@X] )
+			VAR _LastPoint = MAXX( _Points, [@X] )
+			VAR _CenterY = _Y + (_Height * 0.5)
+		
+			// Top half curve (from left to right)
+			VAR _TopCurve =
+				CONCATENATEX(
+					_WithControlPoints,
+					IF(
+						[Value] = 0,
+						"M " & [@X] & " " & _CenterY & " L " & [@X] & " " & [@Y],
+						"S " & [@CX] & " " & [@CY] & ", " & [@X] & " " & [@Y]
+					),
+					" ",
+					[Value],
+					ASC
+				)
+		
+			// Bottom half curve (from right to left, mirrored)
+			VAR _BottomCurve =
+				CONCATENATEX(
+					_WithControlPoints,
+					VAR _MirroredY = _CenterY + (_CenterY - [@Y])
+					VAR _MirroredCY = _CenterY + (_CenterY - [@CY])
+					RETURN
+						"S " & [@CX] & " " & _MirroredCY & ", " & [@X] & " " & _MirroredY,
+					" ",
+					[Value],
+					DESC
+				)
+		
+			// Create a single closed path for the violin shape
+			VAR _ViolinPath =
+				_TopCurve &
+				" " & _BottomCurve &
+				" Z" // Close the path
+		
+			// Combined Elements
+			VAR _CombinedElements =
+				DaxLib.SVG.Element.Paths(
+					_ViolinPath, // d
+					DaxLib.SVG.Attr.Shapes(
+						color,          // fill
+						0.5,          	// fillOpacity
+						BLANK(),        // fillRule
+						color,          // stroke
+						1,              // strokeWidth
+						BLANK(),        // strokeOpacity
+						BLANK()         // opacity
+					),
+					BLANK()             // transforms
+				)
+		
+			RETURN
+		
+				IF( NOT ISEMPTY( _Data ), _CombinedElements )
+	lineageTag: a3ab862c-57a9-4e9b-8cd2-41b65942c27e
+
+	annotation DAXLIB_PackageId = DaxLib.SVG
+
+	annotation DAXLIB_PackageVersion = 0.1.2-beta
+
+/// Creates a KDE-based Heatmap compound SVG Visual using Kernel Density Estimation for smooth color gradients
+/// x              	INT64           The x position of the compound
+/// y              	INT64           The y position of the compound
+/// width          	INT64           The width of the compound
+/// height         	INT64           The height of the compound
+/// paddingX		DOUBLE			The horizontal padding percentage (0.0-1.0, e.g., 0.1 = 10% padding)
+/// paddingY		DOUBLE			The vertical padding percentage (0.0-1.0, e.g., 0.1 = 10% padding)
+/// axisRef        	ANYREF EXPR     The column that the measure will be evaluated against
+/// measureRef     	NUMERIC EXPR    The measure to evaluate
+/// samples        	INT64           Number of density calculation points (default 50)
+/// bandwidth      	NUMERIC         Kernel bandwidth for smoothing (default auto-calculated)
+/// color     		STRING          The Hex color for high density areas (e.g., "#01B8AA")
+function 'DaxLib.SVG.Compound.Heatmap' =
+		(
+			x: INT64,
+			y: INT64,
+			width: INT64,
+			height: INT64,
+			paddingX: DOUBLE,
+			paddingY: DOUBLE,
+			axisRef: ANYREF EXPR,
+			measureRef: NUMERIC EXPR,
+			samples: INT64,
+			bandwidth: NUMERIC,
+			color: STRING
+		) =>
+		
+			// Apply padding to dimensions
+			VAR _X = 			x + (width * (IF(ISBLANK(paddingX), 0, paddingX) / 2))
+			VAR _Y = 			y + (height * (IF(ISBLANK(paddingY), 0, paddingY) / 2))
+			VAR _Width = 		width * (1 - IF(ISBLANK(paddingX), 0, paddingX))
+			VAR _Height = 		height * (1 - IF(ISBLANK(paddingY), 0, paddingY))
+		
+			// Check if Axis is numeric
+			VAR axisSample = 	MAX( axisRef )
+			VAR axisIsNumeric = ISNUMERIC( axisSample ) || ISDATETIME( axisSample )
+		
+			// For totals
+			VAR _Data =
+				ADDCOLUMNS(
+					FILTER(
+						VALUES( axisRef ),
+						NOT ISBLANK( measureRef )
+					),
+					"@AxisIndex",
+						IF(
+							axisIsNumeric,
+							axisRef,
+							RANK( DENSE, CALCULATETABLE( VALUES( axisRef ), ALLSELECTED() ) )
+						),
+					"@Value", measureRef
+				)
+		
+			VAR _NumValues = 		COUNTROWS( _Data )
+			VAR _Min = 				MINX( _Data, [@Value] )
+			VAR _Max = 				MAXX( _Data, [@Value] )
+			VAR _Range = 			_Max - _Min
+			VAR _RangePerSample = 	_Range / samples
+		
+			// Calculate Kernel Density Estimation using Normal distribution
+			VAR _KDE =
+				ADDCOLUMNS(
+					GENERATESERIES( 0, samples, 1 ),
+					"@InputX", _Min + _RangePerSample * [Value],
+					"@KDE",
+						( 1 / _NumValues ) *
+						SUMX(
+							_Data,
+							NORM.DIST(
+								_Min + _RangePerSample * [Value],
+								[@Value],
+								bandwidth,
+								FALSE()
+							)
+						)
+				)
+		
+			VAR _MaxKDE = 		MAXX( _KDE, [@KDE] )
+		
+			// Create gradient stops from KDE points
+			VAR _GradientStops =
+				CONCATENATEX(
+					_KDE,
+					VAR _Position = DaxLib.SVG.Scale.Normalize( [@InputX], _Min, _Max, 0, 100 )
+					VAR _Intensity = IF( _MaxKDE > 0, [@KDE] / _MaxKDE, 0 )
+					VAR _StopColor =
+						DaxLib.SVG.Color.Hex.Interpolate(
+							"#FFFFFF",
+							color,
+							_Intensity
+						)
+					RETURN
+						"<stop offset='" & _Position & "%' stop-color='" & _StopColor & "' />",
+					"",
+					[Value],
+					ASC
+				)
+		
+			// Create linear gradient definition
+			VAR _GradientDef =
+				"<defs>" &
+					"<linearGradient id='kde-gradient' x1='0%' y1='0%' x2='100%' y2='0%'>" &
+						_GradientStops &
+					"</linearGradient>" &
+				"</defs>"
+		
+			// Create rectangle with gradient fill
+			VAR _HeatmapRect =
+				DaxLib.SVG.Element.Rect(
+					0,                          // x
+					0,                          // y
+					width,                      // width
+					height,                     // height
+					0,                          // rx
+					0,                          // ry
+					DaxLib.SVG.Attr.Shapes(
+						"url(#kde-gradient)", 	// fill
+						BLANK(),                // fillOpacity
+						BLANK(),                // fillRule
+						BLANK(),                // stroke
+						BLANK(),                // strokeWidth
+						BLANK(),                // strokeOpacity
+						BLANK()                 // opacity
+					),
+					BLANK()                     // transforms
+				)
+		
+			// Combined elements
+			VAR _CombinedElements =
+				_GradientDef &
+				_HeatmapRect
+		
+			RETURN
+		
+				IF( NOT ISEMPTY( _Data ), _CombinedElements )
+	lineageTag: bb5f48b7-b19e-4119-8090-b36c0e3b3f74
+
+	annotation DAXLIB_PackageId = DaxLib.SVG
+
+	annotation DAXLIB_PackageVersion = 0.1.2-beta
+
+/// Select theme colour, wrapping around to the start if variant exceeds available options
+/// themeName	STRING	The theme name e.g. "Office", "Power BI"
+/// variant		INT64	The variant index (1-N, wraps around if exceeds available variants)
+function 'DaxLib.SVG.Colour.Theme' =
+		(
+			themeName: STRING,
+			variant: INT64
+		) =>
+		
+			VAR Themes =
+				DATATABLE(
+				"ThemeName", STRING,
+				"Variant", INTEGER,
+				"Colour", STRING,
+				{
+					// Power BI Default
+					{"Power BI", 1, "#118DFF"},
+					{"Power BI", 2, "#12239E"},
+					{"Power BI", 3, "#E66C37"},
+					{"Power BI", 4, "#6B007B"},
+					{"Power BI", 5, "#E044A7"},
+					{"Power BI", 6, "#744EC2"},
+					{"Power BI", 7, "#D9B300"},
+					{"Power BI", 8, "#D64550"},
+					{"Power BI", 9, "#197278"},
+					{"Power BI", 10, "#1AAB40"},
+					{"Power BI", 11, "#15C6F4"},
+					{"Power BI", 12, "#4092FF"},
+					{"Power BI", 13, "#FFA058"},
+					{"Power BI", 14, "#BE5DC9"},
+					{"Power BI", 15, "#F472D0"},
+					{"Power BI", 16, "#B5A1FF"},
+					{"Power BI", 17, "#C4A200"},
+					{"Power BI", 18, "#FF8080"},
+					{"Power BI", 19, "#00DBBC"},
+					{"Power BI", 20, "#5BD667"},
+					{"Power BI", 21, "#0091D5"},
+					{"Power BI", 22, "#4668C5"},
+					{"Power BI", 23, "#FF6300"},
+					{"Power BI", 24, "#99008A"},
+					{"Power BI", 25, "#EC008C"},
+					{"Power BI", 26, "#533285"},
+					{"Power BI", 27, "#99700A"},
+					{"Power BI", 28, "#FF4141"},
+					{"Power BI", 29, "#1F9A85"},
+					{"Power BI", 30, "#25891C"},
+					{"Power BI", 31, "#0057A2"},
+					{"Power BI", 32, "#002050"},
+					{"Power BI", 33, "#C94F0F"},
+					{"Power BI", 34, "#450F54"},
+					{"Power BI", 35, "#B60064"},
+					{"Power BI", 36, "#34124F"},
+					{"Power BI", 37, "#6A5A29"},
+					{"Power BI", 38, "#1AAB40"},
+					{"Power BI", 39, "#BA141A"},
+					{"Power BI", 40, "#0C3D37"},
+					{"Power BI", 41, "#0B511F"},
+		
+					// Modern Corporate - Professional blues and grays
+					{"Modern Corporate", 1, "#2E3440"},
+					{"Modern Corporate", 2, "#3B4252"},
+					{"Modern Corporate", 3, "#434C5E"},
+					{"Modern Corporate", 4, "#4C566A"},
+					{"Modern Corporate", 5, "#5E81AC"},
+					{"Modern Corporate", 6, "#81A1C1"},
+		
+					// Ocean Breeze - Cool blues and teals
+					{"Ocean Breeze", 1, "#0077BE"},
+					{"Ocean Breeze", 2, "#00A8CC"},
+					{"Ocean Breeze", 3, "#40E0D0"},
+					{"Ocean Breeze", 4, "#87CEEB"},
+					{"Ocean Breeze", 5, "#B0E0E6"},
+					{"Ocean Breeze", 6, "#E0F6FF"},
+		
+					// Sunset Vibes - Warm oranges and reds
+					{"Sunset Vibes", 1, "#FF6B35"},
+					{"Sunset Vibes", 2, "#F7931E"},
+					{"Sunset Vibes", 3, "#FFD23F"},
+					{"Sunset Vibes", 4, "#EE4B2B"},
+					{"Sunset Vibes", 5, "#C04000"},
+					{"Sunset Vibes", 6, "#FFCBA4"},
+		
+					// Forest Green - Natural greens
+					{"Forest Green", 1, "#355E3B"},
+					{"Forest Green", 2, "#228B22"},
+					{"Forest Green", 3, "#32CD32"},
+					{"Forest Green", 4, "#90EE90"},
+					{"Forest Green", 5, "#98FB98"},
+					{"Forest Green", 6, "#F0FFF0"},
+		
+					// Purple Rain - Rich purples
+					{"Purple Rain", 1, "#301934"},
+					{"Purple Rain", 2, "#663399"},
+					{"Purple Rain", 3, "#9966CC"},
+					{"Purple Rain", 4, "#BA55D3"},
+					{"Purple Rain", 5, "#DDA0DD"},
+					{"Purple Rain", 6, "#E6E6FA"},
+		
+					// Monochrome - Sophisticated grays
+					{"Monochrome", 1, "#1C1C1C"},
+					{"Monochrome", 2, "#333333"},
+					{"Monochrome", 3, "#666666"},
+					{"Monochrome", 4, "#999999"},
+					{"Monochrome", 5, "#CCCCCC"},
+					{"Monochrome", 6, "#F5F5F5"},
+		
+					// Vibrant Tech - Bold and energetic
+					{"Vibrant Tech", 1, "#FF0080"},
+					{"Vibrant Tech", 2, "#00FFFF"},
+					{"Vibrant Tech", 3, "#FFFF00"},
+					{"Vibrant Tech", 4, "#FF8000"},
+					{"Vibrant Tech", 5, "#8000FF"},
+					{"Vibrant Tech", 6, "#00FF80"},
+		
+					// Earth Tones - Natural browns and beiges
+					{"Earth Tones", 1, "#8B4513"},
+					{"Earth Tones", 2, "#A0522D"},
+					{"Earth Tones", 3, "#CD853F"},
+					{"Earth Tones", 4, "#DEB887"},
+					{"Earth Tones", 5, "#F4A460"},
+					{"Earth Tones", 6, "#FFF8DC"},
+		
+					// Pastel Dreams - Soft and gentle
+					{"Pastel Dreams", 1, "#FFB3BA"},
+					{"Pastel Dreams", 2, "#FFDFBA"},
+					{"Pastel Dreams", 3, "#FFFFBA"},
+					{"Pastel Dreams", 4, "#BAFFC9"},
+					{"Pastel Dreams", 5, "#BAE1FF"},
+					// {"Pastel Dreams", 6, "#E1BAFF"},
+		
+					// Midnight Blue - Deep blues and navy
+					{"Midnight Blue", 1, "#191970"},
+					{"Midnight Blue", 2, "#000080"},
+					{"Midnight Blue", 3, "#0000CD"},
+					{"Midnight Blue", 4, "#4169E1"},
+					{"Midnight Blue", 5, "#6495ED"},
+					{"Midnight Blue", 6, "#B0C4DE"}
+				}
+			)
+		
+			VAR ThemeColors = FILTER(Themes, [ThemeName] = themeName)
+			VAR MaxVariant = MAXX(ThemeColors, [Variant])
+			VAR AdjustedVariant = IF(
+				MaxVariant > 0,
+				MOD( variant - 1, MaxVariant ) + 1,
+				variant
+			)
+			VAR SelectedColor =
+				MAXX(
+					FILTER( ThemeColors, [Variant] = AdjustedVariant),
+					[Colour]
+				)
+		
+			RETURN SelectedColor
+	lineageTag: abfb1890-1dd9-4775-8e75-530139e65ab6
+
+	annotation DAXLIB_PackageId = DaxLib.SVG
+
+	annotation DAXLIB_PackageVersion = 0.1.2-beta
+
+/// Returns a color for the specified performance level and theme
+/// themeName	STRING	The theme name: "Stoplight", "Colorblind", "Corporate", "Pastel", or "Grayscale"
+/// variant		STRING	The performance level ("veryBad", "bad", "neutral", "good", "veryGood")
+function 'DaxLib.SVG.Colour.PerformanceTheme' =
+		(
+			themeName: STRING,
+			variant: STRING
+		) =>
+		
+			VAR Themes =
+				DATATABLE(
+				"ThemeName", STRING,
+				"Variant", STRING,
+				"Colour", STRING,
+				{
+					// Stoplight - Classic red/yellow/green
+					{"Stoplight", "veryBad",  "#D04848"}, // Red
+					{"Stoplight", "bad",      "#F07857"}, // Orange-red
+					{"Stoplight", "neutral",  "#FFBF49"}, // Amber
+					{"Stoplight", "good",     "#4CAF50"}, // Green
+					{"Stoplight", "veryGood", "#2E8B57"}, // Sea green
+		
+					// Colorblind-friendly
+					{"Colorblind", "veryBad",  "#8F2D56"}, // Wine red
+					{"Colorblind", "bad",      "#D95980"}, // Light raspberry
+					{"Colorblind", "neutral",  "#FFC857"}, // Yellow
+					{"Colorblind", "good",     "#41B3A3"}, // Teal
+					{"Colorblind", "veryGood", "#1D4E89"}, // Navy blue
+		
+					// Corporate - Blue theme for business use
+					{"Corporate", "veryBad",  "#BC2F4A"}, // Red accent
+					{"Corporate", "bad",      "#E36F6F"}, // Light red
+					{"Corporate", "neutral",  "#BDBDBD"}, // Gray
+					{"Corporate", "good",     "#6BB5D8"}, // Light blue
+					{"Corporate", "veryGood", "#114D85"}, // Dark blue
+		
+					// Pastel - Soft colors for gentler visualization
+					{"Pastel", "veryBad",  "#F8AFA6"}, // Soft red
+					{"Pastel", "bad",      "#FAD48E"}, // Soft orange
+					{"Pastel", "neutral",  "#F5F5F5"}, // Light gray
+					{"Pastel", "good",     "#A6DCEF"}, // Soft blue
+					{"Pastel", "veryGood", "#A6E4D0"}, // Soft green
+		
+					// Grayscale - For black and white or muted presentations
+					{"Grayscale", "veryBad",  "#4D4D4D"}, // Dark gray
+					{"Grayscale", "bad",      "#7D7D7D"}, // Gray
+					{"Grayscale", "neutral",  "#ADADAD"}, // Medium gray
+					{"Grayscale", "good",     "#D3D3D3"}, // Light gray
+					{"Grayscale", "veryGood", "#F9F9F9"}  // Near white
+				}
+			)
+		
+			VAR _variant = 		IF( ISBLANK( variant ), "neutral", variant )
+			VAR _themeName = 	IF( ISBLANK( themeName ), "Stoplight", themeName )
+		
+			VAR SelectedColor =
+				MAXX(
+					FILTER( Themes, [Variant] = _variant && [ThemeName] = _themeName),
+					[Colour]
+				)
+		
+			RETURN SelectedColor
+	lineageTag: 69ec0c4b-b993-4c35-8fbc-c9ac2bf8cfcd
+
+	annotation DAXLIB_PackageId = DaxLib.SVG
+
+	annotation DAXLIB_PackageVersion = 0.1.2-beta
+
+/// Int to Hex conversion
+/// number	INT64	The integer to convert
+/// padTo	INT64	Optional: Minimum number of characters in result
+function 'DaxLib.SVG.Colour.Int.ToHex' =
+		(
+			number: INT64,
+			padTo: INT64
+		) =>
+		
+			VAR MinPadding = IF( number = 0, 1, CEILING( LOG( number + 1, 16 ), 1 ) )
+			VAR ActualPadding = MAX( MinPadding, IF( ISBLANK( padTo ), MinPadding, padTo ) )
+			VAR BitTable = GENERATESERIES( 1, ActualPadding )
+			VAR Hex =
+				CONCATENATEX(
+					BitTable,
+					VAR c = MOD( TRUNC( number / POWER( 16, [Value] - 1 ) ), 16 )
+					RETURN
+						SWITCH( c, 10, "A", 11, "B", 12, "C", 13, "D", 14, "E", 15, "F", c ),
+					"",
+					[Value],
+					DESC
+				)
+		
+			RETURN Hex
+	lineageTag: b19aa376-669f-4b4d-b807-ace8178af69b
+
+	annotation DAXLIB_PackageId = DaxLib.SVG
+
+	annotation DAXLIB_PackageVersion = 0.1.2-beta
+
+/// Hex to Int conversion
+/// hex		STRING	The hex value to convert i.e "1A"
+function 'DaxLib.SVG.Colour.Hex.ToInt' =
+		(
+			hex: STRING
+		) =>
+		
+			VAR CleanHex = IF( LEFT( hex, 1 ) = "#", MID( hex, 2, LEN( hex ) - 1), hex )
+			VAR Result =
+				SUMX(
+					GENERATESERIES( 1, LEN( CleanHex ) ),
+					VAR Pos = [Value]
+					VAR c = MID( CleanHex, Pos, 1 )
+					VAR DigitValue = SWITCH( UPPER( c ), "A", 10, "B", 11, "C", 12, "D", 13, "E", 14, "F", 15, VALUE( c ) )
+					RETURN
+						DigitValue * POWER( 16, LEN( hex ) - Pos )
+				)
+		
+			RETURN Result
+	lineageTag: dc36bc12-e65a-4c6e-841e-b050893abd64
+
+	annotation DAXLIB_PackageId = DaxLib.SVG
+
+	annotation DAXLIB_PackageVersion = 0.1.2-beta
+
+/// RGB to Hex conversion
+/// red		INT64	The red value (0-255)
+/// green	INT64	The green value (0-255)
+/// blue	INT64	The blue value (0-255)
+/// alpha	DOUBLE	Optional: The alpha value (0-1)
+function 'DaxLib.SVG.Colour.RGB.ToHex' =
+		(
+			red: INT64,
+			green: INT64,
+			blue: INT64,
+			alpha: DOUBLE
+		) =>
+		
+			"#" &
+			DaxLib.SVG.Colour.Int.ToHex( red, 2 ) &
+			DaxLib.SVG.Colour.Int.ToHex( green, 2 ) &
+			DaxLib.SVG.Colour.Int.ToHex( blue, 2 ) &
+			IF( NOT ISBLANK( alpha ), DaxLib.SVG.Colour.Int.ToHex( alpha * 255, 2 ) )
+	lineageTag: cad63fd6-282e-4331-970b-fb44b495032d
+
+	annotation DAXLIB_PackageId = DaxLib.SVG
+
+	annotation DAXLIB_PackageVersion = 0.1.2-beta
+
+/// Interpolate between two Hex colors by a given percentage
+/// startHexColour	STRING	The starting Hex colour (e.g., "#FF0000")
+/// endHexColour	STRING	The ending Hex colour (e.g., "#0000FF")
+/// percentage		DOUBLE	The interpolation percentage (0.0 = startColor, 1.0 = endColor)
+function 'DaxLib.SVG.Colour.Hex.Interpolate' =
+		(
+			startHexColour: STRING,
+			endHexColour: STRING,
+			percentage: DOUBLE
+		) =>
+		
+			// Clamp percentage between 0 and 1
+			VAR _ClampedPercentage = MIN( MAX( percentage, 0 ), 1 )
+		
+			// Clean Hex codes
+			VAR _StartHex = SUBSTITUTE( startHexColour, "#", "" )
+			VAR _EndHex = 	SUBSTITUTE( endHexColour, "#", "" )
+		
+			// Extract and convert RGB components using your existing Hex.ToInt function
+			VAR _StartR = 	DaxLib.SVG.Colour.Hex.ToInt( MID( _StartHex, 1, 2 ) )
+			VAR _StartG = 	DaxLib.SVG.Colour.Hex.ToInt( MID( _StartHex, 3, 2 ) )
+			VAR _StartB = 	DaxLib.SVG.Colour.Hex.ToInt( MID( _StartHex, 5, 2 ) )
+		
+			VAR _EndR = 	DaxLib.SVG.Colour.Hex.ToInt( MID( _EndHex, 1, 2 ) )
+			VAR _EndG = 	DaxLib.SVG.Colour.Hex.ToInt( MID( _EndHex, 3, 2 ) )
+			VAR _EndB = 	DaxLib.SVG.Colour.Hex.ToInt( MID( _EndHex, 5, 2 ) )
+		
+			// Interpolate RGB values
+			VAR _InterpolatedR = ROUND( _StartR + ( _EndR - _StartR ) * _ClampedPercentage, 0 )
+			VAR _InterpolatedG = ROUND( _StartG + ( _EndG - _StartG ) * _ClampedPercentage, 0 )
+			VAR _InterpolatedB = ROUND( _StartB + ( _EndB - _StartB ) * _ClampedPercentage, 0 )
+		
+			// Convert back to hex using your existing RGB.ToHex function
+			VAR result =
+				DaxLib.SVG.Colour.RGB.ToHex(
+					_InterpolatedR,
+					_InterpolatedG,
+					_InterpolatedB,
+					BLANK()  // No alpha
+				)
+		
+			RETURN result
+	lineageTag: 9eb8ea8b-a141-45f2-b144-163d5defe2a2
+
+	annotation DAXLIB_PackageId = DaxLib.SVG
+
+	annotation DAXLIB_PackageVersion = 0.1.2-beta
+
+/// Select theme color, wrapping around to the start if variant exceeds available options
+/// themeName	STRING	The theme name e.g. "Office", "Power BI"
+/// variant		INT64	The variant index (1-N, wraps around if exceeds available variants)
+function 'DaxLib.SVG.Color.Theme' =
+		(
+			themeName: STRING,
+			variant: INT64
+		) =>
+		
+			VAR Themes =
+				DATATABLE(
+				"ThemeName", STRING,
+				"Variant", INTEGER,
+				"Color", STRING,
+				{
+					// Power BI Default
+					{"Power BI", 1, "#118DFF"},
+					{"Power BI", 2, "#12239E"},
+					{"Power BI", 3, "#E66C37"},
+					{"Power BI", 4, "#6B007B"},
+					{"Power BI", 5, "#E044A7"},
+					{"Power BI", 6, "#744EC2"},
+					{"Power BI", 7, "#D9B300"},
+					{"Power BI", 8, "#D64550"},
+					{"Power BI", 9, "#197278"},
+					{"Power BI", 10, "#1AAB40"},
+					{"Power BI", 11, "#15C6F4"},
+					{"Power BI", 12, "#4092FF"},
+					{"Power BI", 13, "#FFA058"},
+					{"Power BI", 14, "#BE5DC9"},
+					{"Power BI", 15, "#F472D0"},
+					{"Power BI", 16, "#B5A1FF"},
+					{"Power BI", 17, "#C4A200"},
+					{"Power BI", 18, "#FF8080"},
+					{"Power BI", 19, "#00DBBC"},
+					{"Power BI", 20, "#5BD667"},
+					{"Power BI", 21, "#0091D5"},
+					{"Power BI", 22, "#4668C5"},
+					{"Power BI", 23, "#FF6300"},
+					{"Power BI", 24, "#99008A"},
+					{"Power BI", 25, "#EC008C"},
+					{"Power BI", 26, "#533285"},
+					{"Power BI", 27, "#99700A"},
+					{"Power BI", 28, "#FF4141"},
+					{"Power BI", 29, "#1F9A85"},
+					{"Power BI", 30, "#25891C"},
+					{"Power BI", 31, "#0057A2"},
+					{"Power BI", 32, "#002050"},
+					{"Power BI", 33, "#C94F0F"},
+					{"Power BI", 34, "#450F54"},
+					{"Power BI", 35, "#B60064"},
+					{"Power BI", 36, "#34124F"},
+					{"Power BI", 37, "#6A5A29"},
+					{"Power BI", 38, "#1AAB40"},
+					{"Power BI", 39, "#BA141A"},
+					{"Power BI", 40, "#0C3D37"},
+					{"Power BI", 41, "#0B511F"},
+		
+					// Modern Corporate - Professional blues and grays
+					{"Modern Corporate", 1, "#2E3440"},
+					{"Modern Corporate", 2, "#3B4252"},
+					{"Modern Corporate", 3, "#434C5E"},
+					{"Modern Corporate", 4, "#4C566A"},
+					{"Modern Corporate", 5, "#5E81AC"},
+					{"Modern Corporate", 6, "#81A1C1"},
+		
+					// Ocean Breeze - Cool blues and teals
+					{"Ocean Breeze", 1, "#0077BE"},
+					{"Ocean Breeze", 2, "#00A8CC"},
+					{"Ocean Breeze", 3, "#40E0D0"},
+					{"Ocean Breeze", 4, "#87CEEB"},
+					{"Ocean Breeze", 5, "#B0E0E6"},
+					{"Ocean Breeze", 6, "#E0F6FF"},
+		
+					// Sunset Vibes - Warm oranges and reds
+					{"Sunset Vibes", 1, "#FF6B35"},
+					{"Sunset Vibes", 2, "#F7931E"},
+					{"Sunset Vibes", 3, "#FFD23F"},
+					{"Sunset Vibes", 4, "#EE4B2B"},
+					{"Sunset Vibes", 5, "#C04000"},
+					{"Sunset Vibes", 6, "#FFCBA4"},
+		
+					// Forest Green - Natural greens
+					{"Forest Green", 1, "#355E3B"},
+					{"Forest Green", 2, "#228B22"},
+					{"Forest Green", 3, "#32CD32"},
+					{"Forest Green", 4, "#90EE90"},
+					{"Forest Green", 5, "#98FB98"},
+					{"Forest Green", 6, "#F0FFF0"},
+		
+					// Purple Rain - Rich purples
+					{"Purple Rain", 1, "#301934"},
+					{"Purple Rain", 2, "#663399"},
+					{"Purple Rain", 3, "#9966CC"},
+					{"Purple Rain", 4, "#BA55D3"},
+					{"Purple Rain", 5, "#DDA0DD"},
+					{"Purple Rain", 6, "#E6E6FA"},
+		
+					// Monochrome - Sophisticated grays
+					{"Monochrome", 1, "#1C1C1C"},
+					{"Monochrome", 2, "#333333"},
+					{"Monochrome", 3, "#666666"},
+					{"Monochrome", 4, "#999999"},
+					{"Monochrome", 5, "#CCCCCC"},
+					{"Monochrome", 6, "#F5F5F5"},
+		
+					// Vibrant Tech - Bold and energetic
+					{"Vibrant Tech", 1, "#FF0080"},
+					{"Vibrant Tech", 2, "#00FFFF"},
+					{"Vibrant Tech", 3, "#FFFF00"},
+					{"Vibrant Tech", 4, "#FF8000"},
+					{"Vibrant Tech", 5, "#8000FF"},
+					{"Vibrant Tech", 6, "#00FF80"},
+		
+					// Earth Tones - Natural browns and beiges
+					{"Earth Tones", 1, "#8B4513"},
+					{"Earth Tones", 2, "#A0522D"},
+					{"Earth Tones", 3, "#CD853F"},
+					{"Earth Tones", 4, "#DEB887"},
+					{"Earth Tones", 5, "#F4A460"},
+					{"Earth Tones", 6, "#FFF8DC"},
+		
+					// Pastel Dreams - Soft and gentle
+					{"Pastel Dreams", 1, "#FFB3BA"},
+					{"Pastel Dreams", 2, "#FFDFBA"},
+					{"Pastel Dreams", 3, "#FFFFBA"},
+					{"Pastel Dreams", 4, "#BAFFC9"},
+					{"Pastel Dreams", 5, "#BAE1FF"},
+					// {"Pastel Dreams", 6, "#E1BAFF"},
+		
+					// Midnight Blue - Deep blues and navy
+					{"Midnight Blue", 1, "#191970"},
+					{"Midnight Blue", 2, "#000080"},
+					{"Midnight Blue", 3, "#0000CD"},
+					{"Midnight Blue", 4, "#4169E1"},
+					{"Midnight Blue", 5, "#6495ED"},
+					{"Midnight Blue", 6, "#B0C4DE"}
+				}
+			)
+		
+			VAR ThemeColors = FILTER(Themes, [ThemeName] = themeName)
+			VAR MaxVariant = MAXX(ThemeColors, [Variant])
+			VAR AdjustedVariant = IF(
+				MaxVariant > 0,
+				MOD( variant - 1, MaxVariant ) + 1,
+				variant
+			)
+			VAR SelectedColor =
+				MAXX(
+					FILTER( ThemeColors, [Variant] = AdjustedVariant),
+					[Color]
+				)
+		
+			RETURN SelectedColor
+	lineageTag: edd66f0b-1ebf-49f0-96d9-c893cff30fc6
+
+	annotation DAXLIB_PackageId = DaxLib.SVG
+
+	annotation DAXLIB_PackageVersion = 0.1.2-beta
+
+/// Returns a color for the specified performance level and theme
+/// themeName	STRING	The theme name: "Stoplight", "Colorblind", "Corporate", "Pastel", or "Grayscale"
+/// variant		STRING	The performance level ("veryBad", "bad", "neutral", "good", "veryGood")
+function 'DaxLib.SVG.Color.PerformanceTheme' =
+		(
+			themeName: STRING,
+			variant: STRING
+		) =>
+		
+			VAR Themes =
+				DATATABLE(
+				"ThemeName", STRING,
+				"Variant", STRING,
+				"Color", STRING,
+				{
+					// Stoplight - Classic red/yellow/green
+					{"Stoplight", "veryBad",  "#D04848"}, // Red
+					{"Stoplight", "bad",      "#F07857"}, // Orange-red
+					{"Stoplight", "neutral",  "#FFBF49"}, // Amber
+					{"Stoplight", "good",     "#4CAF50"}, // Green
+					{"Stoplight", "veryGood", "#2E8B57"}, // Sea green
+		
+					// Colorblind-friendly
+					{"Colorblind", "veryBad",  "#8F2D56"}, // Wine red
+					{"Colorblind", "bad",      "#D95980"}, // Light raspberry
+					{"Colorblind", "neutral",  "#FFC857"}, // Yellow
+					{"Colorblind", "good",     "#41B3A3"}, // Teal
+					{"Colorblind", "veryGood", "#1D4E89"}, // Navy blue
+		
+					// Corporate - Blue theme for business use
+					{"Corporate", "veryBad",  "#BC2F4A"}, // Red accent
+					{"Corporate", "bad",      "#E36F6F"}, // Light red
+					{"Corporate", "neutral",  "#BDBDBD"}, // Gray
+					{"Corporate", "good",     "#6BB5D8"}, // Light blue
+					{"Corporate", "veryGood", "#114D85"}, // Dark blue
+		
+					// Pastel - Soft colors for gentler visualization
+					{"Pastel", "veryBad",  "#F8AFA6"}, // Soft red
+					{"Pastel", "bad",      "#FAD48E"}, // Soft orange
+					{"Pastel", "neutral",  "#F5F5F5"}, // Light gray
+					{"Pastel", "good",     "#A6DCEF"}, // Soft blue
+					{"Pastel", "veryGood", "#A6E4D0"}, // Soft green
+		
+					// Grayscale - For black and white or muted presentations
+					{"Grayscale", "veryBad",  "#4D4D4D"}, // Dark gray
+					{"Grayscale", "bad",      "#7D7D7D"}, // Gray
+					{"Grayscale", "neutral",  "#ADADAD"}, // Medium gray
+					{"Grayscale", "good",     "#D3D3D3"}, // Light gray
+					{"Grayscale", "veryGood", "#F9F9F9"}  // Near white
+				}
+			)
+		
+			VAR _variant = 		IF( ISBLANK( variant ), "neutral", variant )
+			VAR _themeName = 	IF( ISBLANK( themeName ), "Stoplight", themeName )
+		
+			VAR SelectedColor =
+				MAXX(
+					FILTER( Themes, [Variant] = _variant && [ThemeName] = _themeName),
+					[Color]
+				)
+		
+			RETURN SelectedColor
+	lineageTag: 46338f39-5cc6-4a70-943d-e375d57d3ef2
+
+	annotation DAXLIB_PackageId = DaxLib.SVG
+
+	annotation DAXLIB_PackageVersion = 0.1.2-beta
+
+/// Int to Hex conversion
+/// number			INT64	The integer to convert
+/// padTo			INT64	Optional: Minimum number of characters in result
+function 'DaxLib.SVG.Color.Int.ToHex' =
+		(
+			number: INT64,
+			padTo: INT64
+		) =>
+		
+			VAR MinPadding = IF( number = 0, 1, CEILING( LOG( number + 1, 16 ), 1 ) )
+			VAR ActualPadding = MAX( MinPadding, IF( ISBLANK( padTo ), MinPadding, padTo ) )
+			VAR BitTable = GENERATESERIES( 1, ActualPadding )
+			VAR Hex =
+				CONCATENATEX(
+					BitTable,
+					VAR c = MOD( TRUNC( number / POWER( 16, [Value] - 1 ) ), 16 )
+					RETURN
+						SWITCH( c, 10, "A", 11, "B", 12, "C", 13, "D", 14, "E", 15, "F", c ),
+					"",
+					[Value],
+					DESC
+				)
+		
+			RETURN Hex
+	lineageTag: 7c82035e-26bf-4202-94b1-3194d8f85c11
+
+	annotation DAXLIB_PackageId = DaxLib.SVG
+
+	annotation DAXLIB_PackageVersion = 0.1.2-beta
+
+/// Hex to Int conversion
+/// hex				STRING	The hex value to convert i.e "1A"
+function 'DaxLib.SVG.Color.Hex.ToInt' =
+		(
+			hex: STRING
+		) =>
+		
+			VAR CleanHex = IF( LEFT( hex, 1 ) = "#", MID( hex, 2, LEN( hex ) - 1), hex )
+			VAR Result =
+				SUMX(
+					GENERATESERIES( 1, LEN( CleanHex ) ),
+					VAR Pos = [Value]
+					VAR c = MID( CleanHex, Pos, 1 )
+					VAR DigitValue = SWITCH( UPPER( c ), "A", 10, "B", 11, "C", 12, "D", 13, "E", 14, "F", 15, VALUE( c ) )
+					RETURN
+						DigitValue * POWER( 16, LEN( hex ) - Pos )
+				)
+		
+			RETURN Result
+	lineageTag: 5e030292-e826-43bb-b5dd-a10466e9425e
+
+	annotation DAXLIB_PackageId = DaxLib.SVG
+
+	annotation DAXLIB_PackageVersion = 0.1.2-beta
+
+/// RGB to Hex conversion
+/// red				INT64	The red value (0-255)
+/// green			INT64	The green value (0-255)
+/// blue			INT64	The blue value (0-255)
+/// alpha			DOUBLE	Optional: The alpha value (0-1)
+function 'DaxLib.SVG.Color.RGB.ToHex' =
+		(
+			red: INT64,
+			green: INT64,
+			blue: INT64,
+			alpha: DOUBLE
+		) =>
+		
+			"#" &
+			DaxLib.SVG.Colour.Int.ToHex( red, 2 ) &
+			DaxLib.SVG.Colour.Int.ToHex( green, 2 ) &
+			DaxLib.SVG.Colour.Int.ToHex( blue, 2 ) &
+			IF( NOT ISBLANK( alpha ), DaxLib.SVG.Colour.Int.ToHex( alpha * 255, 2 ) )
+	lineageTag: 8007dad4-fce6-48db-9356-58c47c1db203
+
+	annotation DAXLIB_PackageId = DaxLib.SVG
+
+	annotation DAXLIB_PackageVersion = 0.1.2-beta
+
+/// Interpolate between two Hex colors by a given percentage
+/// startHexColor	STRING	The starting Hex color (e.g., "#FF0000")
+/// endHexColor		STRING	The ending Hex color (e.g., "#0000FF")
+/// percentage		DOUBLE	The interpolation percentage (0.0 = startColor, 1.0 = endColor)
+function 'DaxLib.SVG.Color.Hex.Interpolate' =
+		(
+			startHexColor: STRING,
+			endHexColor: STRING,
+			percentage: DOUBLE
+		) =>
+		
+			// Clamp percentage between 0 and 1
+			VAR _ClampedPercentage = MIN( MAX( percentage, 0 ), 1 )
+		
+			// Clean Hex codes
+			VAR _StartHex = SUBSTITUTE( startHexColor, "#", "" )
+			VAR _EndHex = 	SUBSTITUTE( endHexColor, "#", "" )
+		
+			// Extract and convert RGB components using your existing Hex.ToInt function
+			VAR _StartR = 	DaxLib.SVG.Color.Hex.ToInt( MID( _StartHex, 1, 2 ) )
+			VAR _StartG = 	DaxLib.SVG.Color.Hex.ToInt( MID( _StartHex, 3, 2 ) )
+			VAR _StartB = 	DaxLib.SVG.Color.Hex.ToInt( MID( _StartHex, 5, 2 ) )
+		
+			VAR _EndR = 	DaxLib.SVG.Color.Hex.ToInt( MID( _EndHex, 1, 2 ) )
+			VAR _EndG = 	DaxLib.SVG.Color.Hex.ToInt( MID( _EndHex, 3, 2 ) )
+			VAR _EndB = 	DaxLib.SVG.Color.Hex.ToInt( MID( _EndHex, 5, 2 ) )
+		
+			// Interpolate RGB values
+			VAR _InterpolatedR = ROUND( _StartR + ( _EndR - _StartR ) * _ClampedPercentage, 0 )
+			VAR _InterpolatedG = ROUND( _StartG + ( _EndG - _StartG ) * _ClampedPercentage, 0 )
+			VAR _InterpolatedB = ROUND( _StartB + ( _EndB - _StartB ) * _ClampedPercentage, 0 )
+		
+			VAR result =
+				DaxLib.SVG.Color.RGB.ToHex(
+					_InterpolatedR,
+					_InterpolatedG,
+					_InterpolatedB,
+					BLANK()  // No alpha
+				)
+		
+			RETURN result
+	lineageTag: 9ed620f7-b5a7-4e81-89ca-54a49af95032
+
+	annotation DAXLIB_PackageId = DaxLib.SVG
+
+	annotation DAXLIB_PackageVersion = 0.1.2-beta
+

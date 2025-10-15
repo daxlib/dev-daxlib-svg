@@ -1,0 +1,36 @@
+table Theme
+	lineageTag: 8ec30657-817b-42cf-b107-3b247a56f0e7
+
+	column Theme
+		lineageTag: 9d25492f-d9cf-40ff-86fa-1dca2b7677c8
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Theme]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Theme = calculated
+		mode: import
+		source = ```
+				
+				DATATABLE(
+				    "Theme", STRING,
+				    {
+				        {"Power BI"},
+				        {"Modern Corporate"},
+				        {"Ocean Breeze"},
+				        {"Sunset Vibes"},
+				        {"Forest Green"},
+				        {"Purple Rain"},
+				        {"Monochrome"},
+				        {"Vibrant Tech"},
+				        {"Earth Tones"},
+				        {"Pastel Dreams"},
+				        {"Midnight Blue"}
+				    }
+				)	 	 	 	 	 	 	 	 	 
+				
+				```
+
+	annotation PBI_Id = df548466820443ed9ba22cedbb974012
+

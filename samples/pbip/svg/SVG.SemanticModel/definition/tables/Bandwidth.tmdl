@@ -1,0 +1,23 @@
+table Bandwidth
+	lineageTag: 7c3bcc6b-257a-4b7f-b500-2f5034466d1b
+
+	column Bandwidth
+		formatString: 0
+		lineageTag: fadeaf42-b37a-4094-9ab7-a0aaa5e9591e
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Bandwidth]
+
+		annotation SummarizationSetBy = User
+
+	partition Bandwidth = calculated
+		mode: import
+		source =
+				
+				SELECTCOLUMNS(
+				    GENERATESERIES( 0, 2000, 100 ),
+				    "Bandwidth", [Value]
+				)
+
+	annotation PBI_Id = 1580dd31b51541c2bcf586bfde724c7d
+

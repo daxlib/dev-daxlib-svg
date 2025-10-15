@@ -1,0 +1,32 @@
+model Model
+	culture: en-GB
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: en-GB
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+annotation __PBI_TimeIntelligenceEnabled = 0
+
+annotation PBI_ProTooling = ["TMDLView_Desktop","DaxQueryView_Desktop","DevMode"]
+
+annotation PBI_QueryOrder = []
+
+annotation DAXLIB_PackageId = DaxLib.SVG
+
+annotation DAXLIB_PackageVersion = 0.1.2-beta
+
+ref table _Measures
+ref table Theme
+ref table Variant
+ref table Orders
+ref table Customers
+ref table Dates
+ref table Inventory
+ref table Products
+ref table Stores
+ref table Bandwidth
+ref table Samples
+
+ref cultureInfo en-GB
+

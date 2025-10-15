@@ -1,0 +1,165 @@
+table Orders
+	lineageTag: af93d070-5967-4784-868b-81c47fe3b3fc
+
+	column OrderNumber
+		formatString: 0
+		lineageTag: 743fa8fa-7380-455a-b591-3c0ae283d73d
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: [OrderNumber]
+
+		annotation SummarizationSetBy = Automatic
+
+	column OrderLineNumber
+		formatString: 0
+		lineageTag: 3ba7012a-7cfd-4104-9b0a-e25bb5819336
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: [OrderLineNumber]
+
+		annotation SummarizationSetBy = Automatic
+
+	column CustomerKey
+		isHidden
+		formatString: 0
+		lineageTag: 338f5525-8680-41b5-acd7-e197ae4b4b78
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [CustomerKey]
+
+		annotation SummarizationSetBy = Automatic
+
+	column ProductKey
+		isHidden
+		formatString: 0
+		lineageTag: 72ff2620-5085-4498-8be3-b7c861c999ae
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [ProductKey]
+
+		annotation SummarizationSetBy = Automatic
+
+	column StoreKey
+		isHidden
+		formatString: 0
+		lineageTag: f0e878ab-6ffa-46d7-9e96-e50a861ef863
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [StoreKey]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Currency
+		lineageTag: 8f4fd7e9-988d-4ae8-a971-6c7df9edd8b7
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Currency]
+
+		annotation SummarizationSetBy = Automatic
+
+	column OrderDate
+		formatString: General Date
+		lineageTag: 39696bbe-94cb-4eff-9697-545355478d0e
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [OrderDate]
+
+		annotation SummarizationSetBy = Automatic
+
+	column RequestedDeliveryDate
+		formatString: General Date
+		lineageTag: d13421a4-b51c-40e4-8836-e141010bfb61
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [RequestedDeliveryDate]
+
+		annotation SummarizationSetBy = Automatic
+
+	column ApprovedDate
+		formatString: General Date
+		lineageTag: d1923efd-9d2f-4486-8026-e98152a2846a
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [ApprovedDate]
+
+		annotation SummarizationSetBy = Automatic
+
+	column FulfilledDate
+		formatString: General Date
+		lineageTag: a8a1f7cf-8c7e-40bb-bc40-21bcd49ed593
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [FulfilledDate]
+
+		annotation SummarizationSetBy = Automatic
+
+	column ShippedDate
+		formatString: General Date
+		lineageTag: ebe4a717-74b9-46d2-89ca-dfc130319f19
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [ShippedDate]
+
+		annotation SummarizationSetBy = Automatic
+
+	column DeliveredDate
+		formatString: General Date
+		lineageTag: 64406542-cbd1-44f4-8ec2-4d7451b338de
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [DeliveredDate]
+
+		annotation SummarizationSetBy = Automatic
+
+	column OrderStatus
+		lineageTag: 92ee53e2-2f7e-4a04-bd64-8532970dcc69
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [OrderStatus]
+
+		annotation SummarizationSetBy = Automatic
+
+	column DeliverySpeed
+		formatString: 0
+		lineageTag: 511b65df-2b3d-4815-9af5-847f7340f4cb
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: [DeliverySpeed]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Quantity
+		formatString: 0
+		lineageTag: 0c5e1f59-79e8-4173-ae67-d9cc318b7436
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: [Quantity]
+
+		annotation SummarizationSetBy = Automatic
+
+	column UnitPrice
+		lineageTag: 378b83df-1555-4e6f-af47-cce6d2dcc9ec
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: [UnitPrice]
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition Orders = calculated
+		mode: import
+		source =
+				
+				DataGoblins.SampleData.Orders(
+				    100,                   // Generate 100 orders
+				    DATE(2025, 08, 01),    // Start date
+				    DATE(2025, 10, 01),    // End date
+				    100,                   // 100 unique customers
+				    250,                   // 250 unique products
+				    5,                     // 5 store locations
+				    1337                   // Random seed
+				)
+
+	annotation PBI_Id = 0fa1598f1f52473e9dcd1377ac27b43c
+
