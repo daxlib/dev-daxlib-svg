@@ -1,0 +1,143 @@
+table Customers
+	lineageTag: 770e32f4-c335-4a7a-8129-aefb4d1a958b
+
+	column CustKey
+		lineageTag: 0326b85b-a4c9-4340-bd60-761189c00a77
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [CustKey]
+
+		annotation SummarizationSetBy = Automatic
+
+	column CustomerKey
+		lineageTag: 76bd9bad-b15f-4774-ac23-891a113a3077
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [CustomerKey]
+
+		annotation SummarizationSetBy = Automatic
+
+	column CustomerName
+		lineageTag: 0349aee5-a19c-48fe-b73d-ba022420f38c
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [CustomerName]
+
+		annotation SummarizationSetBy = Automatic
+
+	column CustomerType
+		lineageTag: 24179987-1bdc-48f6-ad0d-fe4b1aebd248
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [CustomerType]
+
+		annotation SummarizationSetBy = Automatic
+
+	column CustomerSegment
+		lineageTag: ad24c44b-524e-45b8-a2a0-af586b348b0a
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [CustomerSegment]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Industry
+		lineageTag: 343d6c6b-c4e4-445f-83fd-df9a2b4e6f48
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Industry]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Country
+		lineageTag: 0f08456f-928e-422f-bfc3-64947f72a660
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Country]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Region
+		lineageTag: 463e33f2-0984-4f60-a4de-ebc3f98cffdb
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Region]
+
+		annotation SummarizationSetBy = Automatic
+
+	column City
+		lineageTag: 7a697159-09d8-404c-a111-d5c7b972e9ef
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [City]
+
+		annotation SummarizationSetBy = Automatic
+
+	column LifetimeValue
+		lineageTag: 3d43588a-1f2f-4035-88ed-e059c631347e
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [LifetimeValue]
+
+		annotation SummarizationSetBy = Automatic
+
+	column CreditLimit
+		lineageTag: df872acc-e546-4efd-a5a1-5835f0ba6d30
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [CreditLimit]
+
+		annotation SummarizationSetBy = Automatic
+
+	column AccountOpenDate
+		lineageTag: 9d07d66f-14c2-4865-8980-300119c38e43
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [AccountOpenDate]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Status
+		lineageTag: d1c0e731-2520-4341-8fb4-79ee729874b6
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Status]
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Country Order' =
+			
+			VAR country = Customers[Country]
+			RETURN
+			SWITCH(
+			   country,
+			    "Australia", 1,
+			    "Canada", 2,
+			    "France", 3,
+			    "Germany", 4,
+			    "India", 5,
+			    "Japan", 6,
+			    "Mexico", 7,
+			    "UK", 8,
+			    "USA", 9
+			)
+		isHidden
+		formatString: 0
+		lineageTag: 9f7348c6-854c-4319-b548-2b141de5ddcd
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Customers = calculated
+		mode: import
+		source =
+				
+				DataGoblins.SampleData.Customer(
+				    'Orders'[CustomerKey], // Use customer keys from Orders table
+				    0,                     // No referential integrity violations
+				    FALSE,                 // No missing values
+				    1337                   // Random seed
+				)
+
+	annotation PBI_Id = 0011860a694744a5b214cbc903e9b0b7
+

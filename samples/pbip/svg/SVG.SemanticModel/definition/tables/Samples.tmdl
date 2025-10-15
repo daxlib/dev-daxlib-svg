@@ -1,0 +1,23 @@
+table Samples
+	lineageTag: dff5beb6-7beb-4f62-8185-2928e973169c
+
+	column Samples
+		formatString: 0
+		lineageTag: e49c9f95-a9ba-4d59-aa71-bbc56c180a24
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Samples]
+
+		annotation SummarizationSetBy = User
+
+	partition Samples = calculated
+		mode: import
+		source =
+				
+				SELECTCOLUMNS(
+				    GENERATESERIES( 0, 100, 10 ),
+				    "Samples", [Value]
+				)
+
+	annotation PBI_Id = 2453ecc35ec34ec1bfd57c85710e3958
+
