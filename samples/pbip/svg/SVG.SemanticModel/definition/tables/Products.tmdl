@@ -1,0 +1,136 @@
+table Products
+	lineageTag: 7fc59ef2-74f4-48dc-8596-cea15136ec42
+
+	column ProdKey
+		lineageTag: 78e790e4-73fb-4fef-8c0d-19c0f74cf0c5
+		summarizeBy: count
+		isNameInferred
+		sourceColumn: [ProdKey]
+
+		annotation SummarizationSetBy = Automatic
+
+	column ProductKey
+		lineageTag: 3644edbc-9084-4c70-9c60-02cecaf1367e
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [ProductKey]
+
+		annotation SummarizationSetBy = Automatic
+
+	column SKU
+		lineageTag: 67da962c-4a4c-48d6-b516-78ceb1479ca2
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [SKU]
+
+		annotation SummarizationSetBy = Automatic
+
+	column ProductName
+		lineageTag: 30bce0c8-83ff-4340-9e2f-7d204e1160df
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [ProductName]
+
+		annotation SummarizationSetBy = Automatic
+
+	column ProductCategory
+		lineageTag: f5f37f60-46ad-4257-94f1-9581fa02ae11
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [ProductCategory]
+
+		annotation SummarizationSetBy = Automatic
+
+	column ProductSubcategory
+		lineageTag: 02a4c3d7-40e3-460e-9a5e-8a138dab2663
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [ProductSubcategory]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Brand
+		lineageTag: da08d91d-b861-4ea9-ac29-b03a34519220
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Brand]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Color
+		lineageTag: 16d581a6-7449-43be-b8b6-48a2344522b2
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Color]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Size
+		lineageTag: 823dad87-a259-4d78-a8bf-68dced531329
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Size]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Weight
+		lineageTag: 5b81d912-a970-4385-86bd-1cd9e1bdb69b
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: [Weight]
+
+		annotation SummarizationSetBy = Automatic
+
+	column StandardCost
+		lineageTag: 5c5b4a18-54c2-405f-a60d-4ca2ed5bf22b
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: [StandardCost]
+
+		annotation SummarizationSetBy = Automatic
+
+	column ListPrice
+		lineageTag: 0480a74d-4cd2-4762-b33a-15d11ad11da8
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: [ListPrice]
+
+		annotation SummarizationSetBy = Automatic
+
+	column ProductStatus
+		lineageTag: a6357e57-1838-4265-8411-ee7b38fd2a6f
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [ProductStatus]
+
+		annotation SummarizationSetBy = Automatic
+
+	column LaunchDate
+		lineageTag: 077e6c65-7966-470b-8701-85393b85a232
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [LaunchDate]
+
+		annotation SummarizationSetBy = Automatic
+
+	column DiscontinuedDate
+		lineageTag: 86ae864d-c1ea-412b-bae2-de0b70692f17
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [DiscontinuedDate]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Products = calculated
+		mode: import
+		source =
+				
+				DataGoblins.SampleData.Product(
+				    'Orders'[ProductKey],  // Use product keys from Orders table
+				    0,                     // No referential integrity violations
+				    FALSE,                 // No missing values
+				    1337                   // Random seed
+				)
+
+	annotation PBI_Id = 2dc3d3d9dde648d5be3cd6639fb7cc6a
+
