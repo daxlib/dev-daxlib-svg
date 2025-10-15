@@ -7,7 +7,7 @@ DaxLib.SVG is a DAX User-Defined Functions (UDF) library designed to make creati
 
 ## Getting Started
 
-1. Download the library from [DaxLib](https://daxlib.org/package/DaxLib.SVG/)
+1. Download the library from [DAX Lib](https://daxlib.org/package/DaxLib.SVG/)
 2. Install using TMDL view
 3. Start using the functions in your measures
    
@@ -29,5 +29,3 @@ For detailed examples, check out our [example PBIP file](https://github.com/daxl
 | **Colors** | Themes and functions for colour manipulation |
 
 ---
-
-Full documentation is available at our [GitHub Pages site](https://daxlib.github.io/docs-daxlib-svg/).
