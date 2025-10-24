@@ -13,8 +13,6 @@ DaxLib.SVG is a DAX User-Defined Functions (UDF) library designed to make creati
    
 For detailed examples, check out our [example PBIP file](https://github.com/daxlib/dev-daxlib-svg/tree/main/samples/pbip/svg).
 
----
-
 ## Function Categories
 
 | Category | Description |
@@ -28,4 +26,6 @@ For detailed examples, check out our [example PBIP file](https://github.com/daxl
 | **Scales** | Mapping values between scales |
 | **Colors** | Themes and functions for colour manipulation |
 
----
+## Documentation
+
+See the [documentation](https://evaluationcontext.github.io/daxlib.svg/) for more details.

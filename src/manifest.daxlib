@@ -5,7 +5,7 @@
   "authors": "Kurt Buhler, Jake Duddy",
   "description": "A DAX User-Defined Functions (UDF) library designed to make creating SVG visuals in Power BI easier",
   "releaseNotes": "Added Documentation page and complete refactor of functions, presenting primatives as Elements and combination of primatives as Compounds",
-  "projectUrl": "https://github.com/daxlib/dev-daxlib-svg",
+  "projectUrl": "https://evaluationcontext.github.io/daxlib.svg",
   "repositoryUrl": "https://github.com/daxlib/dev-daxlib-svg",
   "tags": "DAX,UDF,FUNCTION,LIB,SVG",
   "icon": "/icon.png",
