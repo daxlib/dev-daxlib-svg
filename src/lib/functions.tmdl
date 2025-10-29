@@ -880,37 +880,10 @@ function 'DaxLib.SVG.Compound.Bar' =
 				ASC
 			)
 	
-		
-	
-		// Single Point Element
-		VAR _SinglePointElement =
-			DaxLib.SVG.Element.Circle(
-				DaxLib.SVG.Scale.Normalize( MAXX( _Data, [@AxisIndex] ), _XMin, _XMax, _X, _X + _Width ), // cx
-				DaxLib.SVG.Scale.Normalize( MAXX( _Data, [@Value] ), _YMin, _YMax, _Y + _Height, _Y ), // cy
-				2,           	// r
-				DaxLib.SVG.Attr.Shapes(
-					barColor, 	// fill
-					BLANK(),    // fillOpacity
-					BLANK(),    // fillRule
-					BLANK(),    // stroke
-					BLANK(),    // strokeWidth
-					BLANK(),    // strokeOpacity
-					BLANK()     // opacity
-				),
-				BLANK()         // transforms
-			)
-	
-		// Combined elements
-		VAR _CombinedElement = 
-			IF(
-				COUNTROWS( _Data ) = 1,
-				_SinglePointElement,
-				_Bars
-			)
 	
 		RETURN ///_CountBars
 			
-			IF( NOT ISEMPTY( _Data ), _CombinedElement )
+			IF( NOT ISEMPTY( _Data ), _Bars )
 
 	annotation DAXLIB_PackageId = DaxLib.SVG
 
