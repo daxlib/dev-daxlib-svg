@@ -838,6 +838,40 @@ table _Measures
 		lineageTag: 28f64d09-7940-451d-8b66-3305905f9484
 		dataCategory: ImageUrl
 
+	measure 'Compound.Bar' = ```
+			
+			VAR Compound = 
+			    DaxLib.SVG.Compound.Bar(
+			        0,                  // x
+			        0,                  // y
+			        100,                // width
+			        20,                 // height
+			        0.05,               // paddingX
+			        0.04,               // paddingY
+			        Dates[Date],        // xAxis
+			        [Total Cost],       // measureVal
+			        DaxLib.SVG.Colour.Theme(
+			            MAX( Theme[Theme] ),
+			            MIN( Variant[Variant] )
+			        )                   // lineColour
+			    )
+			RETURN
+			
+			    IF(
+			        NOT ISBLANK( Compound ),
+			        DaxLib.SVG.SVG(
+			            100,
+			            20,
+			            BLANK(),
+			            Compound,
+			            BLANK()
+			        )
+			    )
+			```
+		displayFolder: SVG\Compound
+		lineageTag: 642d48c6-9dbd-49c5-af50-0d203a518eb3
+		dataCategory: ImageUrl
+
 	column Value
 		isHidden
 		lineageTag: 69ad6815-829f-4dd6-aebd-683bbdf2da4b

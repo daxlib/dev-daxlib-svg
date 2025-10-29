@@ -1,7 +1,7 @@
 {
   "$schema": "https://raw.githubusercontent.com/daxlib/daxlib/refs/heads/main/schemas/manifest/1.0.0/manifest.1.0.0.schema.json",
   "id": "DaxLib.SVG",
-  "version": "0.2.0-beta",
+  "version": "0.2.1-beta",
   "authors": "Kurt Buhler, Jake Duddy",
   "description": "A DAX User-Defined Functions (UDF) library designed to make creating SVG visuals in Power BI easier",
   "releaseNotes": "Added Documentation page and complete refactor of functions, presenting primatives as Elements and combination of primatives as Compounds",

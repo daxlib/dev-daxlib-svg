@@ -1,12 +1,12 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.3.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.2.0/schema.json",
   "name": "6e0ffc4f1e436975ca61",
   "position": {
-    "x": 277.87479015430847,
-    "y": 222.29983212344675,
+    "x": 277.31649565903712,
+    "y": 222.7624309392265,
     "z": 2000,
-    "height": 459.67083930611022,
-    "width": 1289.5274160042313,
+    "height": 459.16337805840567,
+    "width": 1403.251775848461,
     "tabOrder": 1000
   },
   "visual": {
@@ -89,6 +89,20 @@
               },
               "queryRef": "_Measures.Compound.Area",
               "nativeQueryRef": "Compound.Area"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Compound.Bar"
+                }
+              },
+              "queryRef": "_Measures.Compound.Bar",
+              "nativeQueryRef": "Compound.Bar"
             },
             {
               "field": {
