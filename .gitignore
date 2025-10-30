@@ -482,3 +482,7 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
+
+# Power BI Desktop projects
+**/.pbi/localSettings.json
+**/.pbi/cache.abf
