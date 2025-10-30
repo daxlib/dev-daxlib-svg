@@ -8,7 +8,7 @@ model Model
 
 annotation __PBI_TimeIntelligenceEnabled = 0
 
-annotation PBI_ProTooling = ["TMDLView_Desktop","DaxQueryView_Desktop","DevMode"]
+annotation PBI_ProTooling = ["TMDLView_Desktop","DaxQueryView_Desktop","DevMode","TMDL-Extension"]
 
 annotation PBI_QueryOrder = []
 
