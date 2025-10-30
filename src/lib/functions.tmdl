@@ -22,9 +22,9 @@ function 'DaxLib.SVG.SVG' =
 			contents &
 			"</svg>"
 
-	annotation DAXLIB_PackageId = DaxLib.SVG
+	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
-	annotation DAXLIB_PackageVersion = 0.2.1-beta
+	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__
 
 /// Map a value from one value scale to another
 /// Used for scaling values to fit within SVG dimensions
@@ -44,9 +44,9 @@ function 'DaxLib.SVG.Scale.Normalize' =
 			
 			( ( inputValue - fromMin ) / ( fromMax - fromMin ) ) * ( toMax - toMin ) + toMin
 
-	annotation DAXLIB_PackageId = DaxLib.SVG
+	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
-	annotation DAXLIB_PackageVersion = 0.2.1-beta
+	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__
 
 /// Geneates a STRING of common shape attributes, that can be passed to DaxLib.SVG.Element.* or DaxLib.SVG.Def.* functions
 /// fill             STRING      Fill color or gradient reference
@@ -75,9 +75,9 @@ function 'DaxLib.SVG.Attr.Shapes' =
 			IF( NOT ISBLANK( strokeOpacity ), "stroke-opacity='" & strokeOpacity & "' ") &
 			IF( NOT ISBLANK( opacity ),       "opacity='" & opacity & "' ")
 
-	annotation DAXLIB_PackageId = DaxLib.SVG
+	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
-	annotation DAXLIB_PackageVersion = 0.2.1-beta
+	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__
 
 /// Text-specific attributes
 /// fontFamily      STRING      Font family for text
@@ -112,9 +112,9 @@ function 'DaxLib.SVG.Attr.Txt' =
 			IF( NOT ISBLANK( letterSpacing ),  "letter-spacing='" & letterSpacing & "' ") &
 			IF( NOT ISBLANK( wordSpacing ),    "word-spacing='" & wordSpacing & "' ")
 
-	annotation DAXLIB_PackageId = DaxLib.SVG
+	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
-	annotation DAXLIB_PackageVersion = 0.2.1-beta
+	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__
 
 /// Comprehensive stroke attributes function
 /// stroke             STRING    Stroke color (e.g., "#FF0000", "red")
@@ -167,9 +167,9 @@ function 'DaxLib.SVG.Attr.Stroke' =
 				_MarkerMid &
 				_MarkerEnd
 
-	annotation DAXLIB_PackageId = DaxLib.SVG
+	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
-	annotation DAXLIB_PackageVersion = 0.2.1-beta
+	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__
 
 /// Generate Transform string for SVG elements
 /// translate 	STRING	Translation coordinates (e.g., "10,20")
@@ -192,9 +192,9 @@ function 'DaxLib.SVG.Transforms' =
 			IF(NOT ISBLANK(skewX), "skewX(" & skewX & ") ") &
 			IF(NOT ISBLANK(skewY), "skewY(" & skewY & ") ") 
 
-	annotation DAXLIB_PackageId = DaxLib.SVG
+	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
-	annotation DAXLIB_PackageVersion = 0.2.1-beta
+	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__
 
 /// Create a <def> element from one or more DaxLib.SVG.Def.* Elements
 /// defs	STRING	Concatenated lists of def Elements to include in a def block
@@ -207,9 +207,9 @@ function 'DaxLib.SVG.Element.Defs' =
 			defs &  
 			"</defs>"
 
-	annotation DAXLIB_PackageId = DaxLib.SVG
+	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
-	annotation DAXLIB_PackageVersion = 0.2.1-beta
+	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__
 
 /// Create a gradient stop element
 /// offset		STRING	Stop position
@@ -227,9 +227,9 @@ function 'DaxLib.SVG.Def.GradientStop' =
 			IF( NOT ISBLANK( opacity ), " stop-opacity='" & opacity & "'" ) &
 			"/>"
 
-	annotation DAXLIB_PackageId = DaxLib.SVG
+	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
-	annotation DAXLIB_PackageVersion = 0.2.1-beta
+	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__
 
 /// Create a linear gradient definition
 /// defId		STRING	The unique identifier for the gradient
@@ -258,9 +258,9 @@ function 'DaxLib.SVG.Def.LinearGradient' =
 			stops &
 			"</linearGradient>"
 	
-	annotation DAXLIB_PackageId = DaxLib.SVG
+	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
-	annotation DAXLIB_PackageVersion = 0.2.1-beta
+	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__
 
 /// Create a radial gradient definition
 /// defId		STRING	The unique identifier for the gradient
@@ -295,9 +295,9 @@ function 'DaxLib.SVG.Def.RadialGradient' =
 			stops &
 			"</radialGradient>"
 	
-	annotation DAXLIB_PackageId = DaxLib.SVG
+	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
-	annotation DAXLIB_PackageVersion = 0.2.1-beta
+	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__
 
 /// Creates a clipping mask definition
 /// defId		STRING	The unique identifier for the clip path. (Example: "cut-top", "mask-circle")
@@ -312,9 +312,9 @@ function 'DaxLib.SVG.Def.ClipPath' =
 			contents &
 			"</clipPath>"
 
-	annotation DAXLIB_PackageId = DaxLib.SVG
+	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
-	annotation DAXLIB_PackageVersion = 0.2.1-beta
+	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__
 
 /// Create a reusable circle definition
 /// defId		STRING	The unique identifier for the circle
@@ -341,9 +341,9 @@ function 'DaxLib.SVG.Def.Circle' =
 			IF( NOT ISBLANK( transforms ), " transform='" & transforms & "'" ) &
 			"/>"
 
-	annotation DAXLIB_PackageId = DaxLib.SVG
+	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
-	annotation DAXLIB_PackageVersion = 0.2.1-beta
+	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__
 
 /// Create a reusable rectangle definition
 /// defId		STRING		The unique identifier for the rectangle
@@ -373,9 +373,9 @@ function 'DaxLib.SVG.Def.Rect' =
 			IF( NOT ISBLANK( transforms ), " transform='" & transforms & "'" ) &
 			"/>"	
 
-	annotation DAXLIB_PackageId = DaxLib.SVG
+	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
-	annotation DAXLIB_PackageVersion = 0.2.1-beta
+	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__
 
 /// Create a reusable line definition
 /// defId		STRING	The unique identifier for the line
@@ -405,9 +405,9 @@ function 'DaxLib.SVG.Def.Line' =
 			IF( NOT ISBLANK( transforms ), " transform='" & transforms & "'" ) &
 			"/>"
 				
-	annotation DAXLIB_PackageId = DaxLib.SVG
+	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
-	annotation DAXLIB_PackageVersion = 0.2.1-beta
+	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__
 
 /// Create a reusable path definition
 /// defId		STRING	The unique identifier for the path
@@ -428,9 +428,9 @@ function 'DaxLib.SVG.Def.Paths' =
 			IF( NOT ISBLANK( transforms ), " transform='" & transforms & "'" ) &
 			"/>"
 				
-	annotation DAXLIB_PackageId = DaxLib.SVG
+	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
-	annotation DAXLIB_PackageVersion = 0.2.1-beta
+	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__
 
 /// Reference a previously defined SVG element with optional positioning and styling
 /// This function is used to reuse elements that have been defined using DaxLib.SVG.Def.* functions
@@ -455,9 +455,9 @@ function 'DaxLib.SVG.Element.UseDef' =
 			IF( NOT ISBLANK( transforms ), " transform='" & transforms & "'" ) & 
 			"/>"
 
-	annotation DAXLIB_PackageId = DaxLib.SVG
+	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
-	annotation DAXLIB_PackageVersion = 0.2.1-beta
+	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__
 
 /// Generates SVG group element
 /// Transformations applied to the <g> element are performed on its child elements, and its attributes are inherited by its children. It can also group multiple elements to be referenced later with the <use> element.
@@ -476,9 +476,9 @@ function 'DaxLib.SVG.Element.Group' =
 			IF( NOT ISBLANK( opacity ), " opacity='" & opacity & "'" ) &
 			">" & contents & "</g>"
 
-	annotation DAXLIB_PackageId = DaxLib.SVG
+	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
-	annotation DAXLIB_PackageVersion = 0.2.1-beta
+	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__
 
 /// Generates a circle SVG element
 /// cx			STRING	The x position of the center
@@ -503,9 +503,9 @@ function 'DaxLib.SVG.Element.Circle' =
 			IF( NOT ISBLANK( transforms ), " transform='" & transforms & "'" ) & 
 			"/>"
 
-	annotation DAXLIB_PackageId = DaxLib.SVG
+	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
-	annotation DAXLIB_PackageVersion = 0.2.1-beta
+	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__
 
 /// Generates a rectangle SVG element
 /// x			STRING	The x position
@@ -539,9 +539,9 @@ function 'DaxLib.SVG.Element.Rect' =
 			IF( NOT ISBLANK( transforms ), " transform='" & transforms & "'" ) & 
 			"/>"
 
-	annotation DAXLIB_PackageId = DaxLib.SVG
+	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
-	annotation DAXLIB_PackageVersion = 0.2.1-beta
+	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__
 
 /// Generates SVG line element
 /// x1			STRING	Starting X position (left edge is 0)
@@ -569,9 +569,9 @@ function 'DaxLib.SVG.Element.Line' =
 			IF( NOT ISBLANK( transforms ), " transform='" & transforms & "'" ) & 
 			"/>"
 
-	annotation DAXLIB_PackageId = DaxLib.SVG
+	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
-	annotation DAXLIB_PackageVersion = 0.2.1-beta
+	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__
 
 /// Create a SVG path element	
 /// d			STRING	The path data string (e.g., "M10 10 L90 90")
@@ -589,9 +589,9 @@ function 'DaxLib.SVG.Element.Paths' =
 			IF( NOT ISBLANK( transforms ), " transform='" & transforms & "'" ) & 
 			"/>"
 
-	annotation DAXLIB_PackageId = DaxLib.SVG
+	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
-	annotation DAXLIB_PackageVersion = 0.2.1-beta
+	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__
 
 /// Generates an ellipse SVG element
 /// cx			STRING	The x position of the center
@@ -619,9 +619,9 @@ function 'DaxLib.SVG.Element.Ellipse' =
 			IF( NOT ISBLANK( transforms ), " transform='" & transforms & "'" ) & 
 			"/>"
 
-	annotation DAXLIB_PackageId = DaxLib.SVG
+	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
-	annotation DAXLIB_PackageVersion = 0.2.1-beta
+	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__
 
 /// Creates a polygon (closed shape)
 /// points		STRING	Space-separated x,y coordinate pairs (e.g., "0,10 20,30 40,15")
@@ -640,9 +640,9 @@ function 'DaxLib.SVG.Element.Polygon' =
 			IF( NOT ISBLANK( transforms ), " transform='" & transforms & "'" ) & 
 			"/>"
 
-	annotation DAXLIB_PackageId = DaxLib.SVG
+	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
-	annotation DAXLIB_PackageVersion = 0.2.1-beta
+	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__
 
 /// Creates a polyline (connected points)
 /// points		STRING	Space-separated x,y coordinate pairs (e.g., "0,10 20,30 40,15")
@@ -661,9 +661,9 @@ function 'DaxLib.SVG.Element.Polyline' =
 			IF( NOT ISBLANK( transforms ), " transform='" & transforms & "'" ) & 
 			"/>"
 
-	annotation DAXLIB_PackageId = DaxLib.SVG
+	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
-	annotation DAXLIB_PackageVersion = 0.2.1-beta
+	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__
 
 /// Creates a text SVG element
 /// x			STRING	The x position of the text
@@ -694,9 +694,9 @@ function 'DaxLib.SVG.Element.Txt' =
 			">" & txt & 
 			"</text>"
 
-	annotation DAXLIB_PackageId = DaxLib.SVG
+	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
-	annotation DAXLIB_PackageVersion = 0.2.1-beta
+	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__
 
 /// Create a pill SVG compound (rounded rectangle with text centered inside)
 /// x				INT64			The x position of compound
@@ -783,9 +783,9 @@ function 'DaxLib.SVG.Compound.Pill' =
 		
 			IF( NOT ISBLANK( txt ), _CombinedElements )
 
-	annotation DAXLIB_PackageId = DaxLib.SVG
+	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
-	annotation DAXLIB_PackageVersion = 0.2.1-beta
+	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__
 
 
 /// Creates a Bar compound SVG Visual for a numeric axis
@@ -885,9 +885,9 @@ function 'DaxLib.SVG.Compound.Bar' =
 			
 			IF( NOT ISEMPTY( _Data ), _Bars )
 
-	annotation DAXLIB_PackageId = DaxLib.SVG
+	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
-	annotation DAXLIB_PackageVersion = 0.2.1-beta
+	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__
 
 /// Creates a Line compound SVG Visual for a numeric axis
 /// x              	INT64           	The x position of the compound
@@ -1008,9 +1008,9 @@ function 'DaxLib.SVG.Compound.Line' =
 				
 				IF( NOT ISEMPTY( _Data ), _CombinedElement )
 
-	annotation DAXLIB_PackageId = DaxLib.SVG
+	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
-	annotation DAXLIB_PackageVersion = 0.2.1-beta
+	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__
 
 /// Creates an Area compound SVG Visual for a numeric x-axis
 /// x              	INT64           	The x position of the compound
@@ -1191,9 +1191,9 @@ function 'DaxLib.SVG.Compound.Area' =
 			
 				IF( NOT ISEMPTY( _Data ), _CombinedElements )
 
-	annotation DAXLIB_PackageId = DaxLib.SVG
+	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
-	annotation DAXLIB_PackageVersion = 0.2.1-beta
+	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__
 
 /// Creates a Jitter Plot compound SVG Visual showing values as points with x-position based on value and y-position jittered around center
 /// x              	INT64           	The x position of the compound
@@ -1288,9 +1288,9 @@ function 'DaxLib.SVG.Compound.Jitter' =
 				
 				IF( NOT ISEMPTY( _Data ), _CircleElements )
 
-	annotation DAXLIB_PackageId = DaxLib.SVG
+	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
-	annotation DAXLIB_PackageVersion = 0.2.1-beta
+	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__
 
 /// Creates a Box Plot compound SVG Visual showing statistical distribution
 /// x              	INT64           The x position of the compound
@@ -1532,9 +1532,9 @@ function 'DaxLib.SVG.Compound.Boxplot' =
 
 				IF( NOT ISEMPTY( _Data ), _CombinedElements )
 
-	annotation DAXLIB_PackageId = DaxLib.SVG
+	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
-	annotation DAXLIB_PackageVersion = 0.2.1-beta
+	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__
 
 /// Creates a Violin Plot compound SVG Visual showing distribution density using Kernel Density Estimation (KDE)
 /// x			  	INT64           The x position of the compound
@@ -1701,9 +1701,9 @@ function 'DaxLib.SVG.Compound.Violin' =
 
 				IF( NOT ISEMPTY( _Data ), _CombinedElements )
 
-	annotation DAXLIB_PackageId = DaxLib.SVG
+	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
-	annotation DAXLIB_PackageVersion = 0.2.1-beta
+	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__
 
 /// Creates a KDE-based Heatmap compound SVG Visual using Kernel Density Estimation for smooth color gradients
 /// x              	INT64           The x position of the compound
@@ -1841,9 +1841,9 @@ function 'DaxLib.SVG.Compound.Heatmap' =
 
 				IF( NOT ISEMPTY( _Data ), _CombinedElements )
 
-	annotation DAXLIB_PackageId = DaxLib.SVG
+	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
-	annotation DAXLIB_PackageVersion = 0.2.1-beta
+	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__
 
 /// Select theme color, wrapping around to the start if variant exceeds available options
 /// themeName	STRING	The theme name e.g. "Office", "Power BI"
@@ -2000,9 +2000,9 @@ function 'DaxLib.SVG.Color.Theme' =
 
 			RETURN SelectedColor
 
-	annotation DAXLIB_PackageId = DaxLib.SVG
+	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
-	annotation DAXLIB_PackageVersion = 0.2.1-beta
+	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__
 
 /// Returns a color for the specified performance level and theme
 /// themeName	STRING	The theme name: "Stoplight", "Colorblind", "Corporate", "Pastel", or "Grayscale"
@@ -2067,9 +2067,9 @@ function 'DaxLib.SVG.Color.PerformanceTheme' =
 			
 			RETURN SelectedColor
 
-	annotation DAXLIB_PackageId = DaxLib.SVG
+	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
-	annotation DAXLIB_PackageVersion = 0.2.1-beta
+	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__
 
 /// Int to Hex conversion
 /// number			INT64	The integer to convert
@@ -2096,9 +2096,9 @@ function 'DaxLib.SVG.Color.Int.ToHex' =
 		
 			RETURN Hex
 
-	annotation DAXLIB_PackageId = DaxLib.SVG
+	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
-	annotation DAXLIB_PackageVersion = 0.2.1-beta
+	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__
 
 /// Hex to Int conversion
 /// hex				STRING	The hex value to convert i.e "1A"
@@ -2120,9 +2120,9 @@ function 'DaxLib.SVG.Color.Hex.ToInt' =
 		
 			RETURN Result
 
-	annotation DAXLIB_PackageId = DaxLib.SVG
+	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
-	annotation DAXLIB_PackageVersion = 0.2.1-beta
+	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__
 
 /// RGB to Hex conversion
 /// red				INT64	The red value (0-255)
@@ -2143,9 +2143,9 @@ function 'DaxLib.SVG.Color.RGB.ToHex' =
 			DaxLib.SVG.Color.Int.ToHex( blue, 2 ) &
 			IF( NOT ISBLANK( alpha ), DaxLib.SVG.Color.Int.ToHex( alpha * 255, 2 ) )
 
-	annotation DAXLIB_PackageId = DaxLib.SVG
+	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
-	annotation DAXLIB_PackageVersion = 0.2.1-beta
+	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__
 
 /// Interpolate between two Hex colors by a given percentage
 /// startHexColor	STRING	The starting Hex color (e.g., "#FF0000")
@@ -2189,6 +2189,6 @@ function 'DaxLib.SVG.Color.Hex.Interpolate' =
 		
 			RETURN result
 
-	annotation DAXLIB_PackageId = DaxLib.SVG
+	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
-	annotation DAXLIB_PackageVersion = 0.2.1-beta
+	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__
