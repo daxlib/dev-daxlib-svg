@@ -95,6 +95,14 @@ jobs:
       - name: Copy package files
         run: cp -rv source-repo/src/* "upstream-repo/${{ steps.package.outputs.folder }}/"
 
+      # Replace the package ID and version placeholders in functions.tmdl
+      - name: Replace placeholders
+        working-directory: upstream-repo
+        run: |
+          FUNCTIONS_FILE="${{ steps.package.outputs.folder }}/lib/functions.tmdl"
+          sed -i "s/__PLACEHOLDER_PACKAGE_ID__/${{ steps.package.outputs.name }}/g" "${FUNCTIONS_FILE}"
+          sed -i "s/__PLACEHOLDER_PACKAGE_VERSION__/${{ steps.package.outputs.version }}/g" "${FUNCTIONS_FILE}"
+
       # Commit changes
       - name: Git commit changes
         working-directory: upstream-repo
