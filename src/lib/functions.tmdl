@@ -1814,10 +1814,10 @@ function 'DaxLib.SVG.Compound.Heatmap' =
 			// Create rectangle with gradient fill
 			VAR _HeatmapRect = 
 				DaxLib.SVG.Element.Rect(
-					0,                          // x
-					0,                          // y
-					width,                      // width
-					height,                     // height
+					_X,                         // x
+					_Y,                         // y
+					_Width,                     // width
+					_Height,                    // height
 					0,                          // rx
 					0,                          // ry
 					DaxLib.SVG.Attr.Shapes(
