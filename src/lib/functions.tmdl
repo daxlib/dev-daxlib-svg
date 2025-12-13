@@ -727,8 +727,8 @@ function 'DaxLib.SVG.Compound.Pill' =
 
 		VAR _Pill = 
 			DaxLib.SVG.Element.Rect(
-				1,                 	// x
-				1,                 	// y
+				_X,                	// x
+				_Y,                	// y
 				_Width * 0.98,      // width
 				_Height * 0.92,     // height
 				10,               	// rx
@@ -747,8 +747,8 @@ function 'DaxLib.SVG.Compound.Pill' =
 
 		VAR _TextElement = 
 			DaxLib.SVG.Element.Txt(
-				_Width * 0.50,      // x
-				_Height * 0.58,     // y
+				_X + (_Width * 0.50),      // x
+				_Y + (_Height * 0.58),     // y
 				txt,              	// txt
 				0,                	// dx
 				0,                	// dy
