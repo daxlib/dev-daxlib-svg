@@ -4,5 +4,27 @@
   "displayName": "SVG",
   "displayOption": "FitToPage",
   "height": 1080,
-  "width": 1920
+  "width": 1920,
+  "visualInteractions": [
+    {
+      "source": "802bf49e0998eb093ca3",
+      "target": "6e0ffc4f1e436975ca61",
+      "type": "NoFilter"
+    },
+    {
+      "source": "802bf49e0998eb093ca3",
+      "target": "4820f4ddbcebd2fd5440",
+      "type": "NoFilter"
+    },
+    {
+      "source": "12f8573fbd33b10fc3e8",
+      "target": "6e0ffc4f1e436975ca61",
+      "type": "NoFilter"
+    },
+    {
+      "source": "12f8573fbd33b10fc3e8",
+      "target": "4820f4ddbcebd2fd5440",
+      "type": "NoFilter"
+    }
+  ]
 }

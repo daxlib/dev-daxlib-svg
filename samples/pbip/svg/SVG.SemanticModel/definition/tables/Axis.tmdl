@@ -1,0 +1,23 @@
+table Axis
+	lineageTag: 29385c8b-397c-4898-9dee-425c0e94c1bd
+
+	column Axis
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: a4119565-86c0-408f-a5ec-eee20acb2392
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Axis]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Axis = calculated
+		mode: import
+		source =
+				
+				SELECTCOLUMNS(
+				    {true, false},
+				    "Axis", [Value]
+				)
+
+	annotation PBI_Id = fbee802e50b24d5691a9a17d9067807a
+

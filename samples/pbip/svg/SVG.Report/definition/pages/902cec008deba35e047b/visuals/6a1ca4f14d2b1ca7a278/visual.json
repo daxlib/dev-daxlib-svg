@@ -1,12 +1,12 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.3.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
   "name": "6a1ca4f14d2b1ca7a278",
   "position": {
-    "x": 19.780917265221959,
-    "y": 68.762236207676324,
+    "x": 49.947771667855413,
+    "y": 149.84331500356623,
     "z": 8001,
-    "height": 137.52447241535265,
-    "width": 258.09387288908647,
+    "height": 191.30938959574809,
+    "width": 792.567471182385,
     "tabOrder": 8001
   },
   "visual": {
@@ -38,27 +38,11 @@
                       "Entity": "_Measures"
                     }
                   },
-                  "Property": "Total Cost"
+                  "Property": "Total Cost 2"
                 }
               },
-              "queryRef": "_Measures.Total Cost",
-              "nativeQueryRef": "Total Cost Line",
-              "displayName": "Total Cost Line"
-            },
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "_Measures"
-                    }
-                  },
-                  "Property": "Total Cost"
-                }
-              },
-              "queryRef": "_Measures.Total Cost",
-              "nativeQueryRef": "Total Cost Line",
-              "displayName": "Total Cost Line"
+              "queryRef": "_Measures.Total Cost 2",
+              "nativeQueryRef": "Total Cost 2"
             }
           ]
         }
@@ -89,7 +73,7 @@
             "show": {
               "expr": {
                 "Literal": {
-                  "Value": "true"
+                  "Value": "false"
                 }
               }
             },
@@ -208,6 +192,111 @@
             "id": "default"
           }
         }
+      ],
+      "cardImage": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "imageType": {
+              "expr": {
+                "Literal": {
+                  "Value": "'imageData'"
+                }
+              }
+            },
+            "imageData": {
+              "expr": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Compound.Line"
+                }
+              }
+            },
+            "imageTransparency": {
+              "expr": {
+                "Literal": {
+                  "Value": "1D"
+                }
+              }
+            },
+            "imageDataFit": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Fit'"
+                }
+              }
+            }
+          },
+          "selector": {
+            "id": "default"
+          }
+        },
+        {
+          "properties": {
+            "imageType": {
+              "expr": {
+                "Literal": {
+                  "Value": "'imageUrl'"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "_Measures.Total Cost 2"
+          }
+        },
+        {
+          "properties": {
+            "imageUrl": {
+              "expr": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Compound.Bar"
+                }
+              }
+            }
+          },
+          "selector": {
+            "data": [
+              {
+                "dataViewWildcard": {
+                  "matchingOption": 0
+                }
+              }
+            ],
+            "metadata": "_Measures.Total Cost 2"
+          }
+        }
+      ],
+      "divider": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          },
+          "selector": {
+            "id": "default"
+          }
+        }
       ]
     },
     "visualContainerObjects": {
@@ -233,23 +322,5 @@
       ]
     },
     "drillFilterOtherVisuals": true
-  },
-  "filterConfig": {
-    "filters": [
-      {
-        "name": "e17f74eabd2471dbc0e5",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "_Measures"
-              }
-            },
-            "Property": "Total Cost"
-          }
-        },
-        "type": "Advanced"
-      }
-    ]
   }
 }

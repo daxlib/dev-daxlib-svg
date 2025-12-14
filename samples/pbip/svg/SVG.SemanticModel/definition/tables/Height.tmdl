@@ -1,0 +1,23 @@
+table Height
+	lineageTag: e647443b-d73c-49b1-9fe8-ffc3fbee3c95
+
+	column Height
+		formatString: 0
+		lineageTag: 148ffa22-f25a-4d94-902e-7dce78132ef6
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Height]
+
+		annotation SummarizationSetBy = User
+
+	partition Height = calculated
+		mode: import
+		source =
+				
+				SELECTCOLUMNS(
+				    GENERATESERIES( 10, 500, 10 ),
+				    "Height", [Value]
+				)
+
+	annotation PBI_Id = e961d8794a4e442dbd544afec390c8a6
+
