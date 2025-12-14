@@ -788,7 +788,7 @@ function 'DaxLib.SVG.Compound.Pill' =
 	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__
 
 
-/// Creates a Bar compound SVG Visual for a numeric axis
+/// Creates a Bar compound SVG Visual
 /// x              	INT64           	The x position of the compound
 /// y              	INT64           	The y position of the compound
 /// width          	INT64           	The width of the compound
