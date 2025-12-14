@@ -826,7 +826,7 @@ function 'DaxLib.SVG.Compound.Bar' =
 				ADDCOLUMNS(
 					FILTER(
 						VALUES( axisRef ),
-						NOT ISBLANK(measureRef)
+						NOT ISBLANK( measureRef )
 					),
 					"@AxisIndex", 	
 						IF(
@@ -850,38 +850,35 @@ function 'DaxLib.SVG.Compound.Bar' =
 				_CountBars
 				) 
 		
-			//Bars
-			VAR _Bars = 
-				CONCATENATEX(
-					_Data,
-					IF( 
-						NOT ISBLANK( [@Value] ), 
-						DaxLib.SVG.Element.Rect(
-							DaxLib.SVG.Scale.Normalize( [@AxisIndex], _XMin, _XMax, _X, _X + _Width ),
-							DaxLib.SVG.Scale.Normalize( [@Value], _YMin, _YMax, _Y + _Height, _Y ),
-							_BarWidth,
-							_Height - DaxLib.SVG.Scale.Normalize( [@Value], _YMin, _YMax, _Y + _Height, _Y ),
-							0,
-							0,
-							DaxLib.SVG.Attr.Shapes(
-								IF( NOT ISBLANK( barColor ), barColor, "#01B8AA" ),		// fill
-								BLANK(),	// fillOpacity
-								BLANK(),	// fillRule
-								BLANK(), // stroke
-								1,			// stroke
-								BLANK(),	// strokeOpacity
-								BLANK()		// opacity
-							),
-							BLANK()
-						)
-					),
-					" ",
-					[@AxisIndex],
-					ASC
-				)
-		
-		
-			RETURN ///_CountBars
+		//Bars
+		VAR _Bars = 
+			CONCATENATEX(
+				_Data,
+				IF( 
+					NOT ISBLANK( [@Value] ), 
+					DaxLib.SVG.Element.Rect(
+						DaxLib.SVG.Scale.Normalize( [@AxisIndex], _XMin, _XMax, _X, _X + _Width ),
+						DaxLib.SVG.Scale.Normalize( [@Value], _YMin, _YMax, _Y + _Height, _Y ),
+						_BarWidth,
+						(_Y + _Height) - DaxLib.SVG.Scale.Normalize( [@Value], _YMin, _YMax, _Y + _Height, _Y ),
+						0,
+						0,
+						DaxLib.SVG.Attr.Shapes(
+							IF( NOT ISBLANK( barColor ), barColor, "#01B8AA" ),		// fill
+							BLANK(),	// fillOpacity
+							BLANK(),	// fillRule
+							BLANK(), // stroke
+							1,			// stroke
+							BLANK(),	// strokeOpacity
+							BLANK()		// opacity
+						),
+						BLANK()
+					)
+				),
+				" ",
+				[@AxisIndex],
+				ASC
+			)			RETURN
 				
 				IF( NOT ISEMPTY( _Data ), _Bars )
 
