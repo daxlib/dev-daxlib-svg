@@ -878,7 +878,9 @@ function 'DaxLib.SVG.Compound.Bar' =
 				" ",
 				[@AxisIndex],
 				ASC
-			)			RETURN
+			)			
+            
+        RETURN
 				
 				IF( NOT ISEMPTY( _Data ), _Bars )
 
@@ -1639,40 +1641,42 @@ function 'DaxLib.SVG.Compound.Violin' =
 					"@CY", [@y]
 				)
 
-			// Create the violin shape as a single closed path
-			// Start at the center-left, go up the top curve, then down the bottom curve, and close
-			VAR _FirstPoint = MINX( _Points, [@X] )
-			VAR _LastPoint = MAXX( _Points, [@X] )
-			VAR _CenterY = _Y + (_Height * 0.5)
+		// Create the violin shape as a single closed path
+		// Start at the center-left, go up the top curve, then down the bottom curve, and close
+		VAR _FirstPoint = MINX( _Points, [@X] )
+		VAR _LastPoint = MAXX( _Points, [@X] )
+		VAR _CenterY = _Y + (_Height * 0.5)
 
-			// Top half curve (from left to right)
-			VAR _TopCurve = 
-				CONCATENATEX(
-					_WithControlPoints,
+		// Top half curve (from left to right)
+		VAR _TopCurve = 
+			CONCATENATEX(
+				_WithControlPoints,
+				IF(
+					[Value] = 0,
+					"M " & [@X] & " " & _CenterY,
+					"S " & [@CX] & " " & [@CY] & ", " & [@X] & " " & [@Y]
+				),
+				" ",
+				[Value],
+				ASC
+			)
+
+		// Bottom half curve (from right to left, mirrored)
+		VAR _BottomCurve = 
+			CONCATENATEX(
+				_WithControlPoints,
+				VAR _MirroredY = _CenterY + (_CenterY - [@Y])
+				VAR _MirroredCY = _CenterY + (_CenterY - [@CY])
+				RETURN
 					IF(
 						[Value] = 0,
-						"M " & [@X] & " " & _CenterY & " L " & [@X] & " " & [@Y],
-						"S " & [@CX] & " " & [@CY] & ", " & [@X] & " " & [@Y]
+						"",
+						"S " & [@CX] & " " & _MirroredCY & ", " & [@X] & " " & _MirroredY
 					),
-					" ",
-					[Value],
-					ASC
-				)
-
-			// Bottom half curve (from right to left, mirrored)
-			VAR _BottomCurve = 
-				CONCATENATEX(
-					_WithControlPoints,
-					VAR _MirroredY = _CenterY + (_CenterY - [@Y])
-					VAR _MirroredCY = _CenterY + (_CenterY - [@CY])
-					RETURN
-						"S " & [@CX] & " " & _MirroredCY & ", " & [@X] & " " & _MirroredY,
-					" ",
-					[Value],
-					DESC
-				)
-
-			// Create a single closed path for the violin shape
+				" ",
+				[Value],
+				DESC
+			)			// Create a single closed path for the violin shape
 			VAR _ViolinPath = 
 				_TopCurve & 
 				" " & _BottomCurve & 
