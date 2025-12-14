@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
   "name": "6a1ca4f14d2b1ca7a278",
   "position": {
-    "x": 49.947771667855413,
-    "y": 149.84331500356623,
+    "x": 49.573195485669437,
+    "y": 149.65492976805868,
     "z": 8001,
-    "height": 191.30938959574809,
-    "width": 792.567471182385,
+    "height": 191.7453787653252,
+    "width": 455.51219248152864,
     "tabOrder": 8001
   },
   "visual": {
@@ -29,20 +29,6 @@
               "queryRef": "_Measures.Total Cost",
               "nativeQueryRef": "Total Cost Line",
               "displayName": "Total Cost Line"
-            },
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "_Measures"
-                    }
-                  },
-                  "Property": "Total Cost 2"
-                }
-              },
-              "queryRef": "_Measures.Total Cost 2",
-              "nativeQueryRef": "Total Cost 2"
             }
           ]
         }
@@ -218,7 +204,7 @@
                       "Entity": "_Measures"
                     }
                   },
-                  "Property": "Compound.Line"
+                  "Property": "Compound.Area"
                 }
               }
             },
@@ -239,46 +225,6 @@
           },
           "selector": {
             "id": "default"
-          }
-        },
-        {
-          "properties": {
-            "imageType": {
-              "expr": {
-                "Literal": {
-                  "Value": "'imageUrl'"
-                }
-              }
-            }
-          },
-          "selector": {
-            "metadata": "_Measures.Total Cost 2"
-          }
-        },
-        {
-          "properties": {
-            "imageUrl": {
-              "expr": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "_Measures"
-                    }
-                  },
-                  "Property": "Compound.Bar"
-                }
-              }
-            }
-          },
-          "selector": {
-            "data": [
-              {
-                "dataViewWildcard": {
-                  "matchingOption": 0
-                }
-              }
-            ],
-            "metadata": "_Measures.Total Cost 2"
           }
         }
       ],
@@ -322,5 +268,23 @@
       ]
     },
     "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "a88539c2a1a928cce641",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "_Measures"
+              }
+            },
+            "Property": "Total Cost"
+          }
+        },
+        "type": "Advanced"
+      }
+    ]
   }
 }

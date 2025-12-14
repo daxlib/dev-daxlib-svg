@@ -30,6 +30,8 @@ ref table Samples
 ref table Width
 ref table Height
 ref table Axis
+ref table x
+ref table y
 
 ref cultureInfo en-GB
 

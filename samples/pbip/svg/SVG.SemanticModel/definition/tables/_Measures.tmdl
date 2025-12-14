@@ -5,8 +5,8 @@ table _Measures
 			
 			VAR Compound = 
 			    DaxLib.SVG.Compound.Pill(
-			        0,                  // x
-			        0,                  // y
+			        SELECTEDVALUE( x[x], 0 ), // x
+			        SELECTEDVALUE( y[y], 0 ), // y
 			        SELECTEDVALUE( Width[Width], 100 ), // width
 			        SELECTEDVALUE( Height[Height], 20), // height
 			        0.05,               // paddingX
@@ -505,8 +505,8 @@ table _Measures
 			
 			VAR Compound = 
 			    DaxLib.SVG.Compound.Line(
-			        0,                  // x
-			        0,                  // y
+			        SELECTEDVALUE( x[x], 0 ), // x
+			        SELECTEDVALUE( y[y], 0 ), // y
 			        SELECTEDVALUE( Width[Width], 100 ), // width
 			        SELECTEDVALUE( Height[Height], 20), // height
 			        0.05,               // paddingX
@@ -548,8 +548,8 @@ table _Measures
 			
 			VAR Compound = 
 			    DaxLib.SVG.Compound.Area(
-			        0,              // x
-			        0,              // y
+			        SELECTEDVALUE( x[x], 0 ), // x
+			        SELECTEDVALUE( y[y], 0 ), // y
 			        SELECTEDVALUE( Width[Width], 100 ), // width
 			        SELECTEDVALUE( Height[Height], 20), // height
 			        0.05,           // paddingX
@@ -587,8 +587,8 @@ table _Measures
 			
 			VAR Compound = 
 			    DaxLib.SVG.Compound.Boxplot(
-			        0,                  // x
-			        0,                  // y
+			        SELECTEDVALUE( x[x], 0 ), // x
+			        SELECTEDVALUE( y[y], 0 ), // y
 			        SELECTEDVALUE( Width[Width], 100 ), // width
 			        SELECTEDVALUE( Height[Height], 20), // height
 			        0.05,               // paddingX
@@ -626,8 +626,8 @@ table _Measures
 			
 			VAR Compound =
 			    DaxLib.SVG.Compound.Violin(
-			        0,                  // x
-			        0,                  // y
+			        SELECTEDVALUE( x[x], 0 ), // x
+			        SELECTEDVALUE( y[y], 0 ), // y
 			        SELECTEDVALUE( Width[Width], 100 ), // width
 			        SELECTEDVALUE( Height[Height], 20), // height
 			        0.05,               // paddingX
@@ -662,8 +662,8 @@ table _Measures
 			
 			VAR Compound =
 			    DaxLib.SVG.Compound.Jitter(
-			        0,                  // x
-			        0,                  // y
+			        SELECTEDVALUE( x[x], 0 ), // x
+			        SELECTEDVALUE( y[y], 0 ), // y
 			        SELECTEDVALUE( Width[Width], 100 ), // width
 			        SELECTEDVALUE( Height[Height], 20), // height
 			        0.05,               // paddingX
@@ -696,8 +696,8 @@ table _Measures
 			
 			VAR Compound = 
 			    DaxLib.SVG.Compound.Heatmap(
-			        0,                  // x
-			        0,                  // y
+			        SELECTEDVALUE( x[x], 0 ), // x
+			        SELECTEDVALUE( y[y], 0 ), // y
 			        SELECTEDVALUE( Width[Width], 100 ), // width
 			        SELECTEDVALUE( Height[Height], 20), // height
 			        0.05,               // paddingX
@@ -842,8 +842,8 @@ table _Measures
 			
 			VAR Compound = 
 			    DaxLib.SVG.Compound.Bar(
-			        0,                  // x
-			        0,                  // y
+			        SELECTEDVALUE( x[x], 0 ), // x
+			        SELECTEDVALUE( y[y], 0 ), // y
 			        SELECTEDVALUE( Width[Width], 100 ), // width
 			        SELECTEDVALUE( Height[Height], 20), // height
 			        0.05,               // paddingX
@@ -871,12 +871,6 @@ table _Measures
 		displayFolder: SVG\Compound
 		lineageTag: 642d48c6-9dbd-49c5-af50-0d203a518eb3
 		dataCategory: ImageUrl
-
-	measure 'Total Cost 2' = [Total Cost]
-		displayFolder: Sum
-		lineageTag: e4faeef3-40dd-4430-bc1c-edc79c12ffcb
-
-		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
 	column Value
 		isHidden

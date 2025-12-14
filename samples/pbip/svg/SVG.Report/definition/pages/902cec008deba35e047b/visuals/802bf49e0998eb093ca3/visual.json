@@ -2,8 +2,8 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
   "name": "802bf49e0998eb093ca3",
   "position": {
-    "x": 179.05804937533074,
-    "y": 81.0473276119918,
+    "x": 178.23488938568764,
+    "y": 80.180362166260977,
     "z": 8006,
     "height": 68.795987391574442,
     "width": 125.34063456273151,
@@ -88,7 +88,7 @@
                           [
                             {
                               "Literal": {
-                                "Value": "40L"
+                                "Value": "100L"
                               }
                             }
                           ]

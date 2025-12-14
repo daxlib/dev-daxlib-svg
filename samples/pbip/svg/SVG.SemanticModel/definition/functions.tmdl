@@ -2346,7 +2346,7 @@ function 'DaxLib.SVG.Compound.Bar' =
 							DaxLib.SVG.Scale.Normalize( [@AxisIndex], _XMin, _XMax, _X, _X + _Width ),
 							DaxLib.SVG.Scale.Normalize( [@Value], _YMin, _YMax, _Y + _Height, _Y ),
 							_BarWidth,
-							_Height - DaxLib.SVG.Scale.Normalize( [@Value], _YMin, _YMax, _Y + _Height, _Y ),
+							(_Y + _Height) - DaxLib.SVG.Scale.Normalize( [@Value], _YMin, _YMax, _Y + _Height, _Y ),
 							0,
 							0,
 							DaxLib.SVG.Attr.Shapes(
@@ -2366,15 +2366,10 @@ function 'DaxLib.SVG.Compound.Bar' =
 					ASC
 				)
 		
-		
-			RETURN ///_CountBars
+			RETURN
 		
 				IF( NOT ISEMPTY( _Data ), _Bars )
-	lineageTag: c6aaaefb-1e74-4f8a-a950-e19dbb70dd7a
-
-	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
-
-	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__
+	lineageTag: 6ad93689-e71b-46da-8e4f-ea9aa49e02d1
 
 /// Creates a Line compound SVG Visual for a numeric axis
 /// x              	INT64           	The x position of the compound
@@ -3027,18 +3022,6 @@ function 'DaxLib.SVG.Compound.Boxplot' =
 
 	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__
 
-/// Creates a Violin Plot compound SVG Visual showing distribution density using Kernel Density Estimation (KDE)
-/// x			  	INT64           The x position of the compound
-/// y			  	INT64           The y position of the compound
-/// width          	INT64           The width of the compound
-/// height         	INT64           The height of the compound
-/// paddingX		DOUBLE			The horizontal padding percentage (0.0-1.0, e.g., 0.1 = 10% padding)
-/// paddingY		DOUBLE			The vertical padding percentage (0.0-1.0, e.g., 0.1 = 10% padding)
-/// axisRef        	ANYREF EXPR     The column that the measure will be evaluated against
-/// measureRef     	NUMERIC EXPR    The measure to evaluate
-/// samples        	INT64           Number of density calculation points
-/// bandwidth      	NUMERIC         Kernel bandwidth for smoothing
-/// color      		STRING          Fill color for the violin shape
 function 'DaxLib.SVG.Compound.Violin' =
 		(
 			x: INT64,
@@ -3133,40 +3116,42 @@ function 'DaxLib.SVG.Compound.Violin' =
 					"@CY", [@y]
 				)
 		
-			// Create the violin shape as a single closed path
-			// Start at the center-left, go up the top curve, then down the bottom curve, and close
-			VAR _FirstPoint = MINX( _Points, [@X] )
-			VAR _LastPoint = MAXX( _Points, [@X] )
-			VAR _CenterY = _Y + (_Height * 0.5)
+		// Create the violin shape as a single closed path
+		// Start at the center-left, go up the top curve, then down the bottom curve, and close
+		VAR _FirstPoint = MINX( _Points, [@X] )
+		VAR _LastPoint = MAXX( _Points, [@X] )
+		VAR _CenterY = _Y + (_Height * 0.5)
 		
-			// Top half curve (from left to right)
-			VAR _TopCurve =
-				CONCATENATEX(
-					_WithControlPoints,
+		// Top half curve (from left to right)
+		VAR _TopCurve =
+			CONCATENATEX(
+				_WithControlPoints,
+				IF(
+					[Value] = 0,
+					"M " & [@X] & " " & _CenterY,
+					"S " & [@CX] & " " & [@CY] & ", " & [@X] & " " & [@Y]
+				),
+				" ",
+				[Value],
+				ASC
+			)
+		
+		// Bottom half curve (from right to left, mirrored)
+		VAR _BottomCurve =
+			CONCATENATEX(
+				_WithControlPoints,
+				VAR _MirroredY = _CenterY + (_CenterY - [@Y])
+				VAR _MirroredCY = _CenterY + (_CenterY - [@CY])
+				RETURN
 					IF(
 						[Value] = 0,
-						"M " & [@X] & " " & _CenterY & " L " & [@X] & " " & [@Y],
-						"S " & [@CX] & " " & [@CY] & ", " & [@X] & " " & [@Y]
+						"",
+						"S " & [@CX] & " " & _MirroredCY & ", " & [@X] & " " & _MirroredY
 					),
-					" ",
-					[Value],
-					ASC
-				)
-		
-			// Bottom half curve (from right to left, mirrored)
-			VAR _BottomCurve =
-				CONCATENATEX(
-					_WithControlPoints,
-					VAR _MirroredY = _CenterY + (_CenterY - [@Y])
-					VAR _MirroredCY = _CenterY + (_CenterY - [@CY])
-					RETURN
-						"S " & [@CX] & " " & _MirroredCY & ", " & [@X] & " " & _MirroredY,
-					" ",
-					[Value],
-					DESC
-				)
-		
-			// Create a single closed path for the violin shape
+				" ",
+				[Value],
+				DESC
+			)			// Create a single closed path for the violin shape
 			VAR _ViolinPath =
 				_TopCurve &
 				" " & _BottomCurve &
@@ -3191,11 +3176,7 @@ function 'DaxLib.SVG.Compound.Violin' =
 			RETURN
 		
 				IF( NOT ISEMPTY( _Data ), _CombinedElements )
-	lineageTag: 289c348a-1129-4701-9ddb-257ffb12825c
-
-	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
-
-	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__
+	lineageTag: f8c32201-8991-4b02-8a21-053b1e399eb7
 
 /// Creates a KDE-based Heatmap compound SVG Visual using Kernel Density Estimation for smooth color gradients
 /// x              	INT64           The x position of the compound

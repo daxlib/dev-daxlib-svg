@@ -1,13 +1,13 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
-  "name": "12f8573fbd33b10fc3e8",
+  "name": "f9104e74e6734b207a67",
   "position": {
-    "x": 49.124611678212645,
-    "y": 80.180362166260977,
-    "z": 8005,
-    "height": 68.795987391574442,
-    "width": 125.34063456273151,
-    "tabOrder": 8005
+    "x": 426.62871888816829,
+    "y": 80.196140541576028,
+    "z": 8008,
+    "height": 69.215405017727136,
+    "width": 125.33600368074914,
+    "tabOrder": 8008
   },
   "visual": {
     "visualType": "slicer",
@@ -20,14 +20,14 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Width"
+                      "Entity": "y"
                     }
                   },
-                  "Property": "Width"
+                  "Property": "y"
                 }
               },
-              "queryRef": "Width.Width",
-              "nativeQueryRef": "Width",
+              "queryRef": "y.y",
+              "nativeQueryRef": "y",
               "active": true
             }
           ]
@@ -63,8 +63,8 @@
                 "Version": 2,
                 "From": [
                   {
-                    "Name": "w",
-                    "Entity": "Width",
+                    "Name": "y",
+                    "Entity": "y",
                     "Type": 0
                   }
                 ],
@@ -77,10 +77,10 @@
                             "Column": {
                               "Expression": {
                                 "SourceRef": {
-                                  "Source": "w"
+                                  "Source": "y"
                                 }
                               },
-                              "Property": "Width"
+                              "Property": "y"
                             }
                           }
                         ],
@@ -88,7 +88,7 @@
                           [
                             {
                               "Literal": {
-                                "Value": "500L"
+                                "Value": "0L"
                               }
                             }
                           ]
