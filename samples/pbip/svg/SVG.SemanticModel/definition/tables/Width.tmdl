@@ -1,0 +1,23 @@
+table Width
+	lineageTag: 145efe04-7883-4f7f-81ef-557b98bc8c82
+
+	column Width
+		formatString: 0
+		lineageTag: 595f5b9f-72ae-4146-a552-09997eb01436
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Width]
+
+		annotation SummarizationSetBy = User
+
+	partition Width = calculated
+		mode: import
+		source =
+				
+				SELECTCOLUMNS(
+				    GENERATESERIES( 50, 1000, 50 ),
+				    "Width", [Value]
+				)
+
+	annotation PBI_Id = 3f0c308f58ee41febaf5219f878230ab
+

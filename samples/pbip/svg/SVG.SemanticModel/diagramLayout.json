@@ -4,7 +4,7 @@
     {
       "ordinal": 0,
       "scrollPosition": {
-        "x": 4.3750982619594652,
+        "x": 19.795250149831087,
         "y": 0
       },
       "nodes": [
@@ -136,10 +136,80 @@
         },
         {
           "location": {
-            "x": 1357.8923206283366,
-            "y": 182.36200119864867
+            "x": 1069.8714309482941,
+            "y": 247.68632669309122
           },
           "nodeIndex": "Bandwidth",
+          "nodeLineageTag": "7c3bcc6b-257a-4b7f-b500-2f5034466d1b",
+          "size": {
+            "height": 72,
+            "width": 234
+          },
+          "zIndex": 0,
+          "expandedHeight": 200
+        },
+        {
+          "location": {
+            "x": 1064.8607787607607,
+            "y": 327.85708979990721
+          },
+          "nodeIndex": "Samples",
+          "nodeLineageTag": "dff5beb6-7beb-4f62-8185-2928e973169c",
+          "size": {
+            "height": 72,
+            "width": 234
+          },
+          "zIndex": 0,
+          "expandedHeight": 200
+        },
+        {
+          "location": {
+            "x": 1064.7989391106844,
+            "y": 406.04832789174
+          },
+          "nodeIndex": "Width",
+          "nodeLineageTag": "145efe04-7883-4f7f-81ef-557b98bc8c82",
+          "size": {
+            "height": 72,
+            "width": 234
+          },
+          "zIndex": 0,
+          "expandedHeight": 200
+        },
+        {
+          "location": {
+            "x": 1068.6961494905743,
+            "y": 490.17814102852208
+          },
+          "nodeIndex": "Height",
+          "nodeLineageTag": "e647443b-d73c-49b1-9fe8-ffc3fbee3c95",
+          "size": {
+            "height": 72,
+            "width": 234
+          },
+          "zIndex": 0,
+          "expandedHeight": 200
+        },
+        {
+          "location": {
+            "x": 1066.6547395177831,
+            "y": 572.328429150321
+          },
+          "nodeIndex": "Axis",
+          "nodeLineageTag": "29385c8b-397c-4898-9dee-425c0e94c1bd",
+          "size": {
+            "height": 72,
+            "width": 234
+          },
+          "zIndex": 0,
+          "expandedHeight": 200
+        },
+        {
+          "location": {
+            "x": 1357.8923206283366,
+            "y": 222.16421457516049
+          },
+          "nodeIndex": "x",
           "size": {
             "height": 200,
             "width": 234
@@ -149,9 +219,9 @@
         {
           "location": {
             "x": 1641.8923206283366,
-            "y": 182.36200119864867
+            "y": 222.16421457516049
           },
-          "nodeIndex": "Samples",
+          "nodeIndex": "y",
           "size": {
             "height": 200,
             "width": 234
