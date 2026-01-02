@@ -1712,74 +1712,60 @@ function 'DaxLib.SVG.Compound.Heatmap' =
 		
 			// Apply padding to dimensions
 			VAR _X = 			x + ( width * ( COALESCE( paddingX, 0 ) / 2) )
-            VAR _Y = 			y + ( height * ( COALESCE( paddingY, 0 ) / 2) )
-            VAR _Width = 		width * ( 1 - COALESCE( paddingX, 0 ) )
-            VAR _Height = 		height * ( 1 - COALESCE( paddingY, 0 ) )
-
-			// Check if Axis is numeric
-			VAR axisSample = 	MAX( axisRef )
-			VAR axisIsNumeric = ISNUMERIC( axisSample ) || ISDATETIME( axisSample )
+			VAR _Y = 			y + ( height * ( COALESCE( paddingY, 0 ) / 2))
+			VAR _Width = 		width * ( 1 - COALESCE( paddingX, 0 ) )
+			VAR _Height = 		height * ( 1 - COALESCE( paddingY, 0 ) )
 			
 			// For totals
 			VAR _Data = 
-				ADDCOLUMNS(
+				SELECTCOLUMNS(
 					FILTER(
 						VALUES( axisRef ),
 						NOT ISBLANK( measureRef )
 					),
-					"@AxisIndex", 	
-						IF(
-							axisIsNumeric,
-							axisRef,
-							RANK( DENSE, CALCULATETABLE( VALUES( axisRef ), ALLSELECTED() ) )
-						),
 					"@Value", measureRef
 				)
-			
+	
 			VAR _NumValues = 		COUNTROWS( _Data )
+            VAR _InvNumValues =     1 / _NumValues
 			VAR _Min = 				MINX( _Data, [@Value] )
 			VAR _Max = 				MAXX( _Data, [@Value] )
 			VAR _Range = 			_Max - _Min
 			VAR _RangePerSample = 	_Range / samples
 
 			// Calculate Kernel Density Estimation using Normal distribution
+            VAR _KDEInput =
+                ADDCOLUMNS(
+                    GENERATESERIES( 0, samples + 1, 1 ),
+                    "@InputX", _Min + _RangePerSample * [Value]
+                )
+
 			VAR _KDE = 
 				ADDCOLUMNS(
-					GENERATESERIES( 0, samples, 1 ),
-					"@InputX", _Min + _RangePerSample * [Value],
-					"@KDE", 
-						( 1 / _NumValues ) * 
-						SUMX(
-							_Data, 
-							NORM.DIST( 
-								_Min + _RangePerSample * [Value], 
-								[@Value], 
-								bandwidth, 
-								FALSE() 
-							) 
-						)
-				)
+                    _KDEInput,
+                    "@KDE", _InvNumValues * SUMX( _Data, NORM.DIST( [@InputX], [@Value], bandwidth, FALSE ) )
+                )
 
 			VAR _MaxKDE = 		MAXX( _KDE, [@KDE] )
 
 			// Create gradient stops from KDE points
 			VAR _GradientStops = 
-				CONCATENATEX(
-					_KDE,
-					VAR _Position = DaxLib.SVG.Scale.Normalize( [@InputX], _Min, _Max, 0, 100 )
-					VAR _Intensity = IF( _MaxKDE > 0, [@KDE] / _MaxKDE, 0 )
-					VAR _StopColor = 
-						DaxLib.SVG.Color.Hex.Interpolate(
-							"#FFFFFF",
-							color,
-							_Intensity
-						)
-					RETURN
-						"<stop offset='" & _Position & "%' stop-color='" & _StopColor & "' />",
-					"",
-					[Value],
-					ASC
-				)
+                CONCATENATEX(
+                    _KDE,
+                    VAR _Position = DaxLib.SVG.Scale.Normalize( [@InputX], _Min, _Max, 0, 100 )
+                    VAR _Intensity = IF( _MaxKDE > 0, [@KDE] / _MaxKDE, 0 )
+                    VAR _StopColor = 
+                        DaxLib.SVG.Color.Hex.Interpolate(
+                            "#FFFFFF",
+                            color,
+                            _Intensity
+                        )
+                    RETURN
+                        "<stop offset='" & _Position & "%' stop-color='" & _StopColor & "' />",
+                    "",
+                    [Value],
+                    ASC
+                )
 
 			// Create linear gradient definition
 			VAR _GradientDef = 
