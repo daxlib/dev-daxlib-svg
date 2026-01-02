@@ -1,13 +1,13 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
-  "name": "9d6f6de299ab905004d4",
+  "name": "12f8573fbd33b10fc3e8",
   "position": {
-    "x": 1195.1661058176983,
-    "y": 350.80330707010853,
-    "z": 8002,
-    "height": 69.235753525425309,
-    "width": 125.00899942090682,
-    "tabOrder": 8002
+    "x": 49.124611678212645,
+    "y": 80.180362166260977,
+    "z": 8005,
+    "height": 68.795987391574442,
+    "width": 125.34063456273151,
+    "tabOrder": 8005
   },
   "visual": {
     "visualType": "slicer",
@@ -20,14 +20,14 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Bandwidth"
+                      "Entity": "Width"
                     }
                   },
-                  "Property": "Bandwidth"
+                  "Property": "Width"
                 }
               },
-              "queryRef": "Bandwidth.Bandwidth",
-              "nativeQueryRef": "Bandwidth",
+              "queryRef": "Width.Width",
+              "nativeQueryRef": "Width",
               "active": true
             }
           ]
@@ -63,8 +63,8 @@
                 "Version": 2,
                 "From": [
                   {
-                    "Name": "b",
-                    "Entity": "Bandwidth",
+                    "Name": "w",
+                    "Entity": "Width",
                     "Type": 0
                   }
                 ],
@@ -77,10 +77,10 @@
                             "Column": {
                               "Expression": {
                                 "SourceRef": {
-                                  "Source": "b"
+                                  "Source": "w"
                                 }
                               },
-                              "Property": "Bandwidth"
+                              "Property": "Width"
                             }
                           }
                         ],
@@ -88,7 +88,7 @@
                           [
                             {
                               "Literal": {
-                                "Value": "400L"
+                                "Value": "500L"
                               }
                             }
                           ]

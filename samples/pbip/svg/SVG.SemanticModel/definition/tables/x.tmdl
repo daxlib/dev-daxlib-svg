@@ -1,0 +1,23 @@
+table x
+	lineageTag: 099efce1-c09c-4a4c-b0d2-93be61cec33c
+
+	column x
+		formatString: 0
+		lineageTag: 1f34311d-f344-428c-922f-35ad5671244a
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [x]
+
+		annotation SummarizationSetBy = User
+
+	partition x = calculated
+		mode: import
+		source =
+				
+				SELECTCOLUMNS(
+				    GENERATESERIES( -100, 100, 10 ),
+				    "x", [Value]
+				)
+
+	annotation PBI_Id = 48b1f88c36e14ec38c481b793a69f9b6
+

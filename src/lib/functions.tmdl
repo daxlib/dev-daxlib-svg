@@ -727,8 +727,8 @@ function 'DaxLib.SVG.Compound.Pill' =
 
 		VAR _Pill = 
 			DaxLib.SVG.Element.Rect(
-				1,                 	// x
-				1,                 	// y
+				_X,                	// x
+				_Y,                	// y
 				_Width * 0.98,      // width
 				_Height * 0.92,     // height
 				10,               	// rx
@@ -747,8 +747,8 @@ function 'DaxLib.SVG.Compound.Pill' =
 
 		VAR _TextElement = 
 			DaxLib.SVG.Element.Txt(
-				_Width * 0.50,      // x
-				_Height * 0.58,     // y
+				_X + (_Width * 0.50),      // x
+				_Y + (_Height * 0.58),     // y
 				txt,              	// txt
 				0,                	// dx
 				0,                	// dy
@@ -788,7 +788,7 @@ function 'DaxLib.SVG.Compound.Pill' =
 	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__
 
 
-/// Creates a Bar compound SVG Visual for a numeric axis
+/// Creates a Bar compound SVG Visual
 /// x              	INT64           	The x position of the compound
 /// y              	INT64           	The y position of the compound
 /// width          	INT64           	The width of the compound
@@ -826,7 +826,7 @@ function 'DaxLib.SVG.Compound.Bar' =
 				ADDCOLUMNS(
 					FILTER(
 						VALUES( axisRef ),
-						NOT ISBLANK(measureRef)
+						NOT ISBLANK( measureRef )
 					),
 					"@AxisIndex", 	
 						IF(
@@ -850,38 +850,37 @@ function 'DaxLib.SVG.Compound.Bar' =
 				_CountBars
 				) 
 		
-			//Bars
-			VAR _Bars = 
-				CONCATENATEX(
-					_Data,
-					IF( 
-						NOT ISBLANK( [@Value] ), 
-						DaxLib.SVG.Element.Rect(
-							DaxLib.SVG.Scale.Normalize( [@AxisIndex], _XMin, _XMax, _X, _X + _Width ),
-							DaxLib.SVG.Scale.Normalize( [@Value], _YMin, _YMax, _Y + _Height, _Y ),
-							_BarWidth,
-							_Height - DaxLib.SVG.Scale.Normalize( [@Value], _YMin, _YMax, _Y + _Height, _Y ),
-							0,
-							0,
-							DaxLib.SVG.Attr.Shapes(
-								IF( NOT ISBLANK( barColor ), barColor, "#01B8AA" ),		// fill
-								BLANK(),	// fillOpacity
-								BLANK(),	// fillRule
-								BLANK(), // stroke
-								1,			// stroke
-								BLANK(),	// strokeOpacity
-								BLANK()		// opacity
-							),
-							BLANK()
-						)
-					),
-					" ",
-					[@AxisIndex],
-					ASC
-				)
-		
-		
-			RETURN ///_CountBars
+		//Bars
+		VAR _Bars = 
+			CONCATENATEX(
+				_Data,
+				IF( 
+					NOT ISBLANK( [@Value] ), 
+					DaxLib.SVG.Element.Rect(
+						DaxLib.SVG.Scale.Normalize( [@AxisIndex], _XMin, _XMax, _X, _X + _Width ),
+						DaxLib.SVG.Scale.Normalize( [@Value], _YMin, _YMax, _Y + _Height, _Y ),
+						_BarWidth,
+						(_Y + _Height) - DaxLib.SVG.Scale.Normalize( [@Value], _YMin, _YMax, _Y + _Height, _Y ),
+						0,
+						0,
+						DaxLib.SVG.Attr.Shapes(
+							IF( NOT ISBLANK( barColor ), barColor, "#01B8AA" ),		// fill
+							BLANK(),	// fillOpacity
+							BLANK(),	// fillRule
+							BLANK(), // stroke
+							1,			// stroke
+							BLANK(),	// strokeOpacity
+							BLANK()		// opacity
+						),
+						BLANK()
+					)
+				),
+				" ",
+				[@AxisIndex],
+				ASC
+			)			
+            
+        RETURN
 				
 				IF( NOT ISEMPTY( _Data ), _Bars )
 
@@ -1642,40 +1641,42 @@ function 'DaxLib.SVG.Compound.Violin' =
 					"@CY", [@y]
 				)
 
-			// Create the violin shape as a single closed path
-			// Start at the center-left, go up the top curve, then down the bottom curve, and close
-			VAR _FirstPoint = MINX( _Points, [@X] )
-			VAR _LastPoint = MAXX( _Points, [@X] )
-			VAR _CenterY = _Y + (_Height * 0.5)
+		// Create the violin shape as a single closed path
+		// Start at the center-left, go up the top curve, then down the bottom curve, and close
+		VAR _FirstPoint = MINX( _Points, [@X] )
+		VAR _LastPoint = MAXX( _Points, [@X] )
+		VAR _CenterY = _Y + (_Height * 0.5)
 
-			// Top half curve (from left to right)
-			VAR _TopCurve = 
-				CONCATENATEX(
-					_WithControlPoints,
+		// Top half curve (from left to right)
+		VAR _TopCurve = 
+			CONCATENATEX(
+				_WithControlPoints,
+				IF(
+					[Value] = 0,
+					"M " & [@X] & " " & _CenterY,
+					"S " & [@CX] & " " & [@CY] & ", " & [@X] & " " & [@Y]
+				),
+				" ",
+				[Value],
+				ASC
+			)
+
+		// Bottom half curve (from right to left, mirrored)
+		VAR _BottomCurve = 
+			CONCATENATEX(
+				_WithControlPoints,
+				VAR _MirroredY = _CenterY + (_CenterY - [@Y])
+				VAR _MirroredCY = _CenterY + (_CenterY - [@CY])
+				RETURN
 					IF(
 						[Value] = 0,
-						"M " & [@X] & " " & _CenterY & " L " & [@X] & " " & [@Y],
-						"S " & [@CX] & " " & [@CY] & ", " & [@X] & " " & [@Y]
+						"",
+						"S " & [@CX] & " " & _MirroredCY & ", " & [@X] & " " & _MirroredY
 					),
-					" ",
-					[Value],
-					ASC
-				)
-
-			// Bottom half curve (from right to left, mirrored)
-			VAR _BottomCurve = 
-				CONCATENATEX(
-					_WithControlPoints,
-					VAR _MirroredY = _CenterY + (_CenterY - [@Y])
-					VAR _MirroredCY = _CenterY + (_CenterY - [@CY])
-					RETURN
-						"S " & [@CX] & " " & _MirroredCY & ", " & [@X] & " " & _MirroredY,
-					" ",
-					[Value],
-					DESC
-				)
-
-			// Create a single closed path for the violin shape
+				" ",
+				[Value],
+				DESC
+			)			// Create a single closed path for the violin shape
 			VAR _ViolinPath = 
 				_TopCurve & 
 				" " & _BottomCurve & 
@@ -1814,10 +1815,10 @@ function 'DaxLib.SVG.Compound.Heatmap' =
 			// Create rectangle with gradient fill
 			VAR _HeatmapRect = 
 				DaxLib.SVG.Element.Rect(
-					0,                          // x
-					0,                          // y
-					width,                      // width
-					height,                     // height
+					_X,                         // x
+					_Y,                         // y
+					_Width,                     // width
+					_Height,                    // height
 					0,                          // rx
 					0,                          // ry
 					DaxLib.SVG.Attr.Shapes(

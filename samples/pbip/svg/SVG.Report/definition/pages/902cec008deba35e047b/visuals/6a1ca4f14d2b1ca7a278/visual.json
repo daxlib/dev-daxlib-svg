@@ -1,12 +1,12 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.3.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
   "name": "6a1ca4f14d2b1ca7a278",
   "position": {
-    "x": 19.780917265221959,
-    "y": 68.762236207676324,
+    "x": 49.573195485669437,
+    "y": 149.65492976805868,
     "z": 8001,
-    "height": 137.52447241535265,
-    "width": 258.09387288908647,
+    "height": 191.7453787653252,
+    "width": 455.51219248152864,
     "tabOrder": 8001
   },
   "visual": {
@@ -15,36 +15,6 @@
       "queryState": {
         "Data": {
           "projections": [
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "_Measures"
-                    }
-                  },
-                  "Property": "Total Cost"
-                }
-              },
-              "queryRef": "_Measures.Total Cost",
-              "nativeQueryRef": "Total Cost Line",
-              "displayName": "Total Cost Line"
-            },
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "_Measures"
-                    }
-                  },
-                  "Property": "Total Cost"
-                }
-              },
-              "queryRef": "_Measures.Total Cost",
-              "nativeQueryRef": "Total Cost Line",
-              "displayName": "Total Cost Line"
-            },
             {
               "field": {
                 "Measure": {
@@ -89,7 +59,7 @@
             "show": {
               "expr": {
                 "Literal": {
-                  "Value": "true"
+                  "Value": "false"
                 }
               }
             },
@@ -208,6 +178,71 @@
             "id": "default"
           }
         }
+      ],
+      "cardImage": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "imageType": {
+              "expr": {
+                "Literal": {
+                  "Value": "'imageData'"
+                }
+              }
+            },
+            "imageData": {
+              "expr": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Compound.Area"
+                }
+              }
+            },
+            "imageTransparency": {
+              "expr": {
+                "Literal": {
+                  "Value": "1D"
+                }
+              }
+            },
+            "imageDataFit": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Fit'"
+                }
+              }
+            }
+          },
+          "selector": {
+            "id": "default"
+          }
+        }
+      ],
+      "divider": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          },
+          "selector": {
+            "id": "default"
+          }
+        }
       ]
     },
     "visualContainerObjects": {
@@ -237,7 +272,7 @@
   "filterConfig": {
     "filters": [
       {
-        "name": "e17f74eabd2471dbc0e5",
+        "name": "a88539c2a1a928cce641",
         "field": {
           "Measure": {
             "Expression": {
