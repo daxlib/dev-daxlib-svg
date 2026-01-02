@@ -1567,62 +1567,53 @@ function 'DaxLib.SVG.Compound.Violin' =
 			VAR _Y = 			y + ( height * ( COALESCE( paddingY, 0 ) / 2))
 			VAR _Width = 		width * ( 1 - COALESCE( paddingX, 0 ) )
 			VAR _Height = 		height * ( 1 - COALESCE( paddingY, 0 ) )
-
-			// Check if Axis is numeric
-			VAR axisSample = 	MAX( axisRef )
-			VAR axisIsNumeric = ISNUMERIC( axisSample ) || ISDATETIME( axisSample )
 			
 			// For totals
 			VAR _Data = 
-				ADDCOLUMNS(
+				SELECTCOLUMNS(
 					FILTER(
 						VALUES( axisRef ),
 						NOT ISBLANK( measureRef )
 					),
-					"@AxisIndex", 	
-						IF(
-							axisIsNumeric,
-							axisRef,
-							RANK( DENSE, CALCULATETABLE( VALUES( axisRef ), ALLSELECTED() ) )
-						),
 					"@Value", measureRef
 				)
 	
 			VAR _NumValues = 		COUNTROWS( _Data )
+            VAR _InvNumValues =     1 / _NumValues
 			VAR _Min = 				MINX( _Data, [@Value] )
 			VAR _Max = 				MAXX( _Data, [@Value] )
 			VAR _Range = 			_Max - _Min
 			VAR _RangePerSample = 	_Range / samples
 
 			// Calculate Kernel Density Estimation using Normal distribution
+            VAR _KDEInput =
+                ADDCOLUMNS(
+                    GENERATESERIES( 0, samples + 1, 1 ),
+                    "@InputX", _Min + _RangePerSample * [Value]
+                )
+
 			VAR _KDE = 
 				ADDCOLUMNS(
-					GENERATESERIES( 0, samples + 1, 1 ),
-					"@InputX", _Min + _RangePerSample * [Value],
-					"@KDE", 
-						( 1 / _NumValues ) * 
-						SUMX(
-							_Data, 
-							NORM.DIST( 
-								_Min + _RangePerSample * [Value], 
-								[@Value], 
-								bandwidth, 
-								FALSE 
-							) 
-						)
-				)
+                    _KDEInput,
+                    "@KDE", _InvNumValues * SUMX( _Data, NORM.DIST( [@InputX], [@Value], bandwidth, FALSE ) )
+                )
 
 			VAR _MaxKDE = 		MAXX( _KDE, [@KDE] )
 
 			// Map KDE values to SVG coordinates using normalize function
 			VAR _Points = 
-				ADDCOLUMNS(
-					_KDE,
-					"@X", DaxLib.SVG.Scale.Normalize( [@InputX], _Min, _Max, _X, _X + _Width),
-					"@Y", DaxLib.SVG.Scale.Normalize( [@KDE], 0, _MaxKDE, _Y + _Height * 0.5, _Y )
-				)
+                SELECTCOLUMNS(
+                    ADDCOLUMNS(
+                        _KDE,
+                        "@X", DaxLib.SVG.Scale.Normalize( [@InputX], _Min, _Max, _X, _X + _Width),
+                        "@Y", DaxLib.SVG.Scale.Normalize( [@KDE], 0, _MaxKDE, _Y + _Height * 0.5, _Y )
+                    ),
+                    "Value", [Value],
+                    "@X", [@X],
+                    "@Y", [@Y]
+                )
 
-			// Create control points for smooth Bézier curves
+			// Previous point via NATURALLEFTOUTERJOIN
 			VAR _PointsWithPrev = 
 				NATURALLEFTOUTERJOIN(
 					_Points,
@@ -1634,49 +1625,35 @@ function 'DaxLib.SVG.Compound.Violin' =
 					)
 				)
 
-			VAR _WithControlPoints = 
-				ADDCOLUMNS(
-					_PointsWithPrev,
-					"@CX", [@prevX] + ( ( [@x] - [@prevX] ) / 2 ),
-					"@CY", [@y]
-				)
+            // Control points + precompute segment strings once
+            VAR _CenterY = _Y + (_Height * 0.5)
 
-		// Create the violin shape as a single closed path
-		// Start at the center-left, go up the top curve, then down the bottom curve, and close
-		VAR _FirstPoint = MINX( _Points, [@X] )
-		VAR _LastPoint = MAXX( _Points, [@X] )
-		VAR _CenterY = _Y + (_Height * 0.5)
+            VAR _Segs =
+                ADDCOLUMNS(
+                    _PointsWithPrev,
+                    "@CX", [@PrevX] + ( ( [@X] - [@PrevX] ) / 2 ),
+                    "@CY", [@Y],
+                    "@TopSeg",
+                        IF(
+                            [Value] = 0,
+                            "M " & [@X] & " " & _CenterY,
+                            "S " & ([@PrevX] + ( ( [@X] - [@PrevX] ) / 2 )) & " " & [@Y] & ", " & [@X] & " " & [@Y]
+                        ),
+                    "@BottomSeg",
+                        VAR _MirroredY = _CenterY + (_CenterY - [@Y])
+                        VAR _MirroredCY = _CenterY + (_CenterY - [@Y])
+                        RETURN
+                            IF(
+                                [Value] = 0,
+                                "",
+                                "S " & ([@PrevX] + ( ( [@X] - [@PrevX] ) / 2 )) & " " & _MirroredCY & ", " & [@X] & " " & _MirroredY
+                            )
+                )
 
-		// Top half curve (from left to right)
-		VAR _TopCurve = 
-			CONCATENATEX(
-				_WithControlPoints,
-				IF(
-					[Value] = 0,
-					"M " & [@X] & " " & _CenterY,
-					"S " & [@CX] & " " & [@CY] & ", " & [@X] & " " & [@Y]
-				),
-				" ",
-				[Value],
-				ASC
-			)
+            VAR _TopCurve = CONCATENATEX( _Segs, [@TopSeg], " ", [Value], ASC )
 
-		// Bottom half curve (from right to left, mirrored)
-		VAR _BottomCurve = 
-			CONCATENATEX(
-				_WithControlPoints,
-				VAR _MirroredY = _CenterY + (_CenterY - [@Y])
-				VAR _MirroredCY = _CenterY + (_CenterY - [@CY])
-				RETURN
-					IF(
-						[Value] = 0,
-						"",
-						"S " & [@CX] & " " & _MirroredCY & ", " & [@X] & " " & _MirroredY
-					),
-				" ",
-				[Value],
-				DESC
-			)			// Create a single closed path for the violin shape
+            VAR _BottomCurve = CONCATENATEX( _Segs, [@BottomSeg], " ", [Value], DESC )			
+        
 			VAR _ViolinPath = 
 				_TopCurve & 
 				" " & _BottomCurve & 
