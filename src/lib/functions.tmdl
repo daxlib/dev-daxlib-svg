@@ -367,8 +367,8 @@ function 'DaxLib.SVG.Def.Rect' =
 			"<rect id='" & defId & "'" &
 			" width='" & width & "'" &
 			" height='" & height & "'" &
-			IF(NOT ISBLANK( rx ), " rx='" & rx & "'" ) & 
-			IF(NOT ISBLANK( ry ), " ry='" & ry & "'" ) &
+			IF( NOT ISBLANK( rx ), " rx='" & rx & "'" ) & 
+			IF( NOT ISBLANK( ry ), " ry='" & ry & "'" ) &
 			IF( NOT ISBLANK( attributes ), " " & attributes & " " ) &
 			IF( NOT ISBLANK( transforms ), " transform='" & transforms & "'" ) &
 			"/>"	
@@ -687,8 +687,8 @@ function 'DaxLib.SVG.Element.Txt' =
 			"<text" &
 			" x='" & x & "'" &
 			" y='" & y & "'" &
-			IF(NOT ISBLANK( dx ), " dx='" & dx & "'" ) & 
-			IF(NOT ISBLANK( dy ), " dy='" & dy & "'" ) &
+			IF( NOT ISBLANK( dx ), " dx='" & dx & "'" ) & 
+			IF( NOT ISBLANK( dy ), " dy='" & dy & "'" ) &
 			IF( NOT ISBLANK( attributes ), " " & attributes & " " ) &
 			IF( NOT ISBLANK( transforms ), " transform='" & transforms & "'" ) &
 			">" & txt & 
@@ -720,10 +720,10 @@ function 'DaxLib.SVG.Compound.Pill' =
 		) =>
 
 		// Apply padding to dimensions
-		VAR _X = 			x + (width * (IF(ISBLANK(paddingX), 0, paddingX) / 2))
-		VAR _Y = 			y + (height * (IF(ISBLANK(paddingY), 0, paddingY) / 2))
-		VAR _Width = 		width * (1 - IF(ISBLANK(paddingX), 0, paddingX))
-		VAR _Height = 		height * (1 - IF(ISBLANK(paddingY), 0, paddingY))
+		VAR _X = 			x + ( width * ( COALESCE( paddingX, 0 ) / 2) )
+		VAR _Y = 			y + ( height * ( COALESCE( paddingY, 0 ) / 2) )
+		VAR _Width = 		width * ( 1 - COALESCE( paddingX, 0 ) )
+		VAR _Height = 		height * ( 1 - COALESCE( paddingY, 0 ) )
 
 		VAR _Pill = 
 			DaxLib.SVG.Element.Rect(
@@ -812,10 +812,10 @@ function 'DaxLib.SVG.Compound.Bar' =
 		) =>
 
 			// Apply padding to dimensions
-			VAR _X = 			x + (width * (IF(ISBLANK(paddingX), 0, paddingX) / 2))
-			VAR _Y = 			y + (height * (IF(ISBLANK(paddingY), 0, paddingY) / 2))
-			VAR _Width = 		width * (1 - IF(ISBLANK(paddingX), 0, paddingX))
-			VAR _Height = 		height * (1 - IF(ISBLANK(paddingY), 0, paddingY))
+			VAR _X = 			x + ( width * COALESCE( paddingX, 0 ) / 2 )
+			VAR _Y = 			y + ( height * COALESCE( paddingY, 0 ) / 2 )
+			VAR _Width = 		width * ( 1 - COALESCE( paddingX, 0 ) )
+			VAR _Height = 		height * ( 1 - COALESCE( paddingY, 0 ) )
 		
 			// Check if Axis is numeric
 			VAR axisSample = 	MAX( axisRef )
@@ -912,10 +912,10 @@ function 'DaxLib.SVG.Compound.Line' =
 		) =>
 
 			// Apply padding to dimensions
-			VAR _X = 			x + (width * (IF(ISBLANK(paddingX), 0, paddingX) / 2))
-			VAR _Y = 			y + (height * (IF(ISBLANK(paddingY), 0, paddingY) / 2))
-			VAR _Width = 		width * (1 - IF(ISBLANK(paddingX), 0, paddingX))
-			VAR _Height = 		height * (1 - IF(ISBLANK(paddingY), 0, paddingY))
+			VAR _X = 			x + ( width * ( COALESCE( paddingX, 0 ) / 2) )
+            VAR _Y = 			y + ( height * ( COALESCE( paddingY, 0 ) / 2) )
+            VAR _Width = 		width * ( 1 - COALESCE( paddingX, 0 ) )
+            VAR _Height = 		height * ( 1 - COALESCE( paddingY, 0 ) )
 	
 			// Check if Axis is numeric
 			VAR axisSample = 	MAX( axisRef )
@@ -1039,10 +1039,10 @@ function 'DaxLib.SVG.Compound.Area' =
 		) =>
 
 			// Apply padding to dimensions
-			VAR _X = 			x + (width * (IF(ISBLANK(paddingX), 0, paddingX) / 2))
-			VAR _Y = 			y + (height * (IF(ISBLANK(paddingY), 0, paddingY) / 2))
-			VAR _Width = 		width * (1 - IF(ISBLANK(paddingX), 0, paddingX))
-			VAR _Height = 		height * (1 - IF(ISBLANK(paddingY), 0, paddingY))
+			VAR _X = 			x + ( width * ( COALESCE( paddingX, 0 ) / 2) )
+            VAR _Y = 			y + ( height * ( COALESCE( paddingY, 0 ) / 2) )
+            VAR _Width = 		width * ( 1 - COALESCE( paddingX, 0 ) )
+            VAR _Height = 		height * ( 1 - COALESCE( paddingY, 0 ) )
 		
 			// Check if Axis is numeric
 			VAR axisSample = 	MAX( axisRef )
@@ -1220,10 +1220,10 @@ function 'DaxLib.SVG.Compound.Jitter' =
 		) =>
 			
 			// Apply padding to dimensions
-			VAR _X = 			x + (width * (IF(ISBLANK(paddingX), 0, paddingX) / 2))
-			VAR _Y = 			y + (height * (IF(ISBLANK(paddingY), 0, paddingY) / 2))
-			VAR _Width = 		width * (1 - IF(ISBLANK(paddingX), 0, paddingX))
-			VAR _Height = 		height * (1 - IF(ISBLANK(paddingY), 0, paddingY))
+			VAR _X = 			x + ( width * ( COALESCE( paddingX, 0 ) / 2) )
+            VAR _Y = 			y + ( height * ( COALESCE( paddingY, 0 ) / 2) )
+            VAR _Width = 		width * ( 1 - COALESCE( paddingX, 0 ) )
+            VAR _Height = 		height * ( 1 - COALESCE( paddingY, 0 ) )
 
 			// Check if Axis is numeric
 			VAR axisSample = 	MAX( axisRef )
@@ -1319,10 +1319,10 @@ function 'DaxLib.SVG.Compound.Boxplot' =
 		) =>
 
 			// Apply padding to dimensions
-			VAR _X = 			x + (width * (IF(ISBLANK(paddingX), 0, paddingX) / 2))
-			VAR _Y = 			y + (height * (IF(ISBLANK(paddingY), 0, paddingY) / 2))
-			VAR _Width = 		width * (1 - IF(ISBLANK(paddingX), 0, paddingX))
-			VAR _Height = 		height * (1 - IF(ISBLANK(paddingY), 0, paddingY))
+			VAR _X = 			x + ( width * ( COALESCE( paddingX, 0 ) / 2) )
+            VAR _Y = 			y + ( height * ( COALESCE( paddingY, 0 ) / 2) )
+            VAR _Width = 		width * ( 1 - COALESCE( paddingX, 0 ) )
+            VAR _Height = 		height * ( 1 - COALESCE( paddingY, 0 ) )
 
 			// Check if Axis is numeric
 			VAR axisSample = 	MAX( axisRef )
@@ -1563,10 +1563,10 @@ function 'DaxLib.SVG.Compound.Violin' =
 		) =>
 		
 			// Apply padding to dimensions
-			VAR _X = 			x + (width * (IF(ISBLANK(paddingX), 0, paddingX) / 2))
-			VAR _Y = 			y + (height * (IF(ISBLANK(paddingY), 0, paddingY) / 2))
-			VAR _Width = 		width * (1 - IF(ISBLANK(paddingX), 0, paddingX))
-			VAR _Height = 		height * (1 - IF(ISBLANK(paddingY), 0, paddingY))
+			VAR _X = 			x + ( width * ( COALESCE( paddingX, 0 ) / 2) )
+			VAR _Y = 			y + ( height * ( COALESCE( paddingY, 0 ) / 2))
+			VAR _Width = 		width * ( 1 - COALESCE( paddingX, 0 ) )
+			VAR _Height = 		height * ( 1 - COALESCE( paddingY, 0 ) )
 
 			// Check if Axis is numeric
 			VAR axisSample = 	MAX( axisRef )
@@ -1734,10 +1734,10 @@ function 'DaxLib.SVG.Compound.Heatmap' =
 		) =>
 		
 			// Apply padding to dimensions
-			VAR _X = 			x + (width * (IF(ISBLANK(paddingX), 0, paddingX) / 2))
-			VAR _Y = 			y + (height * (IF(ISBLANK(paddingY), 0, paddingY) / 2))
-			VAR _Width = 		width * (1 - IF(ISBLANK(paddingX), 0, paddingX))
-			VAR _Height = 		height * (1 - IF(ISBLANK(paddingY), 0, paddingY))
+			VAR _X = 			x + ( width * ( COALESCE( paddingX, 0 ) / 2) )
+            VAR _Y = 			y + ( height * ( COALESCE( paddingY, 0 ) / 2) )
+            VAR _Width = 		width * ( 1 - COALESCE( paddingX, 0 ) )
+            VAR _Height = 		height * ( 1 - COALESCE( paddingY, 0 ) )
 
 			// Check if Axis is numeric
 			VAR axisSample = 	MAX( axisRef )
