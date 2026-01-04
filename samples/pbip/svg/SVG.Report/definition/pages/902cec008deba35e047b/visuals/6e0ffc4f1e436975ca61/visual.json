@@ -245,14 +245,14 @@
             "imageWidth": {
               "expr": {
                 "Literal": {
-                  "Value": "100D"
+                  "Value": "105D"
                 }
               }
             },
             "imageHeight": {
               "expr": {
                 "Literal": {
-                  "Value": "20D"
+                  "Value": "22D"
                 }
               }
             }
@@ -272,7 +272,7 @@
             "name": {
               "expr": {
                 "Literal": {
-                  "Value": "'Minimal'"
+                  "Value": "'None'"
                 }
               }
             }
