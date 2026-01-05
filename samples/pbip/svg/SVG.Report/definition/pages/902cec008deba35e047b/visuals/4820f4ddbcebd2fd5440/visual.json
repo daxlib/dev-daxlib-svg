@@ -191,7 +191,7 @@
             "name": {
               "expr": {
                 "Literal": {
-                  "Value": "'Minimal'"
+                  "Value": "'None'"
                 }
               }
             }

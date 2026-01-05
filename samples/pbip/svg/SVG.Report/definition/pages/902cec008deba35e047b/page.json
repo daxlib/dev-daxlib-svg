@@ -29,7 +29,7 @@
     {
       "source": "f9104e74e6734b207a67",
       "target": "6e0ffc4f1e436975ca61",
-      "type": "NoFilter"
+      "type": "DataFilter"
     },
     {
       "source": "f9104e74e6734b207a67",
@@ -44,7 +44,7 @@
     {
       "source": "6b2659fe769ef8292b0d",
       "target": "6e0ffc4f1e436975ca61",
-      "type": "NoFilter"
+      "type": "DataFilter"
     }
   ]
 }

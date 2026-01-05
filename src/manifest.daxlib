@@ -1,10 +1,10 @@
 {
   "$schema": "https://raw.githubusercontent.com/daxlib/daxlib/refs/heads/main/schemas/manifest/1.0.0/manifest.1.0.0.schema.json",
   "id": "DaxLib.SVG",
-  "version": "0.2.2-beta",
+  "version": "0.2.3-beta",
   "authors": "Kurt Buhler, Jake Duddy, Tom Shanley",
   "description": "A DAX User-Defined Functions (UDF) library designed to make creating SVG visuals in Power BI easier",
-  "releaseNotes": "Fixed a few compounds to correctly accept x and y parameters for positioning",
+  "releaseNotes": "Performance improvements for Compound functions",
   "projectUrl": "https://evaluationcontext.github.io/daxlib.svg",
   "repositoryUrl": "https://github.com/daxlib/dev-daxlib-svg",
   "tags": "DAX,UDF,FUNCTION,LIB,SVG",

@@ -1482,7 +1482,7 @@ function 'DaxLib.SVG.SVG' =
 			IF( NOT ISBLANK( sortValue ), "<desc>" & FORMAT( sortValue, "000000000000" ) & "</desc>" ) &
 			contents &
 			"</svg>"
-	lineageTag: 59646a1a-9d0c-41db-8001-898f659ccd6c
+	lineageTag: e45bafee-3c57-416b-9425-73827bb40662
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -1505,7 +1505,7 @@ function 'DaxLib.SVG.Scale.Normalize' =
 		) =>
 		
 			( ( inputValue - fromMin ) / ( fromMax - fromMin ) ) * ( toMax - toMin ) + toMin
-	lineageTag: 339b881a-618a-458c-804f-afb934bf7328
+	lineageTag: b33da5d7-f78a-4cfc-bb36-854f10a525fc
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -1537,7 +1537,7 @@ function 'DaxLib.SVG.Attr.Shapes' =
 			IF( NOT ISBLANK( strokeWidth ),   "stroke-width='" & strokeWidth & "' ") &
 			IF( NOT ISBLANK( strokeOpacity ), "stroke-opacity='" & strokeOpacity & "' ") &
 			IF( NOT ISBLANK( opacity ),       "opacity='" & opacity & "' ")
-	lineageTag: 24c46adb-b29d-4b94-8af8-9404d5c33173
+	lineageTag: 89ac6736-2ac2-4fe4-b247-24b9bf86e4f3
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -1575,7 +1575,7 @@ function 'DaxLib.SVG.Attr.Txt' =
 			IF( NOT ISBLANK( textDecoration ), "text-decoration='" & textDecoration & "' ") &
 			IF( NOT ISBLANK( letterSpacing ),  "letter-spacing='" & letterSpacing & "' ") &
 			IF( NOT ISBLANK( wordSpacing ),    "word-spacing='" & wordSpacing & "' ")
-	lineageTag: ab1427b7-3d47-4230-9184-7bf1799958f7
+	lineageTag: 3984f1c0-8a97-422b-9880-c71122b7ea40
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -1631,7 +1631,7 @@ function 'DaxLib.SVG.Attr.Stroke' =
 				_MarkerStart &
 				_MarkerMid &
 				_MarkerEnd
-	lineageTag: 39f37c1b-0467-4120-ae4f-5a7c63a635ed
+	lineageTag: df9f4e42-c20f-465c-bc41-01071ff63878
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -1657,7 +1657,7 @@ function 'DaxLib.SVG.Transforms' =
 			IF(NOT ISBLANK(scale), "scale(" & scale & ") ") &
 			IF(NOT ISBLANK(skewX), "skewX(" & skewX & ") ") &
 			IF(NOT ISBLANK(skewY), "skewY(" & skewY & ") ")
-	lineageTag: 85e925de-1fd6-4d32-bf3d-a089a757800d
+	lineageTag: 45cc5287-1cdd-44fd-91fe-ea64fb777406
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -1673,7 +1673,7 @@ function 'DaxLib.SVG.Element.Defs' =
 			"<defs>" &
 			defs &
 			"</defs>"
-	lineageTag: 35371175-30ff-40e6-bd09-2dbadd56d7a6
+	lineageTag: 0e74e40b-a228-4ac4-896a-26bf8b74629b
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -1694,7 +1694,7 @@ function 'DaxLib.SVG.Def.GradientStop' =
 			"' stop-color='" & color & "'" &
 			IF( NOT ISBLANK( opacity ), " stop-opacity='" & opacity & "'" ) &
 			"/>"
-	lineageTag: 4769cee7-7107-41db-96d2-8e3f51c9762d
+	lineageTag: fe4b5b6c-78d7-42d9-b73b-66d4d7b18d24
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -1726,7 +1726,7 @@ function 'DaxLib.SVG.Def.LinearGradient' =
 			">" &
 			stops &
 			"</linearGradient>"
-	lineageTag: b205977c-e703-4fdb-89d3-1a2caff6e238
+	lineageTag: 2353dcfb-e52e-4abf-b7e8-d5d15ebbf413
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -1764,7 +1764,7 @@ function 'DaxLib.SVG.Def.RadialGradient' =
 			">" &
 			stops &
 			"</radialGradient>"
-	lineageTag: 739745a5-e442-4915-a7be-5899c660109f
+	lineageTag: e797765a-345d-4450-8a7d-dc302cb4f959
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -1782,7 +1782,7 @@ function 'DaxLib.SVG.Def.ClipPath' =
 			"<clipPath id='" & defId & "'>" &
 			contents &
 			"</clipPath>"
-	lineageTag: 221921dc-3c5a-42b9-aad7-2f61011fb293
+	lineageTag: 3bff7a54-27cc-4032-a527-4131e4e2728a
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -1812,7 +1812,7 @@ function 'DaxLib.SVG.Def.Circle' =
 			IF( NOT ISBLANK( attributes ), " " & attributes & " " ) &
 			IF( NOT ISBLANK( transforms ), " transform='" & transforms & "'" ) &
 			"/>"
-	lineageTag: b4e05fc6-1cdb-4f19-b9ef-23930340503d
+	lineageTag: a387bc0f-331b-4dd8-bb97-3dc040de1587
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -1840,12 +1840,12 @@ function 'DaxLib.SVG.Def.Rect' =
 			"<rect id='" & defId & "'" &
 			" width='" & width & "'" &
 			" height='" & height & "'" &
-			IF(NOT ISBLANK( rx ), " rx='" & rx & "'" ) &
-			IF(NOT ISBLANK( ry ), " ry='" & ry & "'" ) &
+			IF( NOT ISBLANK( rx ), " rx='" & rx & "'" ) &
+			IF( NOT ISBLANK( ry ), " ry='" & ry & "'" ) &
 			IF( NOT ISBLANK( attributes ), " " & attributes & " " ) &
 			IF( NOT ISBLANK( transforms ), " transform='" & transforms & "'" ) &
 			"/>"
-	lineageTag: f15b5d23-0200-4f75-9cdb-a9d93a79e4d9
+	lineageTag: 287eb6d7-e00f-426f-b422-4527292033b2
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -1878,7 +1878,7 @@ function 'DaxLib.SVG.Def.Line' =
 			IF( NOT ISBLANK( attributes ), " " & attributes & " " ) &
 			IF( NOT ISBLANK( transforms ), " transform='" & transforms & "'" ) &
 			"/>"
-	lineageTag: 7eb95337-cf87-4889-ad69-4fc1902eb891
+	lineageTag: 002fb777-26ed-42e5-b057-9ea3ca22e483
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -1902,7 +1902,7 @@ function 'DaxLib.SVG.Def.Paths' =
 			IF( NOT ISBLANK( attributes ), " " & attributes & " " ) &
 			IF( NOT ISBLANK( transforms ), " transform='" & transforms & "'" ) &
 			"/>"
-	lineageTag: 0b1d9e80-e2b6-4367-b295-d5fd5527fee2
+	lineageTag: 60a7dcf5-07c6-4066-867a-8883b60e0032
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -1930,7 +1930,7 @@ function 'DaxLib.SVG.Element.UseDef' =
 			IF( NOT ISBLANK( y ), " y='" & y & "'" ) &
 			IF( NOT ISBLANK( transforms ), " transform='" & transforms & "'" ) &
 			"/>"
-	lineageTag: cc3f343b-59fc-445b-aa07-6703be5425d8
+	lineageTag: df6c22c2-9c76-4de1-a326-780b276da083
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -1952,7 +1952,7 @@ function 'DaxLib.SVG.Element.Group' =
 			IF( NOT ISBLANK( transforms ), " transform='" & transforms & "'" ) &
 			IF( NOT ISBLANK( opacity ), " opacity='" & opacity & "'" ) &
 			">" & contents & "</g>"
-	lineageTag: 823d0b26-1352-4bab-af80-f67ac5fe5342
+	lineageTag: eed0b4d9-c0cf-4b47-a986-8701ac5daadf
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -1980,7 +1980,7 @@ function 'DaxLib.SVG.Element.Circle' =
 			IF( NOT ISBLANK( attributes ), " " & attributes & " " ) &
 			IF( NOT ISBLANK( transforms ), " transform='" & transforms & "'" ) &
 			"/>"
-	lineageTag: 91f26ac5-1f22-4060-906f-e6854b817a6b
+	lineageTag: 1b890cc1-1901-4374-9649-44ec5f74f28c
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -2017,7 +2017,7 @@ function 'DaxLib.SVG.Element.Rect' =
 			IF( NOT ISBLANK( attributes ), " " & attributes & " " ) &
 			IF( NOT ISBLANK( transforms ), " transform='" & transforms & "'" ) &
 			"/>"
-	lineageTag: 6dc9e6da-05d6-42aa-9129-bf25fe7c8d4c
+	lineageTag: bf3c4697-8aeb-4e07-b00b-d2c209223d3c
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -2048,7 +2048,7 @@ function 'DaxLib.SVG.Element.Line' =
 			IF( NOT ISBLANK( attributes ), " " & attributes & " " ) &
 			IF( NOT ISBLANK( transforms ), " transform='" & transforms & "'" ) &
 			"/>"
-	lineageTag: 3f056bc2-4fb1-483b-aac8-8405f9c28234
+	lineageTag: b475c79c-c886-4da0-aaa0-1c731222e45e
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -2069,7 +2069,7 @@ function 'DaxLib.SVG.Element.Paths' =
 			IF( NOT ISBLANK( attributes ), " " & attributes & " " ) &
 			IF( NOT ISBLANK( transforms ), " transform='" & transforms & "'" ) &
 			"/>"
-	lineageTag: 9ad6e9b6-12ac-4cc3-a115-8aa5db7e7458
+	lineageTag: 087417c7-e957-4718-8c3c-2d3f71a27750
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -2100,7 +2100,7 @@ function 'DaxLib.SVG.Element.Ellipse' =
 			IF( NOT ISBLANK( attributes ), " " & attributes & " " ) &
 			IF( NOT ISBLANK( transforms ), " transform='" & transforms & "'" ) &
 			"/>"
-	lineageTag: b42be4a6-732a-4d10-9c26-7861ea7abecb
+	lineageTag: c4de2e5a-b2bf-41f1-8b56-3b8f9d99974c
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -2122,7 +2122,7 @@ function 'DaxLib.SVG.Element.Polygon' =
 			IF( NOT ISBLANK( attributes ), " " & attributes & " " ) &
 			IF( NOT ISBLANK( transforms ), " transform='" & transforms & "'" ) &
 			"/>"
-	lineageTag: 57bbd32e-f2cb-42c3-b720-6d0b9504e414
+	lineageTag: 6a17b033-53a7-4f99-b2ce-a33144e60729
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -2144,7 +2144,7 @@ function 'DaxLib.SVG.Element.Polyline' =
 			IF( NOT ISBLANK( attributes ), " " & attributes & " " ) &
 			IF( NOT ISBLANK( transforms ), " transform='" & transforms & "'" ) &
 			"/>"
-	lineageTag: 4c005726-4b1b-4cc7-b300-a64977cfce88
+	lineageTag: 9d9f80f0-a5aa-43d7-81c6-555cdc6b1a8c
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -2172,13 +2172,13 @@ function 'DaxLib.SVG.Element.Txt' =
 			"<text" &
 			" x='" & x & "'" &
 			" y='" & y & "'" &
-			IF(NOT ISBLANK( dx ), " dx='" & dx & "'" ) &
-			IF(NOT ISBLANK( dy ), " dy='" & dy & "'" ) &
+			IF( NOT ISBLANK( dx ), " dx='" & dx & "'" ) &
+			IF( NOT ISBLANK( dy ), " dy='" & dy & "'" ) &
 			IF( NOT ISBLANK( attributes ), " " & attributes & " " ) &
 			IF( NOT ISBLANK( transforms ), " transform='" & transforms & "'" ) &
 			">" & txt &
 			"</text>"
-	lineageTag: d88c1c88-9b65-4ae8-a87c-fa26b021e3ce
+	lineageTag: 27234e91-65a4-4250-a0d1-33f4f1d1df56
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -2205,76 +2205,76 @@ function 'DaxLib.SVG.Compound.Pill' =
 			color: STRING
 		) =>
 		
-		// Apply padding to dimensions
-		VAR _X = 			x + (width * (IF(ISBLANK(paddingX), 0, paddingX) / 2))
-		VAR _Y = 			y + (height * (IF(ISBLANK(paddingY), 0, paddingY) / 2))
-		VAR _Width = 		width * (1 - IF(ISBLANK(paddingX), 0, paddingX))
-		VAR _Height = 		height * (1 - IF(ISBLANK(paddingY), 0, paddingY))
+			// Apply padding to dimensions
+			VAR _X = 			x + ( width * ( COALESCE( paddingX, 0 ) / 2) )
+			VAR _Y = 			y + ( height * ( COALESCE( paddingY, 0 ) / 2) )
+			VAR _Width = 		width * ( 1 - COALESCE( paddingX, 0 ) )
+			VAR _Height = 		height * ( 1 - COALESCE( paddingY, 0 ) )
 		
-		VAR _Pill =
-			DaxLib.SVG.Element.Rect(
-				_X,                	// x
-				_Y,                	// y
-				_Width * 0.98,      // width
-				_Height * 0.92,     // height
-				10,               	// rx
-				10,               	// ry
-				DaxLib.SVG.Attr.Shapes(
-					color,			// fill
-					0.2,			// fillOpacity
-					BLANK(),		// fillRule
-					color,			// stroke
-					1,				// strokeWidth
-					BLANK(),		// strokeOpacity
-					BLANK()			// opacity
-				),         			// attributes
-				BLANK()           	// transforms
-			)
+			VAR _Pill =
+				DaxLib.SVG.Element.Rect(
+					_X,                	// x
+					_Y,                	// y
+					_Width * 0.98,      // width
+					_Height * 0.92,     // height
+					10,               	// rx
+					10,               	// ry
+					DaxLib.SVG.Attr.Shapes(
+						color,			// fill
+						0.2,			// fillOpacity
+						BLANK(),		// fillRule
+						color,			// stroke
+						1,				// strokeWidth
+						BLANK(),		// strokeOpacity
+						BLANK()			// opacity
+					),         			// attributes
+					BLANK()           	// transforms
+				)
 		
-		VAR _TextElement =
-			DaxLib.SVG.Element.Txt(
-				_X + (_Width * 0.50),      // x
-				_Y + (_Height * 0.58),     // y
-				txt,              	// txt
-				0,                	// dx
-				0,                	// dy
-				DaxLib.SVG.Attr.Shapes(
-					color,			// fill
-					BLANK(),		// fillOpacity
-					BLANK(),		// fillRule
-					BLANK(),		// stroke
-					BLANK(),		// strokeWidth
-					BLANK(),		// strokeOpacity
-					BLANK()			// opacity
-				) &
-				DaxLib.SVG.Attr.Txt(
-					"Segoe UI",		// fontFamily
-					12,				// fontSize
-					BLANK(),		// fontWeight
-					BLANK(),		// fontStyle
-					"middle",		// textAnchor
-					"middle",		// baseline
-					BLANK(),		// textDecoration
-					BLANK(),		// letterSpacing
-					BLANK()			// wordSpacing
-				),         			// attributes
-				BLANK()				// transforms
-			)
+			VAR _TextElement =
+				DaxLib.SVG.Element.Txt(
+					_X + (_Width * 0.50),      // x
+					_Y + (_Height * 0.58),     // y
+					txt,              	// txt
+					0,                	// dx
+					0,                	// dy
+					DaxLib.SVG.Attr.Shapes(
+						color,			// fill
+						BLANK(),		// fillOpacity
+						BLANK(),		// fillRule
+						BLANK(),		// stroke
+						BLANK(),		// strokeWidth
+						BLANK(),		// strokeOpacity
+						BLANK()			// opacity
+					) &
+					DaxLib.SVG.Attr.Txt(
+						"Segoe UI",		// fontFamily
+						12,				// fontSize
+						BLANK(),		// fontWeight
+						BLANK(),		// fontStyle
+						"middle",		// textAnchor
+						"middle",		// baseline
+						BLANK(),		// textDecoration
+						BLANK(),		// letterSpacing
+						BLANK()			// wordSpacing
+					),         			// attributes
+					BLANK()				// transforms
+				)
 		
-		VAR _CombinedElements =
-			_Pill &
-			_TextElement
+			VAR _CombinedElements =
+				_Pill &
+				_TextElement
 		
-		RETURN
+			RETURN
 		
-			IF( NOT ISBLANK( txt ), _CombinedElements )
-	lineageTag: a04ec6bf-a031-499d-90e8-3e5f158db100
+				IF( NOT ISBLANK( txt ), _CombinedElements )
+	lineageTag: 9b5aacc5-54c4-4179-bac0-0600d427f76a
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
 	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__
 
-/// Creates a Bar compound SVG Visual for a numeric axis
+/// Creates a Bar compound SVG Visual
 /// x              	INT64           	The x position of the compound
 /// y              	INT64           	The y position of the compound
 /// width          	INT64           	The width of the compound
@@ -2298,29 +2298,35 @@ function 'DaxLib.SVG.Compound.Bar' =
 		) =>
 		
 			// Apply padding to dimensions
-			VAR _X = 			x + (width * (IF(ISBLANK(paddingX), 0, paddingX) / 2))
-			VAR _Y = 			y + (height * (IF(ISBLANK(paddingY), 0, paddingY) / 2))
-			VAR _Width = 		width * (1 - IF(ISBLANK(paddingX), 0, paddingX))
-			VAR _Height = 		height * (1 - IF(ISBLANK(paddingY), 0, paddingY))
+			VAR _X = 			x + ( width * COALESCE( paddingX, 0 ) / 2 )
+			VAR _Y = 			y + ( height * COALESCE( paddingY, 0 ) / 2 )
+			VAR _Width = 		width * ( 1 - COALESCE( paddingX, 0 ) )
+			VAR _Height = 		height * ( 1 - COALESCE( paddingY, 0 ) )
 		
 			// Check if Axis is numeric
 			VAR axisSample = 	MAX( axisRef )
 			VAR axisIsNumeric = ISNUMERIC( axisSample ) || ISDATETIME( axisSample )
 		
 			// For totals
+			// Materialize axis + value once (avoid repeated measure evaluation)
+			VAR _Values =
+				ADDCOLUMNS(
+					VALUES( axisRef ),
+					"@Value", measureRef
+				)
+		
+			VAR _DataNonBlank =
+				FILTER( _Values, NOT ISBLANK( [@Value] ) )
+		
 			VAR _Data =
 				ADDCOLUMNS(
-					FILTER(
-						VALUES( axisRef ),
-						NOT ISBLANK( measureRef )
-					),
+					_DataNonBlank,
 					"@AxisIndex",
 						IF(
 							axisIsNumeric,
 							axisRef,
 							RANK( DENSE, CALCULATETABLE( VALUES( axisRef ), ALLSELECTED() ) )
-						),
-					"@Value", measureRef
+						)
 				)
 		
 			// Define axis scales
@@ -2329,32 +2335,33 @@ function 'DaxLib.SVG.Compound.Bar' =
 			VAR _RawYMin = 	MINX( _Data, [@Value] )
 			VAR _YMin = 	IF( _RawYMin > 0, 0, _RawYMin )
 			VAR _YMax = 	MAXX( _Data, [@Value] )
+			VAR _XWidth =   _X + _Width
+			VAR _YHeight =  _Y + _Height
 		
-			VAR _CountBars = CALCULATE(COUNT(axisRef), axisRef >= _XMin && axisRef <= _XMax)
-			VAR _BarWidth = DIVIDE(
-				_Width,
-				_CountBars
-				)
+			VAR _CountBars = COUNTROWS( _Data )
+			VAR _BarWidth = DIVIDE( _Width, _CountBars )
 		
-			//Bars
+			// Bars
 			VAR _Bars =
 				CONCATENATEX(
 					_Data,
 					IF(
 						NOT ISBLANK( [@Value] ),
+						VAR _normY = DaxLib.SVG.Scale.Normalize( [@Value], _YMin, _YMax, _YHeight, _Y )
+						RETURN
 						DaxLib.SVG.Element.Rect(
-							DaxLib.SVG.Scale.Normalize( [@AxisIndex], _XMin, _XMax, _X, _X + _Width ),
-							DaxLib.SVG.Scale.Normalize( [@Value], _YMin, _YMax, _Y + _Height, _Y ),
+							DaxLib.SVG.Scale.Normalize( [@AxisIndex], _XMin, _XMax, _X, _XWidth ),
+							_normY,
 							_BarWidth,
-							(_Y + _Height) - DaxLib.SVG.Scale.Normalize( [@Value], _YMin, _YMax, _Y + _Height, _Y ),
+							_YHeight - _normY,
 							0,
 							0,
 							DaxLib.SVG.Attr.Shapes(
 								IF( NOT ISBLANK( barColor ), barColor, "#01B8AA" ),		// fill
 								BLANK(),	// fillOpacity
 								BLANK(),	// fillRule
-								BLANK(), // stroke
-								1,			// stroke
+								BLANK(),    // stroke
+								1,			// strokeWidth
 								BLANK(),	// strokeOpacity
 								BLANK()		// opacity
 							),
@@ -2369,7 +2376,11 @@ function 'DaxLib.SVG.Compound.Bar' =
 			RETURN
 		
 				IF( NOT ISEMPTY( _Data ), _Bars )
-	lineageTag: 6ad93689-e71b-46da-8e4f-ea9aa49e02d1
+	lineageTag: cf978573-2dcf-4b99-8528-2329d7c7c2e7
+
+	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
+
+	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__
 
 /// Creates a Line compound SVG Visual for a numeric axis
 /// x              	INT64           	The x position of the compound
@@ -2395,29 +2406,35 @@ function 'DaxLib.SVG.Compound.Line' =
 		) =>
 		
 			// Apply padding to dimensions
-			VAR _X = 			x + (width * (IF(ISBLANK(paddingX), 0, paddingX) / 2))
-			VAR _Y = 			y + (height * (IF(ISBLANK(paddingY), 0, paddingY) / 2))
-			VAR _Width = 		width * (1 - IF(ISBLANK(paddingX), 0, paddingX))
-			VAR _Height = 		height * (1 - IF(ISBLANK(paddingY), 0, paddingY))
+			VAR _X = 			x + ( width * ( COALESCE( paddingX, 0 ) / 2) )
+			VAR _Y = 			y + ( height * ( COALESCE( paddingY, 0 ) / 2) )
+			VAR _Width = 		width * ( 1 - COALESCE( paddingX, 0 ) )
+			VAR _Height = 		height * ( 1 - COALESCE( paddingY, 0 ) )
 		
 			// Check if Axis is numeric
 			VAR axisSample = 	MAX( axisRef )
 			VAR axisIsNumeric = ISNUMERIC( axisSample ) || ISDATETIME( axisSample )
 		
 			// For totals
+			// Materialize axis + value once (avoid repeated measure evaluation)
+			VAR _Values =
+				ADDCOLUMNS(
+					VALUES( axisRef ),
+					"@Value", measureRef
+				)
+		
+			VAR _DataNonBlank =
+				FILTER( _Values, NOT ISBLANK( [@Value] ) )
+		
 			VAR _Data =
 				ADDCOLUMNS(
-					FILTER(
-						VALUES( axisRef ),
-						NOT ISBLANK( measureRef )
-					),
+					_DataNonBlank,
 					"@AxisIndex",
 						IF(
 							axisIsNumeric,
 							axisRef,
 							RANK( DENSE, CALCULATETABLE( VALUES( axisRef ), ALLSELECTED() ) )
-						),
-					"@Value", measureRef
+						)
 				)
 		
 			// Define axis scales
@@ -2426,6 +2443,8 @@ function 'DaxLib.SVG.Compound.Line' =
 			VAR _RawYMin = 	MINX( _Data, [@Value] )
 			VAR _YMin = 	IF( _RawYMin > 0, 0, _RawYMin )
 			VAR _YMax = 	MAXX( _Data, [@Value] )
+			VAR _XWidth =   _X + _Width
+			VAR _YHeight =  _Y + _Height
 		
 			//Points
 			VAR _Points =
@@ -2435,8 +2454,8 @@ function 'DaxLib.SVG.Compound.Line' =
 						NOT ISBLANK( [@Value] ),
 						COMBINEVALUES(
 							",",
-							DaxLib.SVG.Scale.Normalize( [@AxisIndex], _XMin, _XMax, _X, _X + _Width ),
-							DaxLib.SVG.Scale.Normalize( [@Value], _YMin, _YMax, _Y + _Height, _Y )
+							DaxLib.SVG.Scale.Normalize( [@AxisIndex], _XMin, _XMax, _X, _XWidth ),
+							DaxLib.SVG.Scale.Normalize( [@Value], _YMin, _YMax, _YHeight, _Y )
 						)
 					),
 					" ",
@@ -2463,8 +2482,8 @@ function 'DaxLib.SVG.Compound.Line' =
 			// Single Point Element
 			VAR _SinglePointElement =
 				DaxLib.SVG.Element.Circle(
-					DaxLib.SVG.Scale.Normalize( MAXX( _Data, [@AxisIndex] ), _XMin, _XMax, _X, _X + _Width ), // cx
-					DaxLib.SVG.Scale.Normalize( MAXX( _Data, [@Value] ), _YMin, _YMax, _Y + _Height, _Y ), // cy
+					DaxLib.SVG.Scale.Normalize( MAXX( _Data, [@AxisIndex] ), _XMin, _XMax, _X, _XWidth ), // cx
+					DaxLib.SVG.Scale.Normalize( MAXX( _Data, [@Value] ), _YMin, _YMax, _YHeight, _Y ), // cy
 					2,           	// r
 					DaxLib.SVG.Attr.Shapes(
 						lineColor, 	// fill
@@ -2489,7 +2508,7 @@ function 'DaxLib.SVG.Compound.Line' =
 			RETURN
 		
 				IF( NOT ISEMPTY( _Data ), _CombinedElement )
-	lineageTag: 4065c4fe-afc3-4a80-b33d-d2c9946b251f
+	lineageTag: 892fec28-b2b1-4e57-bc2c-dab2b0c2ad47
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -2523,29 +2542,35 @@ function 'DaxLib.SVG.Compound.Area' =
 		) =>
 		
 			// Apply padding to dimensions
-			VAR _X = 			x + (width * (IF(ISBLANK(paddingX), 0, paddingX) / 2))
-			VAR _Y = 			y + (height * (IF(ISBLANK(paddingY), 0, paddingY) / 2))
-			VAR _Width = 		width * (1 - IF(ISBLANK(paddingX), 0, paddingX))
-			VAR _Height = 		height * (1 - IF(ISBLANK(paddingY), 0, paddingY))
+			VAR _X = 			x + ( width * ( COALESCE( paddingX, 0 ) / 2) )
+			VAR _Y = 			y + ( height * ( COALESCE( paddingY, 0 ) / 2) )
+			VAR _Width = 		width * ( 1 - COALESCE( paddingX, 0 ) )
+			VAR _Height = 		height * ( 1 - COALESCE( paddingY, 0 ) )
 		
 			// Check if Axis is numeric
 			VAR axisSample = 	MAX( axisRef )
 			VAR axisIsNumeric = ISNUMERIC( axisSample ) || ISDATETIME( axisSample )
 		
 			// For totals
+			// Materialize axis + value once (avoid repeated measure evaluation)
+			VAR _Values =
+				ADDCOLUMNS(
+					VALUES( axisRef ),
+					"@Value", measureRef
+				)
+		
+			VAR _DataNonBlank =
+				FILTER( _Values, NOT ISBLANK( [@Value] ) )
+		
 			VAR _Data =
 				ADDCOLUMNS(
-					FILTER(
-						VALUES( axisRef ),
-						NOT ISBLANK( measureRef )
-					),
+					_DataNonBlank,
 					"@AxisIndex",
 						IF(
 							axisIsNumeric,
 							axisRef,
 							RANK( DENSE, CALCULATETABLE( VALUES( axisRef ), ALLSELECTED() ) )
-						),
-					"@Value", measureRef
+						)
 				)
 		
 			VAR _XMin = 	MINX( _Data, [@AxisIndex] )
@@ -2553,39 +2578,35 @@ function 'DaxLib.SVG.Compound.Area' =
 			VAR _RawYMin = 	MINX( _Data, [@Value] )
 			VAR _YMin = 	IF( _RawYMin > 0, 0, _RawYMin )
 			VAR _YMax = 	MAXX( _Data, [@Value] )
+			VAR _XWidth =   _X + _Width
+			VAR _YHeight =  _Y + _Height
 		
 			// Calculate baseline Y position (for zero line or bottom)
-			VAR _BaselineY = DaxLib.SVG.Scale.Normalize( _YMin, _YMin, _YMax, _Y + _Height, _Y )
+			VAR _BaselineY = DaxLib.SVG.Scale.Normalize( _YMin, _YMin, _YMax, _YHeight, _Y )
+		
+			// Cache
+			VAR _DataNormalized =
+				ADDCOLUMNS(
+					_Data,
+					"@NormX", DaxLib.SVG.Scale.Normalize( [@AxisIndex], _XMin, _XMax, _X, _XWidth ),
+					"@NormY", DaxLib.SVG.Scale.Normalize( [@Value], _YMin, _YMax, _YHeight, _Y )
+				)
 		
 			// Get first and last X positions
-			VAR _FirstX =
-				MINX(
-					FILTER( _Data, NOT ISBLANK( [@Value] ) ),
-					DaxLib.SVG.Scale.Normalize( [@AxisIndex], _XMin, _XMax, _X, _X + _Width )
-				)
-		
-			VAR _LastX =
-				MAXX(
-					FILTER( _Data, NOT ISBLANK( [@Value] ) ),
-					DaxLib.SVG.Scale.Normalize( [@AxisIndex], _XMin, _XMax, _X, _X + _Width )
-				)
+			VAR _FirstX = MINX( _DataNormalized, [@NormX] )
+			VAR _LastX = MAXX( _DataNormalized, [@NormX] )
 		
 			// Generate points for the area polygon
 			// Start at baseline (bottom left), go up the data line, then back down to baseline
 			VAR _PolygonPoints =
 				// Start at first X position at baseline
-				_FirstX & "," & _BaselineY
+				_FirstX & "," & _BaselineY & " " &
 				// Add all the data points (the top line)
-				& " " &
 				CONCATENATEX(
-					_Data,
+					_DataNormalized,
 					IF(
 						NOT ISBLANK( [@Value] ),
-						COMBINEVALUES(
-							",",
-							DaxLib.SVG.Scale.Normalize( [@AxisIndex], _XMin, _XMax, _X, _X + _Width ),
-							DaxLib.SVG.Scale.Normalize( [@Value], _YMin, _YMax, _Y + _Height, _Y )
-						)
+						COMBINEVALUES( ",", [@NormX], [@NormY] )
 					),
 					" ",
 					[@AxisIndex],
@@ -2597,14 +2618,10 @@ function 'DaxLib.SVG.Compound.Area' =
 			// Generate points for just the top line (for optional stroke)
 			VAR _TopPoints =
 				CONCATENATEX(
-					_Data,
+					_DataNormalized,
 					IF(
 						NOT ISBLANK( [@Value] ),
-						COMBINEVALUES(
-							",",
-							DaxLib.SVG.Scale.Normalize( [@AxisIndex], _XMin, _XMax, _X, _X + _Width ),
-							DaxLib.SVG.Scale.Normalize( [@Value], _YMin, _YMax, _Y + _Height, _Y )
-						)
+						COMBINEVALUES( ",", [@NormX], [@NormY] )
 					),
 					" ",
 					[@AxisIndex],
@@ -2646,8 +2663,8 @@ function 'DaxLib.SVG.Compound.Area' =
 			// Circle if only one point
 			VAR _SinglePointElement =
 				DaxLib.SVG.Element.Circle(
-						DaxLib.SVG.Scale.Normalize( MAXX( _Data, [@AxisIndex] ), _XMin, _XMax, _X, _X + _Width ), // cx
-						DaxLib.SVG.Scale.Normalize( MAXX( _Data, [@Value] ), _YMin, _YMax, _Y + _Height, _Y ), // cy
+						DaxLib.SVG.Scale.Normalize( MAXX( _Data, [@AxisIndex] ), _XMin, _XMax, _X, _XWidth ), // cx
+						DaxLib.SVG.Scale.Normalize( MAXX( _Data, [@Value] ), _YMin, _YMax, _YHeight, _Y ), // cy
 						2,               	// r
 						DaxLib.SVG.Attr.Shapes(
 							fillColor,     // fill
@@ -2673,7 +2690,7 @@ function 'DaxLib.SVG.Compound.Area' =
 			RETURN
 		
 				IF( NOT ISEMPTY( _Data ), _CombinedElements )
-	lineageTag: 2e3f5c23-8c35-4a51-9b0d-179401b9b56c
+	lineageTag: ffbd490c-583f-44f2-b66e-a3ff2a368dac
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -2705,38 +2722,56 @@ function 'DaxLib.SVG.Compound.Jitter' =
 		) =>
 		
 			// Apply padding to dimensions
-			VAR _X = 			x + (width * (IF(ISBLANK(paddingX), 0, paddingX) / 2))
-			VAR _Y = 			y + (height * (IF(ISBLANK(paddingY), 0, paddingY) / 2))
-			VAR _Width = 		width * (1 - IF(ISBLANK(paddingX), 0, paddingX))
-			VAR _Height = 		height * (1 - IF(ISBLANK(paddingY), 0, paddingY))
+			VAR _X = 			x + ( width * ( COALESCE( paddingX, 0 ) / 2) )
+			VAR _Y = 			y + ( height * ( COALESCE( paddingY, 0 ) / 2) )
+			VAR _Width = 		width * ( 1 - COALESCE( paddingX, 0 ) )
+			VAR _Height = 		height * ( 1 - COALESCE( paddingY, 0 ) )
 		
 			// Check if Axis is numeric
 			VAR axisSample = 	MAX( axisRef )
 			VAR axisIsNumeric = ISNUMERIC( axisSample ) || ISDATETIME( axisSample )
 		
 			// For totals
+			// Materialize axis + value once (avoid repeated measure evaluation)
+			VAR _Values =
+				ADDCOLUMNS(
+					VALUES( axisRef ),
+					"@Value", measureRef
+				)
+		
+			VAR _DataNonBlank =
+				FILTER( _Values, NOT ISBLANK( [@Value] ) )
+		
 			VAR _Data =
 				ADDCOLUMNS(
-					FILTER(
-						VALUES( axisRef ),
-						NOT ISBLANK( measureRef )
-					),
+					_DataNonBlank,
 					"@AxisIndex",
 						IF(
 							axisIsNumeric,
 							axisRef,
 							RANK( DENSE, CALCULATETABLE( VALUES( axisRef ), ALLSELECTED() ) )
-						),
-					"@Value", measureRef
+						)
 				)
 		
 			VAR _RawXMin = 	MINX( _Data, [@Value] )
 			VAR _XMin = 	IF( _RawXMin > 0, 0, _RawXMin )
 			VAR _XMax = 	MAXX( _Data, [@Value] )
+			VAR _XWidth =   _X + _Width
+			VAR _YHeight =  _Y + _Height
+			VAR _CenterY = 	_Y + _Height * 0.5
+			VAR _JitterRange = 	_Height * IF( ISBLANK( jitterAmount ), 0.3, jitterAmount )
 		
 			// Points
-			VAR _CenterY = 		_Y + _Height * 0.5
-			VAR _JitterRange = 	_Height * IF( ISBLANK( jitterAmount ), 0.3, jitterAmount )
+			VAR _CircleAttr =
+				DaxLib.SVG.Attr.Shapes(
+					pointColor,   	// fill
+					0.5,            // fillOpacity
+					BLANK(),        // fillRule
+					pointColor,   	// stroke
+					1,              // strokeWidth
+					0.9,            // strokeOpacity
+					BLANK()         // opacity
+				)
 			VAR _CircleElements =
 				CONCATENATEX(
 					_Data,
@@ -2745,21 +2780,13 @@ function 'DaxLib.SVG.Compound.Jitter' =
 						VAR _Seed = 		ABS( [@Value] * 12345 ) + ABS( [@AxisIndex] * 67890 ) + ABS( LEN( FORMAT( [@Value], "0.000000" ) ) * 9876 )
 						VAR _PseudoRandom = MOD( _Seed, 10000 ) / 10000
 						VAR _JitterY = 		_CenterY + ( _PseudoRandom - 0.5 ) * _JitterRange
-						VAR _ClampedY = 	MAX( _Y, MIN( _Y + _Height, _JitterY ) )
+						VAR _ClampedY = 	MAX( _Y, MIN( _YHeight, _JitterY ) )
 						RETURN
 							DaxLib.SVG.Element.Circle(
-								DaxLib.SVG.Scale.Normalize( [@Value], _XMin, _XMax, _X, _X + _Width ), // cx
+								DaxLib.SVG.Scale.Normalize( [@Value], _XMin, _XMax, _X, _XWidth ), // cx
 								_ClampedY,          // cy
 								2,         			// r
-								DaxLib.SVG.Attr.Shapes(
-									pointColor,   	// fill
-									0.5,            // fillOpacity
-									BLANK(),        // fillRule
-									pointColor,   	// stroke
-									1,              // strokeWidth
-									0.9,            // strokeOpacity
-									BLANK()         // opacity
-								),
+								_CircleAttr,       	// attributes
 								BLANK()             // transforms
 							)
 					),
@@ -2771,7 +2798,7 @@ function 'DaxLib.SVG.Compound.Jitter' =
 			RETURN
 		
 				IF( NOT ISEMPTY( _Data ), _CircleElements )
-	lineageTag: bcc5eb6a-ff41-4a16-a10c-2d6638073a1a
+	lineageTag: 1f7d3b4e-84c4-4f9a-97df-896cf21a2cc2
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -2805,29 +2832,35 @@ function 'DaxLib.SVG.Compound.Boxplot' =
 		) =>
 		
 			// Apply padding to dimensions
-			VAR _X = 			x + (width * (IF(ISBLANK(paddingX), 0, paddingX) / 2))
-			VAR _Y = 			y + (height * (IF(ISBLANK(paddingY), 0, paddingY) / 2))
-			VAR _Width = 		width * (1 - IF(ISBLANK(paddingX), 0, paddingX))
-			VAR _Height = 		height * (1 - IF(ISBLANK(paddingY), 0, paddingY))
+			VAR _X = 			x + ( width * ( COALESCE( paddingX, 0 ) / 2) )
+			VAR _Y = 			y + ( height * ( COALESCE( paddingY, 0 ) / 2) )
+			VAR _Width = 		width * ( 1 - COALESCE( paddingX, 0 ) )
+			VAR _Height = 		height * ( 1 - COALESCE( paddingY, 0 ) )
 		
 			// Check if Axis is numeric
 			VAR axisSample = 	MAX( axisRef )
 			VAR axisIsNumeric = ISNUMERIC( axisSample ) || ISDATETIME( axisSample )
 		
 			// For totals
+			// Materialize axis + value once (avoid repeated measure evaluation)
+			VAR _Values =
+				ADDCOLUMNS(
+					VALUES( axisRef ),
+					"@Value", measureRef
+				)
+		
+			VAR _DataNonBlank =
+				FILTER( _Values, NOT ISBLANK( [@Value] ) )
+		
 			VAR _Data =
 				ADDCOLUMNS(
-					FILTER(
-						VALUES( axisRef ),
-						NOT ISBLANK( measureRef )
-					),
+					_DataNonBlank,
 					"@AxisIndex",
 						IF(
 							axisIsNumeric,
 							axisRef,
 							RANK( DENSE, CALCULATETABLE( VALUES( axisRef ), ALLSELECTED() ) )
-						),
-					"@Value", measureRef
+						)
 				)
 		
 			VAR _XMin = 			MINX( _Data, [@Value] )
@@ -2847,12 +2880,14 @@ function 'DaxLib.SVG.Compound.Boxplot' =
 			VAR _LowerWhisker =		MAX( _Min, _Q1 - 1.5 * _IQR )
 			VAR _UpperWhisker = 	MIN( _Max, _Q3 + 1.5 * _IQR )
 		
+			VAR _XWidth =   _X + _Width
+		
 			// Scale statistical values to SVG coordinates
-			VAR _Q1X = 				DaxLib.SVG.Scale.Normalize( _Q1, _XMin, _XMax, _X, _X + _Width )
-			VAR _MedianX = 			DaxLib.SVG.Scale.Normalize( _Median, _XMin, _XMax, _X, _X + _Width )
-			VAR _Q3X = 				DaxLib.SVG.Scale.Normalize( _Q3, _XMin, _XMax, _X, _X + _Width )
-			VAR _LowerWhiskerX = 	DaxLib.SVG.Scale.Normalize( _LowerWhisker, _XMin, _XMax, _X, _X + _Width )
-			VAR _UpperWhiskerX = 	DaxLib.SVG.Scale.Normalize( _UpperWhisker, _XMin, _XMax, _X, _X + _Width )
+			VAR _Q1X = 				DaxLib.SVG.Scale.Normalize( _Q1, _XMin, _XMax, _X, _XWidth )
+			VAR _MedianX = 			DaxLib.SVG.Scale.Normalize( _Median, _XMin, _XMax, _X, _XWidth )
+			VAR _Q3X = 				DaxLib.SVG.Scale.Normalize( _Q3, _XMin, _XMax, _X, _XWidth )
+			VAR _LowerWhiskerX = 	DaxLib.SVG.Scale.Normalize( _LowerWhisker, _XMin, _XMax, _X, _XWidth )
+			VAR _UpperWhiskerX = 	DaxLib.SVG.Scale.Normalize( _UpperWhisker, _XMin, _XMax, _X, _XWidth )
 		
 			// Box dimensions - centered vertically with padding
 			VAR _BoxHeight = 		_Height * 0.6
@@ -2860,6 +2895,16 @@ function 'DaxLib.SVG.Compound.Boxplot' =
 			VAR _CenterY = 			_Y + _Height * 0.5
 		
 			// Create outlier points beyond whiskers if enabled
+			VAR _OutlierAttr =
+				DaxLib.SVG.Attr.Shapes(
+					strokeColor,    // fill
+					BLANK(),        // fillOpacity
+					BLANK(),        // fillRule
+					BLANK(),        // stroke
+					BLANK(),        // strokeWidth
+					BLANK(),        // strokeOpacity
+					BLANK()         // opacity
+				)
 			VAR _Outliers =
 				IF(
 					showOutliers,
@@ -2869,18 +2914,10 @@ function 'DaxLib.SVG.Compound.Boxplot' =
 							[@Value] < _LowerWhisker || [@Value] > _UpperWhisker
 						),
 						DaxLib.SVG.Element.Circle(
-							DaxLib.SVG.Scale.Normalize( [@Value], _XMin, _XMax, _X, _X + _Width ), // cx
+							DaxLib.SVG.Scale.Normalize( [@Value], _XMin, _XMax, _X, _XWidth ), // cx
 							_CenterY,          	// cy
 							2,                  // radius
-							DaxLib.SVG.Attr.Shapes(
-								strokeColor,    // fill
-								BLANK(),        // fillOpacity
-								BLANK(),        // fillRule
-								BLANK(),        // stroke
-								BLANK(),        // strokeWidth
-								BLANK(),        // strokeOpacity
-								BLANK()         // opacity
-							),
+							_OutlierAttr,       // attributes
 							BLANK()             // transforms
 						),
 						""
@@ -3016,12 +3053,24 @@ function 'DaxLib.SVG.Compound.Boxplot' =
 			RETURN
 		
 				IF( NOT ISEMPTY( _Data ), _CombinedElements )
-	lineageTag: ecd6e218-9765-4864-a19c-f7a5ce5695a5
+	lineageTag: 8beb2941-0e4b-487d-b93a-c13e18677e2a
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
 	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__
 
+/// Creates a Violin Plot compound SVG Visual showing distribution density using Kernel Density Estimation (KDE)
+/// x			  	INT64           The x position of the compound
+/// y			  	INT64           The y position of the compound
+/// width          	INT64           The width of the compound
+/// height         	INT64           The height of the compound
+/// paddingX		DOUBLE			The horizontal padding percentage (0.0-1.0, e.g., 0.1 = 10% padding)
+/// paddingY		DOUBLE			The vertical padding percentage (0.0-1.0, e.g., 0.1 = 10% padding)
+/// axisRef        	ANYREF EXPR     The column that the measure will be evaluated against
+/// measureRef     	NUMERIC EXPR    The measure to evaluate
+/// samples        	INT64           Number of density calculation points
+/// bandwidth      	NUMERIC         Kernel bandwidth for smoothing
+/// color      		STRING          Fill color for the violin shape
 function 'DaxLib.SVG.Compound.Violin' =
 		(
 			x: INT64,
@@ -3038,66 +3087,59 @@ function 'DaxLib.SVG.Compound.Violin' =
 		) =>
 		
 			// Apply padding to dimensions
-			VAR _X = 			x + (width * (IF(ISBLANK(paddingX), 0, paddingX) / 2))
-			VAR _Y = 			y + (height * (IF(ISBLANK(paddingY), 0, paddingY) / 2))
-			VAR _Width = 		width * (1 - IF(ISBLANK(paddingX), 0, paddingX))
-			VAR _Height = 		height * (1 - IF(ISBLANK(paddingY), 0, paddingY))
-		
-			// Check if Axis is numeric
-			VAR axisSample = 	MAX( axisRef )
-			VAR axisIsNumeric = ISNUMERIC( axisSample ) || ISDATETIME( axisSample )
+			VAR _X = 			x + ( width * ( COALESCE( paddingX, 0 ) / 2) )
+			VAR _Y = 			y + ( height * ( COALESCE( paddingY, 0 ) / 2))
+			VAR _Width = 		width * ( 1 - COALESCE( paddingX, 0 ) )
+			VAR _Height = 		height * ( 1 - COALESCE( paddingY, 0 ) )
 		
 			// For totals
 			VAR _Data =
-				ADDCOLUMNS(
+				SELECTCOLUMNS(
 					FILTER(
 						VALUES( axisRef ),
 						NOT ISBLANK( measureRef )
 					),
-					"@AxisIndex",
-						IF(
-							axisIsNumeric,
-							axisRef,
-							RANK( DENSE, CALCULATETABLE( VALUES( axisRef ), ALLSELECTED() ) )
-						),
 					"@Value", measureRef
 				)
 		
 			VAR _NumValues = 		COUNTROWS( _Data )
+			VAR _InvNumValues =     1 / _NumValues
 			VAR _Min = 				MINX( _Data, [@Value] )
 			VAR _Max = 				MAXX( _Data, [@Value] )
 			VAR _Range = 			_Max - _Min
 			VAR _RangePerSample = 	_Range / samples
+			VAR _XWidth =           _X + _Width
+			VAR _YHeight =          _Y + _Height * 0.5
 		
 			// Calculate Kernel Density Estimation using Normal distribution
-			VAR _KDE =
+			VAR _KDEInput =
 				ADDCOLUMNS(
 					GENERATESERIES( 0, samples + 1, 1 ),
-					"@InputX", _Min + _RangePerSample * [Value],
-					"@KDE",
-						( 1 / _NumValues ) *
-						SUMX(
-							_Data,
-							NORM.DIST(
-								_Min + _RangePerSample * [Value],
-								[@Value],
-								bandwidth,
-								FALSE
-							)
-						)
+					"@InputX", _Min + _RangePerSample * [Value]
+				)
+		
+			VAR _KDE =
+				ADDCOLUMNS(
+					_KDEInput,
+					"@KDE", _InvNumValues * SUMX( _Data, NORM.DIST( [@InputX], [@Value], bandwidth, FALSE ) )
 				)
 		
 			VAR _MaxKDE = 		MAXX( _KDE, [@KDE] )
 		
 			// Map KDE values to SVG coordinates using normalize function
 			VAR _Points =
-				ADDCOLUMNS(
-					_KDE,
-					"@X", DaxLib.SVG.Scale.Normalize( [@InputX], _Min, _Max, _X, _X + _Width),
-					"@Y", DaxLib.SVG.Scale.Normalize( [@KDE], 0, _MaxKDE, _Y + _Height * 0.5, _Y )
+				SELECTCOLUMNS(
+					ADDCOLUMNS(
+						_KDE,
+						"@X", DaxLib.SVG.Scale.Normalize( [@InputX], _Min, _Max, _X, _XWidth),
+						"@Y", DaxLib.SVG.Scale.Normalize( [@KDE], 0, _MaxKDE, _YHeight, _Y )
+					),
+					"Value", [Value],
+					"@X", [@X],
+					"@Y", [@Y]
 				)
 		
-			// Create control points for smooth Bézier curves
+			// Previous point via NATURALLEFTOUTERJOIN
 			VAR _PointsWithPrev =
 				NATURALLEFTOUTERJOIN(
 					_Points,
@@ -3109,49 +3151,35 @@ function 'DaxLib.SVG.Compound.Violin' =
 					)
 				)
 		
-			VAR _WithControlPoints =
+			// Control points + precompute segment strings once
+			VAR _CenterY = _Y + (_Height * 0.5)
+		
+			VAR _Segs =
 				ADDCOLUMNS(
 					_PointsWithPrev,
-					"@CX", [@prevX] + ( ( [@x] - [@prevX] ) / 2 ),
-					"@CY", [@y]
+					"@CX", [@PrevX] + ( ( [@X] - [@PrevX] ) / 2 ),
+					"@CY", [@Y],
+					"@TopSeg",
+						IF(
+							[Value] = 0,
+							"M " & [@X] & " " & _CenterY,
+							"S " & ([@PrevX] + ( ( [@X] - [@PrevX] ) / 2 )) & " " & [@Y] & ", " & [@X] & " " & [@Y]
+						),
+					"@BottomSeg",
+						VAR _MirroredY = _CenterY + (_CenterY - [@Y])
+						VAR _MirroredCY = _CenterY + (_CenterY - [@Y])
+						RETURN
+							IF(
+								[Value] = 0,
+								"",
+								"S " & ([@PrevX] + ( ( [@X] - [@PrevX] ) / 2 )) & " " & _MirroredCY & ", " & [@X] & " " & _MirroredY
+							)
 				)
 		
-		// Create the violin shape as a single closed path
-		// Start at the center-left, go up the top curve, then down the bottom curve, and close
-		VAR _FirstPoint = MINX( _Points, [@X] )
-		VAR _LastPoint = MAXX( _Points, [@X] )
-		VAR _CenterY = _Y + (_Height * 0.5)
+			VAR _TopCurve = CONCATENATEX( _Segs, [@TopSeg], " ", [Value], ASC )
 		
-		// Top half curve (from left to right)
-		VAR _TopCurve =
-			CONCATENATEX(
-				_WithControlPoints,
-				IF(
-					[Value] = 0,
-					"M " & [@X] & " " & _CenterY,
-					"S " & [@CX] & " " & [@CY] & ", " & [@X] & " " & [@Y]
-				),
-				" ",
-				[Value],
-				ASC
-			)
+			VAR _BottomCurve = CONCATENATEX( _Segs, [@BottomSeg], " ", [Value], DESC )
 		
-		// Bottom half curve (from right to left, mirrored)
-		VAR _BottomCurve =
-			CONCATENATEX(
-				_WithControlPoints,
-				VAR _MirroredY = _CenterY + (_CenterY - [@Y])
-				VAR _MirroredCY = _CenterY + (_CenterY - [@CY])
-				RETURN
-					IF(
-						[Value] = 0,
-						"",
-						"S " & [@CX] & " " & _MirroredCY & ", " & [@X] & " " & _MirroredY
-					),
-				" ",
-				[Value],
-				DESC
-			)			// Create a single closed path for the violin shape
 			VAR _ViolinPath =
 				_TopCurve &
 				" " & _BottomCurve &
@@ -3176,7 +3204,11 @@ function 'DaxLib.SVG.Compound.Violin' =
 			RETURN
 		
 				IF( NOT ISEMPTY( _Data ), _CombinedElements )
-	lineageTag: f8c32201-8991-4b02-8a21-053b1e399eb7
+	lineageTag: e44f2857-f57a-4047-982b-d4a74ae49dde
+
+	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
+
+	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__
 
 /// Creates a KDE-based Heatmap compound SVG Visual using Kernel Density Estimation for smooth color gradients
 /// x              	INT64           The x position of the compound
@@ -3206,53 +3238,39 @@ function 'DaxLib.SVG.Compound.Heatmap' =
 		) =>
 		
 			// Apply padding to dimensions
-			VAR _X = 			x + (width * (IF(ISBLANK(paddingX), 0, paddingX) / 2))
-			VAR _Y = 			y + (height * (IF(ISBLANK(paddingY), 0, paddingY) / 2))
-			VAR _Width = 		width * (1 - IF(ISBLANK(paddingX), 0, paddingX))
-			VAR _Height = 		height * (1 - IF(ISBLANK(paddingY), 0, paddingY))
-		
-			// Check if Axis is numeric
-			VAR axisSample = 	MAX( axisRef )
-			VAR axisIsNumeric = ISNUMERIC( axisSample ) || ISDATETIME( axisSample )
+			VAR _X = 			x + ( width * ( COALESCE( paddingX, 0 ) / 2) )
+			VAR _Y = 			y + ( height * ( COALESCE( paddingY, 0 ) / 2))
+			VAR _Width = 		width * ( 1 - COALESCE( paddingX, 0 ) )
+			VAR _Height = 		height * ( 1 - COALESCE( paddingY, 0 ) )
 		
 			// For totals
 			VAR _Data =
-				ADDCOLUMNS(
+				SELECTCOLUMNS(
 					FILTER(
 						VALUES( axisRef ),
 						NOT ISBLANK( measureRef )
 					),
-					"@AxisIndex",
-						IF(
-							axisIsNumeric,
-							axisRef,
-							RANK( DENSE, CALCULATETABLE( VALUES( axisRef ), ALLSELECTED() ) )
-						),
 					"@Value", measureRef
 				)
 		
 			VAR _NumValues = 		COUNTROWS( _Data )
+			VAR _InvNumValues =     1 / _NumValues
 			VAR _Min = 				MINX( _Data, [@Value] )
 			VAR _Max = 				MAXX( _Data, [@Value] )
 			VAR _Range = 			_Max - _Min
 			VAR _RangePerSample = 	_Range / samples
 		
 			// Calculate Kernel Density Estimation using Normal distribution
+			VAR _KDEInput =
+				ADDCOLUMNS(
+					GENERATESERIES( 0, samples + 1, 1 ),
+					"@InputX", _Min + _RangePerSample * [Value]
+				)
+		
 			VAR _KDE =
 				ADDCOLUMNS(
-					GENERATESERIES( 0, samples, 1 ),
-					"@InputX", _Min + _RangePerSample * [Value],
-					"@KDE",
-						( 1 / _NumValues ) *
-						SUMX(
-							_Data,
-							NORM.DIST(
-								_Min + _RangePerSample * [Value],
-								[@Value],
-								bandwidth,
-								FALSE()
-							)
-						)
+					_KDEInput,
+					"@KDE", _InvNumValues * SUMX( _Data, NORM.DIST( [@InputX], [@Value], bandwidth, FALSE ) )
 				)
 		
 			VAR _MaxKDE = 		MAXX( _KDE, [@KDE] )
@@ -3313,7 +3331,7 @@ function 'DaxLib.SVG.Compound.Heatmap' =
 			RETURN
 		
 				IF( NOT ISEMPTY( _Data ), _CombinedElements )
-	lineageTag: 50554193-8403-4978-b6a1-55222e4d6bd3
+	lineageTag: 9d8c9140-bf5a-4cb2-97b1-0bec39dde3dc
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -3473,7 +3491,7 @@ function 'DaxLib.SVG.Color.Theme' =
 				)
 		
 			RETURN SelectedColor
-	lineageTag: 43badd2b-0566-45a8-afb5-f20d62776eef
+	lineageTag: 9c81fc8d-447e-4c46-96c0-fdcf3c50e8e6
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -3541,7 +3559,7 @@ function 'DaxLib.SVG.Color.PerformanceTheme' =
 				)
 		
 			RETURN SelectedColor
-	lineageTag: 591213df-85ff-45e0-a6f4-19b9b07441bc
+	lineageTag: f2a0a3b0-9ffb-41ce-8b6f-9229fbabb9ed
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -3571,7 +3589,7 @@ function 'DaxLib.SVG.Color.Int.ToHex' =
 				)
 		
 			RETURN Hex
-	lineageTag: 2a097a23-90a8-4beb-8baf-aa2e35336270
+	lineageTag: af20da90-4650-4bee-878f-6d3b20bff26a
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -3596,7 +3614,7 @@ function 'DaxLib.SVG.Color.Hex.ToInt' =
 				)
 		
 			RETURN Result
-	lineageTag: 915ebcaf-76d2-4828-8c38-bdecc97d289a
+	lineageTag: 844587c1-d3bc-400b-bfce-7e3bccabd2e5
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -3620,7 +3638,7 @@ function 'DaxLib.SVG.Color.RGB.ToHex' =
 			DaxLib.SVG.Color.Int.ToHex( green, 2 ) &
 			DaxLib.SVG.Color.Int.ToHex( blue, 2 ) &
 			IF( NOT ISBLANK( alpha ), DaxLib.SVG.Color.Int.ToHex( alpha * 255, 2 ) )
-	lineageTag: 673fe707-5122-4585-afd7-5b5249e1111e
+	lineageTag: 4eb8f3a0-9159-47ab-95ae-719b9ebe6cd7
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -3667,7 +3685,7 @@ function 'DaxLib.SVG.Color.Hex.Interpolate' =
 				)
 		
 			RETURN result
-	lineageTag: 53c51d27-cfcc-4e9d-a64e-68313ef73207
+	lineageTag: bcfcc879-a146-45bf-a5f6-1fdc083061ce
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
