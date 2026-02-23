@@ -70,7 +70,7 @@ function 'DaxLib.SVG.Data.AxisMeasure' =
 				)
 
 			VAR _AxisSample = MAX( axisRefColumn )
-			VAR _AxisIsNumeric = ISNUMERIC( _AxisSample ) || ISDATETIME( _AxisSample )
+			VAR _AxisIsNumeric = ISNUMBER( _AxisSample )
 			VAR _UseNumericAxis =
 				IF(
 					_AxisMode = "Numeric",
@@ -130,6 +130,288 @@ function 'DaxLib.SVG.Data.Range' =
 					"@Min", _Min,
 					"@Max", _Max,
 					"@Baseline", _Baseline
+				)
+
+	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
+
+	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__
+
+/// Estimates the maximum Y-axis tick label width for layout reservation
+/// @param {numeric} axisMin – Axis minimum value
+/// @param {numeric} axisMax – Axis maximum value
+/// @param {int} tickCount – Number of ticks to estimate
+/// @param {int} axisFontSize – Axis font size
+/// @param {decimal} labelWidthFactor – Font width factor (Segoe UI default: 0.56)
+/// @returns {numeric} Estimated max label width in pixels
+function 'DaxLib.SVG.Axis.MaxTickLabelWidth' =
+		(
+			axisMin: NUMERIC VAL,
+			axisMax: NUMERIC VAL,
+			tickCount: INT64,
+			axisFontSize: INT64,
+			labelWidthFactor: DOUBLE
+		) =>
+
+			VAR _TickCount = IF( ISBLANK( tickCount ) || tickCount < 1, 1, tickCount )
+			VAR _AxisFontSize = IF( ISBLANK( axisFontSize ), 10, axisFontSize )
+			VAR _LabelWidthFactor = IF( ISBLANK( labelWidthFactor ), 0.56, labelWidthFactor )
+
+			VAR _LabelTable =
+				ADDCOLUMNS(
+					GENERATESERIES( 0, _TickCount - 1, 1 ),
+					"@TickValue",
+						IF(
+							_TickCount = 1,
+							axisMin,
+							axisMin + DIVIDE( [Value], _TickCount - 1, 0 ) * ( axisMax - axisMin )
+						),
+					"@Label", FORMAT( [@TickValue], "General Number" ),
+					"@EstimatedWidth", LEN( [@Label] ) * _AxisFontSize * _LabelWidthFactor
+				)
+
+			RETURN
+				MAXX( _LabelTable, [@EstimatedWidth] )
+
+	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
+
+	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__
+
+/// Calculates axis-aware plot area bounds
+/// @param {numeric} x – Content x
+/// @param {numeric} y – Content y
+/// @param {numeric} width – Content width
+/// @param {numeric} height – Content height
+/// @param {boolean} showAxis – Whether axes are enabled
+/// @param {int} axisFontSize – Axis font size
+/// @param {numeric} maxTickLabelWidth – Estimated max y-label width
+/// @returns {table} Single-row table with @PlotX, @PlotY, @PlotWidth, @PlotHeight
+function 'DaxLib.SVG.Axis.Layout' =
+		(
+			x: NUMERIC VAL,
+			y: NUMERIC VAL,
+			width: NUMERIC VAL,
+			height: NUMERIC VAL,
+			showAxis: BOOLEAN,
+			axisFontSize: INT64,
+			maxTickLabelWidth: NUMERIC VAL
+		) =>
+
+			VAR _ShowAxis = IF( ISBLANK( showAxis ), FALSE(), showAxis )
+			VAR _AxisFontSize = IF( ISBLANK( axisFontSize ), 10, axisFontSize )
+			VAR _TickLength = 3
+			VAR _TickPadding = 4
+			VAR _AxisLinePadding = 2
+
+			VAR _ReservedXAxisHeight = IF( _ShowAxis, _AxisFontSize + _TickLength + _TickPadding + _AxisLinePadding, 0 )
+			VAR _ReservedYAxisWidth = IF( _ShowAxis, maxTickLabelWidth + _TickLength + _TickPadding + _AxisLinePadding, 0 )
+
+			RETURN
+				ROW(
+					"@PlotX", x + _ReservedYAxisWidth,
+					"@PlotY", y,
+					"@PlotWidth", MAX( 0, width - _ReservedYAxisWidth ),
+					"@PlotHeight", MAX( 0, height - _ReservedXAxisHeight )
+				)
+
+	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
+
+	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__
+
+/// Renders cartesian axis lines, ticks, and labels
+/// @returns {string} Axis SVG string or blank when axes are disabled
+function 'DaxLib.SVG.Axis.Render' =
+		(
+			plotX: NUMERIC VAL,
+			plotY: NUMERIC VAL,
+			plotWidth: NUMERIC VAL,
+			plotHeight: NUMERIC VAL,
+			xAxisMin: NUMERIC VAL,
+			xAxisMax: NUMERIC VAL,
+			yAxisMin: NUMERIC VAL,
+			yAxisMax: NUMERIC VAL,
+			showAxis: BOOLEAN,
+			axisFontSize: INT64
+		) =>
+
+			VAR _ShowAxis = IF( ISBLANK( showAxis ), FALSE(), showAxis )
+			VAR _AxisFontSize = IF( ISBLANK( axisFontSize ), 10, axisFontSize )
+			VAR _AxisFontFamily = "Segoe UI"
+			VAR _AxisColor = "#605E5C"
+			VAR _AxisLineStrokeWidth = 1
+			VAR _TickLength = 3
+			VAR _TickPadding = 4
+			VAR _TickCountX = 5
+			VAR _TickCountY = 4
+
+			VAR _XTickTable =
+				ADDCOLUMNS(
+					GENERATESERIES( 0, _TickCountX - 1, 1 ),
+					"@TickValue",
+						IF(
+							_TickCountX = 1,
+							xAxisMin,
+							xAxisMin + DIVIDE( [Value], _TickCountX - 1, 0 ) * ( xAxisMax - xAxisMin )
+						),
+					"@Pos",
+						IF(
+							xAxisMax = xAxisMin,
+							plotX + plotWidth / 2,
+							DaxLib.SVG.Scale.Normalize( [@TickValue], xAxisMin, xAxisMax, plotX, plotX + plotWidth )
+						),
+					"@Label", FORMAT( [@TickValue], "General Number" )
+				)
+
+			VAR _YTickTable =
+				ADDCOLUMNS(
+					GENERATESERIES( 0, _TickCountY - 1, 1 ),
+					"@TickValue",
+						IF(
+							_TickCountY = 1,
+							yAxisMin,
+							yAxisMin + DIVIDE( [Value], _TickCountY - 1, 0 ) * ( yAxisMax - yAxisMin )
+						),
+					"@Pos",
+						IF(
+							yAxisMax = yAxisMin,
+							plotY + plotHeight / 2,
+							DaxLib.SVG.Scale.Normalize( [@TickValue], yAxisMin, yAxisMax, plotY + plotHeight, plotY )
+						),
+					"@Label", FORMAT( [@TickValue], "General Number" )
+				)
+
+			VAR _XAxisLine =
+				DaxLib.SVG.Element.Line(
+					plotX,
+					plotY + plotHeight,
+					plotX + plotWidth,
+					plotY + plotHeight,
+					DaxLib.SVG.Attr.Shapes( BLANK(), BLANK(), BLANK(), _AxisColor, _AxisLineStrokeWidth, BLANK(), BLANK() ),
+					BLANK()
+				)
+
+			VAR _YAxisLine =
+				DaxLib.SVG.Element.Line(
+					plotX,
+					plotY,
+					plotX,
+					plotY + plotHeight,
+					DaxLib.SVG.Attr.Shapes( BLANK(), BLANK(), BLANK(), _AxisColor, _AxisLineStrokeWidth, BLANK(), BLANK() ),
+					BLANK()
+				)
+
+			VAR _XTicks =
+				CONCATENATEX(
+					_XTickTable,
+					DaxLib.SVG.Element.Line(
+						[@Pos],
+						plotY + plotHeight,
+						[@Pos],
+						plotY + plotHeight + _TickLength,
+						DaxLib.SVG.Attr.Shapes( BLANK(), BLANK(), BLANK(), _AxisColor, 1, BLANK(), BLANK() ),
+						BLANK()
+					)
+					&
+					DaxLib.SVG.Element.Txt(
+						[@Pos],
+						plotY + plotHeight + _TickLength + _TickPadding,
+						[@Label],
+						BLANK(),
+						BLANK(),
+						DaxLib.SVG.Attr.Shapes( _AxisColor, BLANK(), BLANK(), BLANK(), BLANK(), BLANK(), BLANK() )
+						& DaxLib.SVG.Attr.Txt( _AxisFontFamily, _AxisFontSize, BLANK(), BLANK(), "middle", "hanging", BLANK(), BLANK(), BLANK() ),
+						BLANK()
+					),
+					""
+				)
+
+			VAR _YTicks =
+				CONCATENATEX(
+					_YTickTable,
+					DaxLib.SVG.Element.Line(
+						plotX - _TickLength,
+						[@Pos],
+						plotX,
+						[@Pos],
+						DaxLib.SVG.Attr.Shapes( BLANK(), BLANK(), BLANK(), _AxisColor, 1, BLANK(), BLANK() ),
+						BLANK()
+					)
+					&
+					DaxLib.SVG.Element.Txt(
+						plotX - _TickLength - _TickPadding,
+						[@Pos],
+						[@Label],
+						BLANK(),
+						BLANK(),
+						DaxLib.SVG.Attr.Shapes( _AxisColor, BLANK(), BLANK(), BLANK(), BLANK(), BLANK(), BLANK() )
+						& DaxLib.SVG.Attr.Txt( _AxisFontFamily, _AxisFontSize, BLANK(), BLANK(), "end", "middle", BLANK(), BLANK(), BLANK() ),
+						BLANK()
+					),
+					""
+				)
+
+			RETURN
+				IF( _ShowAxis, _XAxisLine & _YAxisLine & _XTicks & _YTicks )
+
+	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
+
+	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__
+
+/// Maps axis/value data to plot coordinates honoring orientation
+/// @returns {table} Single-row table with @X and @Y
+function 'DaxLib.SVG.Axis.Point' =
+		(
+			orientation: STRING,
+			axisIndex: NUMERIC VAL,
+			measureValue: NUMERIC VAL,
+			xMin: NUMERIC VAL,
+			xMax: NUMERIC VAL,
+			yMin: NUMERIC VAL,
+			yMax: NUMERIC VAL,
+			plotX: NUMERIC VAL,
+			plotY: NUMERIC VAL,
+			plotWidth: NUMERIC VAL,
+			plotHeight: NUMERIC VAL
+		) =>
+
+			VAR _Orientation = IF( orientation = "Horizontal", "Horizontal", "Vertical" )
+
+			VAR _AxisX = IF( xMax = xMin, plotX, DaxLib.SVG.Scale.Normalize( axisIndex, xMin, xMax, plotX, plotX + plotWidth ) )
+			VAR _AxisY = IF( xMax = xMin, plotY + plotHeight, DaxLib.SVG.Scale.Normalize( axisIndex, xMin, xMax, plotY + plotHeight, plotY ) )
+
+			VAR _ValueX = IF( yMax = yMin, plotX, DaxLib.SVG.Scale.Normalize( measureValue, yMin, yMax, plotX, plotX + plotWidth ) )
+			VAR _ValueY = IF( yMax = yMin, plotY + plotHeight, DaxLib.SVG.Scale.Normalize( measureValue, yMin, yMax, plotY + plotHeight, plotY ) )
+
+			RETURN
+				ROW(
+					"@X", IF( _Orientation = "Horizontal", _ValueX, _AxisX ),
+					"@Y", IF( _Orientation = "Horizontal", _AxisY, _ValueY )
+				)
+
+	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
+
+	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__
+
+/// Maps the numeric baseline to plot coordinates honoring orientation
+/// @returns {table} Single-row table with @BaseX and @BaseY
+function 'DaxLib.SVG.Axis.Baseline' =
+		(
+			orientation: STRING,
+			yMin: NUMERIC VAL,
+			yMax: NUMERIC VAL,
+			plotX: NUMERIC VAL,
+			plotY: NUMERIC VAL,
+			plotWidth: NUMERIC VAL,
+			plotHeight: NUMERIC VAL
+		) =>
+
+			VAR _Orientation = IF( orientation = "Horizontal", "Horizontal", "Vertical" )
+			VAR _BaseX = IF( yMax = yMin, plotX, DaxLib.SVG.Scale.Normalize( yMin, yMin, yMax, plotX, plotX + plotWidth ) )
+			VAR _BaseY = IF( yMax = yMin, plotY + plotHeight, DaxLib.SVG.Scale.Normalize( yMin, yMin, yMax, plotY + plotHeight, plotY ) )
+
+			RETURN
+				ROW(
+					"@BaseX", IF( _Orientation = "Horizontal", _BaseX, plotX ),
+					"@BaseY", IF( _Orientation = "Horizontal", plotY, _BaseY )
 				)
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
@@ -910,6 +1192,9 @@ function 'DaxLib.SVG.Compound.Pill' =
 /// @param {anyref} axisRef – The column that the measure will be evaluated against
 /// @param {numeric} measureRef – The measure to evaluate
 /// @param {string} barColor – The hex color of the bars, e.g., "#01B8AA"
+/// @param {string} orientation – Optional: "Vertical" (default) or "Horizontal"
+/// @param {boolean} showAxis – Optional: show axes when TRUE, defaults to FALSE
+/// @param {int} axisFontSize – Optional: axis label font size, defaults to 10
 /// @returns {string} SVG markup string.
 function 'DaxLib.SVG.Compound.Bar' = 
 		(
@@ -921,7 +1206,10 @@ function 'DaxLib.SVG.Compound.Bar' =
 			paddingY: DOUBLE,
 			axisRef: ANYREF EXPR,
 			measureRef: NUMERIC EXPR,
-			barColor: STRING
+			barColor: STRING,
+			orientation: STRING,
+			showAxis: BOOLEAN,
+			axisFontSize: INT64
 		) =>
 
 			// Apply padding to dimensions
@@ -929,6 +1217,10 @@ function 'DaxLib.SVG.Compound.Bar' =
 			VAR _Y = 			y + (height * (IF(ISBLANK(paddingY), 0, paddingY) / 2))
 			VAR _Width = 		width * (1 - IF(ISBLANK(paddingX), 0, paddingX))
 			VAR _Height = 		height * (1 - IF(ISBLANK(paddingY), 0, paddingY))
+
+			VAR _Orientation = IF( orientation = "Horizontal", "Horizontal", "Vertical" )
+			VAR _ShowAxis = IF( ISBLANK( showAxis ), FALSE(), showAxis )
+			VAR _AxisFontSize = IF( ISBLANK( axisFontSize ), 10, axisFontSize )
 		
 			VAR _Data = DaxLib.SVG.Data.AxisMeasure( axisRef, measureRef, "Auto" )
 			VAR _RawYMin = MINX( _Data, [@Value] )
@@ -940,12 +1232,26 @@ function 'DaxLib.SVG.Compound.Bar' =
 			VAR _XMax = 	MAXX( _Data, [@AxisIndex] )
 			VAR _YMin = 	MINX( _Range, [@Baseline] )
 			VAR _YMax = 	MAXX( _Range, [@Max] )
+
+			VAR _YAxisMinForLabels = IF( _Orientation = "Horizontal", _XMin, _YMin )
+			VAR _YAxisMaxForLabels = IF( _Orientation = "Horizontal", _XMax, _YMax )
+			VAR _MaxTickLabelWidth = DaxLib.SVG.Axis.MaxTickLabelWidth( _YAxisMinForLabels, _YAxisMaxForLabels, 4, _AxisFontSize, 0.56 )
+			VAR _Layout = DaxLib.SVG.Axis.Layout( _X, _Y, _Width, _Height, _ShowAxis, _AxisFontSize, _MaxTickLabelWidth )
+			VAR _PlotX = MINX( _Layout, [@PlotX] )
+			VAR _PlotY = MINX( _Layout, [@PlotY] )
+			VAR _PlotWidth = MINX( _Layout, [@PlotWidth] )
+			VAR _PlotHeight = MINX( _Layout, [@PlotHeight] )
 		
 			VAR _CountBars = COUNTROWS( _Data )
-			VAR _BarWidth = DIVIDE( 
-				_Width, 
-				_CountBars
-				) 
+			VAR _BarThickness =
+				DIVIDE(
+					IF( _Orientation = "Horizontal", _PlotHeight, _PlotWidth ),
+					_CountBars
+				)
+
+			VAR _Baseline = DaxLib.SVG.Axis.Baseline( _Orientation, _YMin, _YMax, _PlotX, _PlotY, _PlotWidth, _PlotHeight )
+			VAR _BaseX = MINX( _Baseline, [@BaseX] )
+			VAR _BaseY = MINX( _Baseline, [@BaseY] )
 		
 		//Bars
 		VAR _Bars = 
@@ -953,33 +1259,44 @@ function 'DaxLib.SVG.Compound.Bar' =
 				_Data,
 				IF( 
 					NOT ISBLANK( [@Value] ), 
-					DaxLib.SVG.Element.Rect(
-						DaxLib.SVG.Scale.Normalize( [@AxisIndex], _XMin, _XMax, _X, _X + _Width ),
-						DaxLib.SVG.Scale.Normalize( [@Value], _YMin, _YMax, _Y + _Height, _Y ),
-						_BarWidth,
-						(_Y + _Height) - DaxLib.SVG.Scale.Normalize( [@Value], _YMin, _YMax, _Y + _Height, _Y ),
-						0,
-						0,
-						DaxLib.SVG.Attr.Shapes(
-							IF( NOT ISBLANK( barColor ), barColor, "#01B8AA" ),		// fill
-							BLANK(),	// fillOpacity
-							BLANK(),	// fillRule
-							BLANK(), // stroke
-							1,			// stroke
-							BLANK(),	// strokeOpacity
-							BLANK()		// opacity
-						),
-						BLANK()
-					)
+					VAR _Point = DaxLib.SVG.Axis.Point( _Orientation, [@AxisIndex], [@Value], _XMin, _XMax, _YMin, _YMax, _PlotX, _PlotY, _PlotWidth, _PlotHeight )
+					VAR _PointX = MINX( _Point, [@X] )
+					VAR _PointY = MINX( _Point, [@Y] )
+
+					RETURN
+						DaxLib.SVG.Element.Rect(
+							IF( _Orientation = "Horizontal", MIN( _BaseX, _PointX ), _PointX ),
+							IF( _Orientation = "Horizontal", _PointY, MIN( _BaseY, _PointY ) ),
+							IF( _Orientation = "Horizontal", ABS( _PointX - _BaseX ), _BarThickness ),
+							IF( _Orientation = "Horizontal", _BarThickness, ABS( _BaseY - _PointY ) ),
+							0,
+							0,
+							DaxLib.SVG.Attr.Shapes(
+								IF( NOT ISBLANK( barColor ), barColor, "#01B8AA" ),
+								BLANK(),
+								BLANK(),
+								BLANK(),
+								1,
+								BLANK(),
+								BLANK()
+							),
+							BLANK()
+						)
 				),
 				" ",
 				[@AxisIndex],
 				ASC
-			)			
+			)
+
+			VAR _XAxisMin = IF( _Orientation = "Horizontal", _YMin, _XMin )
+			VAR _XAxisMax = IF( _Orientation = "Horizontal", _YMax, _XMax )
+			VAR _YAxisMin = IF( _Orientation = "Horizontal", _XMin, _YMin )
+			VAR _YAxisMax = IF( _Orientation = "Horizontal", _XMax, _YMax )
+			VAR _AxisElements = DaxLib.SVG.Axis.Render( _PlotX, _PlotY, _PlotWidth, _PlotHeight, _XAxisMin, _XAxisMax, _YAxisMin, _YAxisMax, _ShowAxis, _AxisFontSize )
             
         RETURN
 				
-				IF( NOT ISEMPTY( _Data ), _Bars )
+				IF( NOT ISEMPTY( _Data ) && _PlotWidth > 0 && _PlotHeight > 0, _Bars & _AxisElements )
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -995,6 +1312,9 @@ function 'DaxLib.SVG.Compound.Bar' =
 /// @param {anyref} axisRef – The column that the measure will be evaluated against
 /// @param {numeric} measureRef – The measure to evaluate
 /// @param {string} lineColor – The hex color of the line, e.g., "#01B8AA"
+/// @param {string} orientation – Optional: "Vertical" (default) or "Horizontal"
+/// @param {boolean} showAxis – Optional: show axes when TRUE, defaults to FALSE
+/// @param {int} axisFontSize – Optional: axis label font size, defaults to 10
 /// @returns {string} An SVG line chart element that visualizes the measure across the specified axis.
 function 'DaxLib.SVG.Compound.Line' =
 		(
@@ -1006,7 +1326,10 @@ function 'DaxLib.SVG.Compound.Line' =
 			paddingY: DOUBLE,
 			axisRef: ANYREF EXPR,
 			measureRef: NUMERIC EXPR,
-			lineColor: STRING
+			lineColor: STRING,
+			orientation: STRING,
+			showAxis: BOOLEAN,
+			axisFontSize: INT64
 		) =>
 
 			// Apply padding to dimensions
@@ -1014,6 +1337,10 @@ function 'DaxLib.SVG.Compound.Line' =
 			VAR _Y = 			y + (height * (IF(ISBLANK(paddingY), 0, paddingY) / 2))
 			VAR _Width = 		width * (1 - IF(ISBLANK(paddingX), 0, paddingX))
 			VAR _Height = 		height * (1 - IF(ISBLANK(paddingY), 0, paddingY))
+
+			VAR _Orientation = IF( orientation = "Horizontal", "Horizontal", "Vertical" )
+			VAR _ShowAxis = IF( ISBLANK( showAxis ), FALSE(), showAxis )
+			VAR _AxisFontSize = IF( ISBLANK( axisFontSize ), 10, axisFontSize )
 	
 			VAR _Data = DaxLib.SVG.Data.AxisMeasure( axisRef, measureRef, "Auto" )
 			VAR _RawYMin = MINX( _Data, [@Value] )
@@ -1026,17 +1353,23 @@ function 'DaxLib.SVG.Compound.Line' =
 			VAR _YMin = 	MINX( _Range, [@Baseline] )
 			VAR _YMax = 	MAXX( _Range, [@Max] )
 
+			VAR _YAxisMinForLabels = IF( _Orientation = "Horizontal", _XMin, _YMin )
+			VAR _YAxisMaxForLabels = IF( _Orientation = "Horizontal", _XMax, _YMax )
+			VAR _MaxTickLabelWidth = DaxLib.SVG.Axis.MaxTickLabelWidth( _YAxisMinForLabels, _YAxisMaxForLabels, 4, _AxisFontSize, 0.56 )
+			VAR _Layout = DaxLib.SVG.Axis.Layout( _X, _Y, _Width, _Height, _ShowAxis, _AxisFontSize, _MaxTickLabelWidth )
+			VAR _PlotX = MINX( _Layout, [@PlotX] )
+			VAR _PlotY = MINX( _Layout, [@PlotY] )
+			VAR _PlotWidth = MINX( _Layout, [@PlotWidth] )
+			VAR _PlotHeight = MINX( _Layout, [@PlotHeight] )
+
 			//Points
 			VAR _Points = 
 				CONCATENATEX(
 					_Data,
 					IF( 
-						NOT ISBLANK( [@Value] ), 
-						COMBINEVALUES( 
-							",", 
-							DaxLib.SVG.Scale.Normalize( [@AxisIndex], _XMin, _XMax, _X, _X + _Width ), 
-							DaxLib.SVG.Scale.Normalize( [@Value], _YMin, _YMax, _Y + _Height, _Y )
-						)
+						NOT ISBLANK( [@Value] ),
+						VAR _Point = DaxLib.SVG.Axis.Point( _Orientation, [@AxisIndex], [@Value], _XMin, _XMax, _YMin, _YMax, _PlotX, _PlotY, _PlotWidth, _PlotHeight )
+						RETURN COMBINEVALUES( ",", MINX( _Point, [@X] ), MINX( _Point, [@Y] ) )
 					),
 					" ",
 					[@AxisIndex],
@@ -1060,10 +1393,11 @@ function 'DaxLib.SVG.Compound.Line' =
 				)
 
 			// Single Point Element
+			VAR _SinglePoint = DaxLib.SVG.Axis.Point( _Orientation, MAXX( _Data, [@AxisIndex] ), MAXX( _Data, [@Value] ), _XMin, _XMax, _YMin, _YMax, _PlotX, _PlotY, _PlotWidth, _PlotHeight )
 			VAR _SinglePointElement =
 				DaxLib.SVG.Element.Circle(
-					DaxLib.SVG.Scale.Normalize( MAXX( _Data, [@AxisIndex] ), _XMin, _XMax, _X, _X + _Width ), // cx
-					DaxLib.SVG.Scale.Normalize( MAXX( _Data, [@Value] ), _YMin, _YMax, _Y + _Height, _Y ), // cy
+					MINX( _SinglePoint, [@X] ),
+					MINX( _SinglePoint, [@Y] ),
 					2,           	// r
 					DaxLib.SVG.Attr.Shapes(
 						lineColor, 	// fill
@@ -1085,9 +1419,15 @@ function 'DaxLib.SVG.Compound.Line' =
 					_LineElement
 				)
 
+			VAR _XAxisMin = IF( _Orientation = "Horizontal", _YMin, _XMin )
+			VAR _XAxisMax = IF( _Orientation = "Horizontal", _YMax, _XMax )
+			VAR _YAxisMin = IF( _Orientation = "Horizontal", _XMin, _YMin )
+			VAR _YAxisMax = IF( _Orientation = "Horizontal", _XMax, _YMax )
+			VAR _AxisElements = DaxLib.SVG.Axis.Render( _PlotX, _PlotY, _PlotWidth, _PlotHeight, _XAxisMin, _XAxisMax, _YAxisMin, _YAxisMax, _ShowAxis, _AxisFontSize )
+
 			RETURN
 				
-				IF( NOT ISEMPTY( _Data ), _CombinedElement )
+				IF( NOT ISEMPTY( _Data ) && _PlotWidth > 0 && _PlotHeight > 0, _CombinedElement & _AxisElements )
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -1105,6 +1445,9 @@ function 'DaxLib.SVG.Compound.Line' =
 /// @param {string} fillColor – The color of the area fill, e.g., "#01B8AA"
 /// @param {numeric} fillOpacity – The opacity of the fill (0-1), defaults to 0.3
 /// @param {string} strokeColor – The color of the stroke line
+/// @param {string} orientation – Optional: "Vertical" (default) or "Horizontal"
+/// @param {boolean} showAxis – Optional: show axes when TRUE, defaults to FALSE
+/// @param {int} axisFontSize – Optional: axis label font size, defaults to 10
 /// @returns {string} An SVG area chart element that visualizes the measure across the specified axis with filled area
 function 'DaxLib.SVG.Compound.Area' =
 		(
@@ -1118,7 +1461,10 @@ function 'DaxLib.SVG.Compound.Area' =
 			measureRef: NUMERIC EXPR,
 			fillColor: STRING,
 			fillOpacity: NUMERIC,
-			strokeColor: STRING
+			strokeColor: STRING,
+			orientation: STRING,
+			showAxis: BOOLEAN,
+			axisFontSize: INT64
 		) =>
 
 			// Apply padding to dimensions
@@ -1126,6 +1472,10 @@ function 'DaxLib.SVG.Compound.Area' =
 			VAR _Y = 			y + (height * (IF(ISBLANK(paddingY), 0, paddingY) / 2))
 			VAR _Width = 		width * (1 - IF(ISBLANK(paddingX), 0, paddingX))
 			VAR _Height = 		height * (1 - IF(ISBLANK(paddingY), 0, paddingY))
+
+			VAR _Orientation = IF( orientation = "Horizontal", "Horizontal", "Vertical" )
+			VAR _ShowAxis = IF( ISBLANK( showAxis ), FALSE(), showAxis )
+			VAR _AxisFontSize = IF( ISBLANK( axisFontSize ), 10, axisFontSize )
 		
 			VAR _Data = DaxLib.SVG.Data.AxisMeasure( axisRef, measureRef, "Auto" )
 			VAR _RawYMin = MINX( _Data, [@Value] )
@@ -1137,45 +1487,82 @@ function 'DaxLib.SVG.Compound.Area' =
 			VAR _YMin = 	MINX( _Range, [@Baseline] )
 			VAR _YMax = 	MAXX( _Range, [@Max] )
 
-			// Calculate baseline Y position (for zero line or bottom)
-			VAR _BaselineY = DaxLib.SVG.Scale.Normalize( _YMin, _YMin, _YMax, _Y + _Height, _Y )
+			VAR _YAxisMinForLabels = IF( _Orientation = "Horizontal", _XMin, _YMin )
+			VAR _YAxisMaxForLabels = IF( _Orientation = "Horizontal", _XMax, _YMax )
+			VAR _MaxTickLabelWidth = DaxLib.SVG.Axis.MaxTickLabelWidth( _YAxisMinForLabels, _YAxisMaxForLabels, 4, _AxisFontSize, 0.56 )
+			VAR _Layout = DaxLib.SVG.Axis.Layout( _X, _Y, _Width, _Height, _ShowAxis, _AxisFontSize, _MaxTickLabelWidth )
+			VAR _PlotX = MINX( _Layout, [@PlotX] )
+			VAR _PlotY = MINX( _Layout, [@PlotY] )
+			VAR _PlotWidth = MINX( _Layout, [@PlotWidth] )
+			VAR _PlotHeight = MINX( _Layout, [@PlotHeight] )
+
+			VAR _Baseline = DaxLib.SVG.Axis.Baseline( _Orientation, _YMin, _YMax, _PlotX, _PlotY, _PlotWidth, _PlotHeight )
+			VAR _BaselineX = MINX( _Baseline, [@BaseX] )
+			VAR _BaselineY = MINX( _Baseline, [@BaseY] )
+
+			VAR _DataNonBlank = FILTER( _Data, NOT ISBLANK( [@Value] ) )
+			VAR _FirstDatum = TOPN( 1, _DataNonBlank, [@AxisIndex], ASC )
+			VAR _LastDatum = TOPN( 1, _DataNonBlank, [@AxisIndex], DESC )
 
 			// Get first and last X positions
 			VAR _FirstX = 
-				MINX(
-					FILTER( _Data, NOT ISBLANK( [@Value] ) ),
-					DaxLib.SVG.Scale.Normalize( [@AxisIndex], _XMin, _XMax, _X, _X + _Width )
+				MAXX(
+					_FirstDatum,
+					MINX( DaxLib.SVG.Axis.Point( _Orientation, [@AxisIndex], [@Value], _XMin, _XMax, _YMin, _YMax, _PlotX, _PlotY, _PlotWidth, _PlotHeight ), [@X] )
+				)
+
+			VAR _FirstY =
+				MAXX(
+					_FirstDatum,
+					MINX( DaxLib.SVG.Axis.Point( _Orientation, [@AxisIndex], [@Value], _XMin, _XMax, _YMin, _YMax, _PlotX, _PlotY, _PlotWidth, _PlotHeight ), [@Y] )
 				)
 			
 			VAR _LastX = 
 				MAXX(
-					FILTER( _Data, NOT ISBLANK( [@Value] ) ),
-					DaxLib.SVG.Scale.Normalize( [@AxisIndex], _XMin, _XMax, _X, _X + _Width )
+					_LastDatum,
+					MINX( DaxLib.SVG.Axis.Point( _Orientation, [@AxisIndex], [@Value], _XMin, _XMax, _YMin, _YMax, _PlotX, _PlotY, _PlotWidth, _PlotHeight ), [@X] )
+				)
+
+			VAR _LastY =
+				MAXX(
+					_LastDatum,
+					MINX( DaxLib.SVG.Axis.Point( _Orientation, [@AxisIndex], [@Value], _XMin, _XMax, _YMin, _YMax, _PlotX, _PlotY, _PlotWidth, _PlotHeight ), [@Y] )
 				)
 
 			// Generate points for the area polygon
 			// Start at baseline (bottom left), go up the data line, then back down to baseline
 			VAR _PolygonPoints = 
-				// Start at first X position at baseline
-				_FirstX & "," & _BaselineY
-				// Add all the data points (the top line)
-				& " " & 
-				CONCATENATEX(
-					_Data,
-					IF( 
-						NOT ISBLANK( [@Value] ), 
-						COMBINEVALUES( 
-							",", 
-							DaxLib.SVG.Scale.Normalize( [@AxisIndex], _XMin, _XMax, _X, _X + _Width ), 
-							DaxLib.SVG.Scale.Normalize( [@Value], _YMin, _YMax, _Y + _Height, _Y )
-						)
-					),
-					" ",
-					[@AxisIndex],
-					ASC
+				IF(
+					_Orientation = "Horizontal",
+					_BaselineX & "," & _FirstY
+					& " " &
+					CONCATENATEX(
+						_Data,
+						IF(
+							NOT ISBLANK( [@Value] ),
+							VAR _Point = DaxLib.SVG.Axis.Point( _Orientation, [@AxisIndex], [@Value], _XMin, _XMax, _YMin, _YMax, _PlotX, _PlotY, _PlotWidth, _PlotHeight )
+							RETURN COMBINEVALUES( ",", MINX( _Point, [@X] ), MINX( _Point, [@Y] ) )
+						),
+						" ",
+						[@AxisIndex],
+						ASC
+					)
+					& " " & _BaselineX & "," & _LastY,
+					_FirstX & "," & _BaselineY
+					& " " & 
+					CONCATENATEX(
+						_Data,
+						IF( 
+							NOT ISBLANK( [@Value] ), 
+							VAR _Point = DaxLib.SVG.Axis.Point( _Orientation, [@AxisIndex], [@Value], _XMin, _XMax, _YMin, _YMax, _PlotX, _PlotY, _PlotWidth, _PlotHeight )
+							RETURN COMBINEVALUES( ",", MINX( _Point, [@X] ), MINX( _Point, [@Y] ) )
+						),
+						" ",
+						[@AxisIndex],
+						ASC
+					)
+					& " " & _LastX & "," & _BaselineY
 				)
-				// End at last X position at baseline
-				& " " & _LastX & "," & _BaselineY
 
 			// Generate points for just the top line (for optional stroke)
 			VAR _TopPoints = 
@@ -1183,11 +1570,8 @@ function 'DaxLib.SVG.Compound.Area' =
 					_Data,
 					IF( 
 						NOT ISBLANK( [@Value] ), 
-						COMBINEVALUES( 
-							",", 
-							DaxLib.SVG.Scale.Normalize( [@AxisIndex], _XMin, _XMax, _X, _X + _Width ), 
-							DaxLib.SVG.Scale.Normalize( [@Value], _YMin, _YMax, _Y + _Height, _Y )
-						)
+						VAR _Point = DaxLib.SVG.Axis.Point( _Orientation, [@AxisIndex], [@Value], _XMin, _XMax, _YMin, _YMax, _PlotX, _PlotY, _PlotWidth, _PlotHeight )
+						RETURN COMBINEVALUES( ",", MINX( _Point, [@X] ), MINX( _Point, [@Y] ) )
 					),
 					" ",
 					[@AxisIndex],
@@ -1227,10 +1611,11 @@ function 'DaxLib.SVG.Compound.Area' =
 				)
 			
 			// Circle if only one point
+			VAR _SinglePoint = DaxLib.SVG.Axis.Point( _Orientation, MAXX( _Data, [@AxisIndex] ), MAXX( _Data, [@Value] ), _XMin, _XMax, _YMin, _YMax, _PlotX, _PlotY, _PlotWidth, _PlotHeight )
 			VAR _SinglePointElement =
 				DaxLib.SVG.Element.Circle(
-						DaxLib.SVG.Scale.Normalize( MAXX( _Data, [@AxisIndex] ), _XMin, _XMax, _X, _X + _Width ), // cx
-						DaxLib.SVG.Scale.Normalize( MAXX( _Data, [@Value] ), _YMin, _YMax, _Y + _Height, _Y ), // cy
+						MINX( _SinglePoint, [@X] ),
+						MINX( _SinglePoint, [@Y] ),
 						2,               	// r
 						DaxLib.SVG.Attr.Shapes(
 							fillColor,     // fill
@@ -1253,9 +1638,15 @@ function 'DaxLib.SVG.Compound.Area' =
 					_StrokeElement
 				)
 
+			VAR _XAxisMin = IF( _Orientation = "Horizontal", _YMin, _XMin )
+			VAR _XAxisMax = IF( _Orientation = "Horizontal", _YMax, _XMax )
+			VAR _YAxisMin = IF( _Orientation = "Horizontal", _XMin, _YMin )
+			VAR _YAxisMax = IF( _Orientation = "Horizontal", _XMax, _YMax )
+			VAR _AxisElements = DaxLib.SVG.Axis.Render( _PlotX, _PlotY, _PlotWidth, _PlotHeight, _XAxisMin, _XAxisMax, _YAxisMin, _YAxisMax, _ShowAxis, _AxisFontSize )
+
 			RETURN
 			
-				IF( NOT ISEMPTY( _Data ), _CombinedElements )
+				IF( NOT ISEMPTY( _Data ) && _PlotWidth > 0 && _PlotHeight > 0, _CombinedElements & _AxisElements )
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
