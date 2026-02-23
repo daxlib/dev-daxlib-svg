@@ -27,6 +27,193 @@ function 'DaxLib.SVG.SVG' =
 
 	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__
 
+/// Creates a wrapping multi-pill SVG compound in a bounded canvas
+/// @param {int} x – The x position of the compound
+/// @param {int} y – The y position of the compound
+/// @param {int} width – The width of the compound
+/// @param {int} height – The height of the compound
+/// @param {decimal} paddingX – Horizontal padding percentage (0.0-1.0)
+/// @param {decimal} paddingY – Vertical padding percentage (0.0-1.0)
+/// @param {anyref} axisRefColumn – Axis column used for ordering and default labels
+/// @param {string} labelExpr – Label expression evaluated per axis row
+/// @param {numeric} valueExpr – Numeric expression evaluated per axis row
+/// @param {string} colorExpr – Color expression evaluated per axis row
+/// @param {int} pillHeight – Height of each pill
+/// @param {int} minPillWidth – Minimum pill width
+/// @param {int} maxPillWidth – Maximum pill width
+/// @param {int} gapX – Horizontal gap between pills
+/// @param {int} gapY – Vertical gap between rows
+/// @param {int} maxRowCount – Maximum number of rows
+/// @param {string} overflowMode – "Clip" or "EllipsisPill"
+/// @param {string} sortMode – "AxisAsc", "AxisDesc", "ValueDesc", "ValueAsc"
+/// @returns {string} Concatenated SVG pill elements
+function 'DaxLib.SVG.Compound.Pills' =
+		(
+			x: INT64,
+			y: INT64,
+			width: INT64,
+			height: INT64,
+			paddingX: DOUBLE,
+			paddingY: DOUBLE,
+			axisRefColumn: ANYREF EXPR,
+			labelExpr: STRING EXPR,
+			valueExpr: NUMERIC EXPR,
+			colorExpr: STRING EXPR,
+			pillHeight: INT64,
+			minPillWidth: INT64,
+			maxPillWidth: INT64,
+			gapX: INT64,
+			gapY: INT64,
+			maxRowCount: INT64,
+			overflowMode: STRING,
+			sortMode: STRING
+		) =>
+
+			VAR _X = x + ( width * ( IF( ISBLANK( paddingX ), 0, paddingX ) / 2 ) )
+			VAR _Y = y + ( height * ( IF( ISBLANK( paddingY ), 0, paddingY ) / 2 ) )
+			VAR _Width = width * ( 1 - IF( ISBLANK( paddingX ), 0, paddingX ) )
+			VAR _Height = height * ( 1 - IF( ISBLANK( paddingY ), 0, paddingY ) )
+
+			VAR _ContentX = _X
+			VAR _ContentY = _Y
+			VAR _ContentWidth = MAX( 0, _Width )
+			VAR _ContentHeight = MAX( 0, _Height )
+
+			VAR _PillHeight = IF( ISBLANK( pillHeight ), 18, MAX( 8, pillHeight ) )
+			VAR _MinPillWidth = IF( ISBLANK( minPillWidth ), 42, MAX( 16, minPillWidth ) )
+			VAR _MaxPillWidth = IF( ISBLANK( maxPillWidth ), 120, MAX( _MinPillWidth, maxPillWidth ) )
+			VAR _GapX = IF( ISBLANK( gapX ), 6, MAX( 0, gapX ) )
+			VAR _GapY = IF( ISBLANK( gapY ), 6, MAX( 0, gapY ) )
+			VAR _MaxRows = IF( ISBLANK( maxRowCount ), 3, MAX( 1, maxRowCount ) )
+			VAR _OverflowMode = IF( overflowMode = "EllipsisPill", "EllipsisPill", "Clip" )
+			VAR _SortMode =
+				IF(
+					sortMode = "AxisDesc" || sortMode = "ValueDesc" || sortMode = "ValueAsc",
+					sortMode,
+					"AxisAsc"
+				)
+
+			VAR _AxisSample = MAX( axisRefColumn )
+			VAR _AxisIsNumeric = ISNUMBER( _AxisSample )
+
+			VAR _Base =
+				ADDCOLUMNS(
+					VALUES( axisRefColumn ),
+					"@AxisValue", axisRefColumn,
+					"@AxisIndex",
+						IF(
+							_AxisIsNumeric,
+							axisRefColumn,
+							RANK( DENSE, CALCULATETABLE( VALUES( axisRefColumn ), ALLSELECTED() ) )
+						),
+					"@Value", valueExpr
+				)
+
+			VAR _RowAttributes =
+				ADDCOLUMNS(
+					VALUES( axisRefColumn ),
+					"@AxisValue", axisRefColumn,
+					"@LabelRaw", labelExpr,
+					"@RowColor", colorExpr
+				)
+
+			VAR _Joined = NATURALLEFTOUTERJOIN( _Base, _RowAttributes )
+
+			VAR _Prepared =
+				ADDCOLUMNS(
+					_Joined,
+					"@Label", IF( NOT ISBLANK( [@LabelRaw] ), [@LabelRaw], FORMAT( [@AxisValue], "General Number" ) ),
+					"@PillColor", IF( NOT ISBLANK( [@RowColor] ), [@RowColor], "#E8F0FB" ),
+					"@LabelColor", IF( NOT ISBLANK( [@RowColor] ), [@RowColor], "#0F6CBD" )
+				)
+
+			VAR _Measured =
+				ADDCOLUMNS(
+					_Prepared,
+					"@EstimatedLabelWidth", LEN( [@Label] ) * 12 * 0.56,
+					"@PillWidth", MIN( _MaxPillWidth, MAX( _MinPillWidth, LEN( [@Label] ) * 12 * 0.56 + 24 ) )
+				)
+
+			VAR _Sorted =
+				SWITCH(
+					_SortMode,
+					"AxisDesc", TOPN( COUNTROWS( _Measured ), _Measured, [@AxisIndex], DESC, [@AxisValue], DESC ),
+					"ValueDesc", TOPN( COUNTROWS( _Measured ), _Measured, [@Value], DESC, [@AxisIndex], ASC ),
+					"ValueAsc", TOPN( COUNTROWS( _Measured ), _Measured, [@Value], ASC, [@AxisIndex], ASC ),
+					TOPN( COUNTROWS( _Measured ), _Measured, [@AxisIndex], ASC, [@AxisValue], ASC )
+				)
+
+			VAR _Ordered =
+				ADDCOLUMNS(
+					_Sorted,
+					"@Order",
+						SWITCH(
+							_SortMode,
+							"AxisDesc", RANKX( _Sorted, [@AxisIndex], BLANK(), DESC, DENSE ),
+							"ValueDesc", RANKX( _Sorted, [@Value] + DIVIDE( [@AxisIndex], 1000000000, 0 ), BLANK(), DESC, DENSE ),
+							"ValueAsc", RANKX( _Sorted, [@Value] + DIVIDE( [@AxisIndex], 1000000000, 0 ), BLANK(), ASC, DENSE ),
+							RANKX( _Sorted, [@AxisIndex], BLANK(), ASC, DENSE )
+						)
+				)
+
+			VAR _AverageWidth = MAX( _MinPillWidth, AVERAGEX( _Ordered, [@PillWidth] ) )
+			VAR _Columns = MAX( 1, INT( DIVIDE( _ContentWidth + _GapX, _AverageWidth + _GapX, 1 ) ) )
+			VAR _CellWidth = DIVIDE( _ContentWidth - ( _GapX * ( _Columns - 1 ) ), _Columns, _ContentWidth )
+
+			VAR _Positioned =
+				ADDCOLUMNS(
+					_Ordered,
+					"@Row", INT( DIVIDE( [@Order] - 1, _Columns, 0 ) ) + 1,
+					"@Col", MOD( [@Order] - 1, _Columns ) + 1,
+					"@RenderWidth", MIN( [@PillWidth], _CellWidth ),
+					"@RenderX", _ContentX + ( MOD( [@Order] - 1, _Columns ) * ( _CellWidth + _GapX ) ),
+					"@RenderY", _ContentY + ( INT( DIVIDE( [@Order] - 1, _Columns, 0 ) ) * ( _PillHeight + _GapY ) )
+				)
+
+			VAR _Visible =
+				FILTER(
+					_Positioned,
+					[@Row] <= _MaxRows
+						&& [@RenderY] + _PillHeight <= _ContentY + _ContentHeight
+				)
+
+			VAR _HiddenCount = MAX( 0, COUNTROWS( _Ordered ) - COUNTROWS( _Visible ) )
+
+			VAR _VisibleForRender =
+				IF(
+					_OverflowMode = "EllipsisPill" && _HiddenCount > 0,
+					FILTER( _Visible, [@Order] < COUNTROWS( _Visible ) ),
+					_Visible
+				)
+
+			VAR _RenderedPills =
+				CONCATENATEX(
+					_VisibleForRender,
+					"<rect x='" & [@RenderX] & "' y='" & [@RenderY] & "' width='" & [@RenderWidth] & "' height='" & _PillHeight & "' rx='10' ry='10' fill='" & [@PillColor] & "' fill-opacity='0.2' stroke='" & [@PillColor] & "' stroke-width='1'/>"
+					& "<text x='" & ( [@RenderX] + [@RenderWidth] * 0.5 ) & "' y='" & ( [@RenderY] + _PillHeight * 0.58 ) & "' text-anchor='middle' dominant-baseline='middle' font-family='Segoe UI' font-size='12' fill='" & [@LabelColor] & "'>" & [@Label] & "</text>",
+					""
+				)
+
+			VAR _Ellipsis =
+				IF(
+					_OverflowMode = "EllipsisPill" && _HiddenCount > 0 && COUNTROWS( _Visible ) > 0,
+					VAR _LastVisible = TOPN( 1, _Visible, [@Order], DESC )
+					RETURN
+						CONCATENATEX(
+							_LastVisible,
+							"<rect x='" & [@RenderX] & "' y='" & [@RenderY] & "' width='" & [@RenderWidth] & "' height='" & _PillHeight & "' rx='10' ry='10' fill='#E6E6E6' fill-opacity='0.7' stroke='#C8C8C8' stroke-width='1'/>"
+							& "<text x='" & ( [@RenderX] + [@RenderWidth] * 0.5 ) & "' y='" & ( [@RenderY] + _PillHeight * 0.58 ) & "' text-anchor='middle' dominant-baseline='middle' font-family='Segoe UI' font-size='12' fill='#605E5C'>+" & _HiddenCount & "</text>",
+							""
+						)
+				)
+
+			RETURN
+				IF( _ContentWidth > 0 && _ContentHeight > 0, _RenderedPills & _Ellipsis )
+
+	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
+
+	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__
+
 /// Map a value from one value scale to another
 /// Used for scaling values to fit within SVG dimensions
 /// @param {numeric} inputValue – The value to map
@@ -2303,6 +2490,172 @@ function 'DaxLib.SVG.Compound.Heatmap' =
 			RETURN
 
 				IF( NOT ISEMPTY( _Data ), _CombinedElements )
+
+	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
+
+	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__
+
+/// Minimal wrapper for a fluent-style bar visual
+/// @param {anyref} axisRefColumn – Axis reference column
+/// @param {numeric} measureRefExpr – Measure expression
+/// @param {string} color – Optional series color
+/// @param {string} orientation – Optional orientation: "Vertical" or "Horizontal"
+/// @param {boolean} showAxis – Optional axis toggle
+/// @returns {string} SVG data URI with embedded bar chart
+function 'DaxLib.SVG.Visual.Bar' =
+		(
+			axisRefColumn: ANYREF EXPR,
+			measureRefExpr: NUMERIC EXPR,
+			color: STRING,
+			orientation: STRING,
+			showAxis: BOOLEAN
+		) =>
+
+			VAR _Color = IF( NOT ISBLANK( color ), color, DaxLib.SVG.Color.Theme( "Power BI", 1 ) )
+			VAR _Marks =
+				DaxLib.SVG.Compound.Bar(
+					0,
+					0,
+					120,
+					48,
+					0,
+					0,
+					axisRefColumn,
+					measureRefExpr,
+					_Color,
+					orientation,
+					showAxis,
+					8
+				)
+
+			RETURN
+				DaxLib.SVG.SVG( "100%", "100%", "0 0 120 48", _Marks, BLANK() )
+
+	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
+
+	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__
+
+/// Minimal wrapper for a fluent-style line visual
+/// @param {anyref} axisRefColumn – Axis reference column
+/// @param {numeric} measureRefExpr – Measure expression
+/// @param {string} color – Optional series color
+/// @param {string} orientation – Optional orientation: "Vertical" or "Horizontal"
+/// @param {boolean} showAxis – Optional axis toggle
+/// @returns {string} SVG data URI with embedded line chart
+function 'DaxLib.SVG.Visual.Line' =
+		(
+			axisRefColumn: ANYREF EXPR,
+			measureRefExpr: NUMERIC EXPR,
+			color: STRING,
+			orientation: STRING,
+			showAxis: BOOLEAN
+		) =>
+
+			VAR _Color = IF( NOT ISBLANK( color ), color, DaxLib.SVG.Color.Theme( "Power BI", 1 ) )
+			VAR _Marks =
+				DaxLib.SVG.Compound.Line(
+					0,
+					0,
+					120,
+					48,
+					0,
+					0,
+					axisRefColumn,
+					measureRefExpr,
+					_Color,
+					orientation,
+					showAxis,
+					8
+				)
+
+			RETURN
+				DaxLib.SVG.SVG( "100%", "100%", "0 0 120 48", _Marks, BLANK() )
+
+	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
+
+	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__
+
+/// Minimal wrapper for a fluent-style area visual
+/// @param {anyref} axisRefColumn – Axis reference column
+/// @param {numeric} measureRefExpr – Measure expression
+/// @param {string} color – Optional series color
+/// @param {string} orientation – Optional orientation: "Vertical" or "Horizontal"
+/// @param {boolean} showAxis – Optional axis toggle
+/// @returns {string} SVG data URI with embedded area chart
+function 'DaxLib.SVG.Visual.Area' =
+		(
+			axisRefColumn: ANYREF EXPR,
+			measureRefExpr: NUMERIC EXPR,
+			color: STRING,
+			orientation: STRING,
+			showAxis: BOOLEAN
+		) =>
+
+			VAR _Color = IF( NOT ISBLANK( color ), color, DaxLib.SVG.Color.Theme( "Power BI", 1 ) )
+			VAR _Marks =
+				DaxLib.SVG.Compound.Area(
+					0,
+					0,
+					120,
+					48,
+					0,
+					0,
+					axisRefColumn,
+					measureRefExpr,
+					_Color,
+					0.24,
+					_Color,
+					orientation,
+					showAxis,
+					8
+				)
+
+			RETURN
+				DaxLib.SVG.SVG( "100%", "100%", "0 0 120 48", _Marks, BLANK() )
+
+	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
+
+	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__
+
+/// Minimal wrapper for wrapping pill layout visual
+/// @param {anyref} axisRefColumn – Axis reference column
+/// @param {numeric} measureRefExpr – Numeric expression for sorting/intensity
+/// @param {string} color – Optional pill color override
+/// @param {int} maxRowCount – Maximum rendered rows
+/// @returns {string} SVG data URI with embedded wrapping pills
+function 'DaxLib.SVG.Visual.Pills' =
+		(
+			axisRefColumn: ANYREF EXPR,
+			measureRefExpr: NUMERIC EXPR,
+			color: STRING,
+			maxRowCount: INT64
+		) =>
+
+			VAR _Color = IF( NOT ISBLANK( color ), color, DaxLib.SVG.Color.Theme( "Power BI", 1 ) )
+			VAR _Marks =
+				DaxLib.SVG.Compound.Pills(
+					0,
+					0,
+					120,
+					48,
+					0,
+					0,
+					axisRefColumn,
+					FORMAT( axisRefColumn, "General Number" ),
+					measureRefExpr,
+					_Color,
+					16,
+					34,
+					120,
+					6,
+					6,
+					maxRowCount,
+					"EllipsisPill",
+					"AxisAsc"
+				)
+
+			RETURN
+				DaxLib.SVG.SVG( "100%", "100%", "0 0 120 48", _Marks, BLANK() )
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
