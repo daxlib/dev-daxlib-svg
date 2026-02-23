@@ -1937,6 +1937,533 @@ function 'DaxLib.SVG.Compound.Jitter' =
 
 	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__
 
+/// Creates a Scatter compound SVG visual using axis rows as points
+/// @param {int} x – The x position of the compound
+/// @param {int} y – The y position of the compound
+/// @param {int} width – The width of the compound
+/// @param {int} height – The height of the compound
+/// @param {decimal} paddingX – Horizontal padding percentage (0.0-1.0)
+/// @param {decimal} paddingY – Vertical padding percentage (0.0-1.0)
+/// @param {anyref} axisRef – Axis grouping reference (one point per axis value)
+/// @param {numeric} xMeasureRef – Measure expression for X value
+/// @param {numeric} yMeasureRef – Measure expression for Y value
+/// @param {string} pointColor – Optional point color
+/// @param {int} pointRadius – Optional point radius
+/// @returns {string} SVG circles for scatter points
+function 'DaxLib.SVG.Compound.Scatter' =
+		(
+			x: INT64,
+			y: INT64,
+			width: INT64,
+			height: INT64,
+			paddingX: DOUBLE,
+			paddingY: DOUBLE,
+			axisRef: ANYREF EXPR,
+			xMeasureRef: NUMERIC EXPR,
+			yMeasureRef: NUMERIC EXPR,
+			pointColor: STRING,
+			pointRadius: INT64
+		) =>
+
+			VAR _X = x + (width * (IF(ISBLANK(paddingX), 0, paddingX) / 2))
+			VAR _Y = y + (height * (IF(ISBLANK(paddingY), 0, paddingY) / 2))
+			VAR _Width = width * (1 - IF(ISBLANK(paddingX), 0, paddingX))
+			VAR _Height = height * (1 - IF(ISBLANK(paddingY), 0, paddingY))
+
+			VAR _PointColor = IF( NOT ISBLANK( pointColor ), pointColor, "#0F6CBD" )
+			VAR _PointRadius = IF( ISBLANK( pointRadius ), 2, MAX( 1, pointRadius ) )
+
+			VAR _Data =
+				ADDCOLUMNS(
+					VALUES( axisRef ),
+					"@XValue", xMeasureRef,
+					"@YValue", yMeasureRef
+				)
+
+			VAR _DataValid = FILTER( _Data, NOT ISBLANK( [@XValue] ) && NOT ISBLANK( [@YValue] ) )
+
+			VAR _XMin = MINX( _DataValid, [@XValue] )
+			VAR _XMax = MAXX( _DataValid, [@XValue] )
+			VAR _YMin = MINX( _DataValid, [@YValue] )
+			VAR _YMax = MAXX( _DataValid, [@YValue] )
+
+			VAR _Points =
+				CONCATENATEX(
+					_DataValid,
+					DaxLib.SVG.Element.Circle(
+						IF( _XMax = _XMin, _X + ( _Width / 2 ), DaxLib.SVG.Scale.Normalize( [@XValue], _XMin, _XMax, _X, _X + _Width ) ),
+						IF( _YMax = _YMin, _Y + ( _Height / 2 ), DaxLib.SVG.Scale.Normalize( [@YValue], _YMin, _YMax, _Y + _Height, _Y ) ),
+						_PointRadius,
+						DaxLib.SVG.Attr.Shapes(
+							_PointColor,
+							0.55,
+							BLANK(),
+							_PointColor,
+							1,
+							0.95,
+							BLANK()
+						),
+						BLANK()
+					),
+					""
+				)
+
+			RETURN
+				IF( NOT ISEMPTY( _DataValid ) && _Width > 0 && _Height > 0, _Points )
+
+	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
+
+	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__
+
+/// Creates a Histogram compound SVG visual by binning measure values
+/// @param {int} x – The x position of the compound
+/// @param {int} y – The y position of the compound
+/// @param {int} width – The width of the compound
+/// @param {int} height – The height of the compound
+/// @param {decimal} paddingX – Horizontal padding percentage (0.0-1.0)
+/// @param {decimal} paddingY – Vertical padding percentage (0.0-1.0)
+/// @param {anyref} axisRef – Axis grouping reference
+/// @param {numeric} measureRef – Numeric value expression to bin
+/// @param {int} binCount – Number of bins
+/// @param {string} barColor – Optional bar color
+/// @returns {string} SVG rectangles representing histogram bins
+function 'DaxLib.SVG.Compound.Histogram' =
+		(
+			x: INT64,
+			y: INT64,
+			width: INT64,
+			height: INT64,
+			paddingX: DOUBLE,
+			paddingY: DOUBLE,
+			axisRef: ANYREF EXPR,
+			measureRef: NUMERIC EXPR,
+			binCount: INT64,
+			barColor: STRING
+		) =>
+
+			VAR _X = x + (width * (IF(ISBLANK(paddingX), 0, paddingX) / 2))
+			VAR _Y = y + (height * (IF(ISBLANK(paddingY), 0, paddingY) / 2))
+			VAR _Width = width * (1 - IF(ISBLANK(paddingX), 0, paddingX))
+			VAR _Height = height * (1 - IF(ISBLANK(paddingY), 0, paddingY))
+
+			VAR _Color = IF( NOT ISBLANK( barColor ), barColor, "#0F6CBD" )
+			VAR _Bins = IF( ISBLANK( binCount ), 10, MAX( 2, binCount ) )
+			VAR _Gap = 1
+
+			VAR _Data =
+				ADDCOLUMNS(
+					VALUES( axisRef ),
+					"@Value", measureRef
+				)
+
+			VAR _DataValid = FILTER( _Data, NOT ISBLANK( [@Value] ) )
+			VAR _MinValue = MINX( _DataValid, [@Value] )
+			VAR _MaxValue = MAXX( _DataValid, [@Value] )
+			VAR _Span = _MaxValue - _MinValue
+			VAR _BinSize = IF( _Span = 0, 1, DIVIDE( _Span, _Bins, 1 ) )
+
+			VAR _BinTable =
+				ADDCOLUMNS(
+					GENERATESERIES( 0, _Bins - 1, 1 ),
+					"@BinIndex", [Value],
+					"@BinStart", _MinValue + [Value] * _BinSize,
+					"@BinEnd", _MinValue + ( [Value] + 1 ) * _BinSize
+				)
+
+			VAR _Counts =
+				ADDCOLUMNS(
+					_BinTable,
+					"@Count",
+						VAR _Start = [@BinStart]
+						VAR _End = [@BinEnd]
+						VAR _IsLastBin = [@BinIndex] = _Bins - 1
+						RETURN
+							COUNTROWS(
+								FILTER(
+									_DataValid,
+									[@Value] >= _Start && IF( _IsLastBin, [@Value] <= _End, [@Value] < _End )
+								)
+							)
+				)
+
+			VAR _MaxCount = MAXX( _Counts, [@Count] )
+			VAR _Step = DIVIDE( _Width, _Bins, 0 )
+			VAR _BarWidth = MAX( 1, _Step - _Gap )
+
+			VAR _Bars =
+				CONCATENATEX(
+					_Counts,
+					VAR _BarHeight = IF( _MaxCount = 0, 0, DIVIDE( [@Count], _MaxCount, 0 ) * _Height )
+					VAR _BarX = _X + [@BinIndex] * _Step
+					VAR _BarY = _Y + _Height - _BarHeight
+					RETURN
+						DaxLib.SVG.Element.Rect(
+							_BarX,
+							_BarY,
+							_BarWidth,
+							_BarHeight,
+							1,
+							1,
+							DaxLib.SVG.Attr.Shapes(
+								_Color,
+								0.75,
+								BLANK(),
+								_Color,
+								1,
+								BLANK(),
+								BLANK()
+							),
+							BLANK()
+						),
+					""
+				)
+
+			RETURN
+				IF( NOT ISEMPTY( _DataValid ) && _Width > 0 && _Height > 0, _Bars )
+
+	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
+
+	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__
+
+/// Creates a Bullet compound SVG visual with qualitative bands, value bar, and target marker
+/// @param {int} x – The x position of the compound
+/// @param {int} y – The y position of the compound
+/// @param {int} width – The width of the compound
+/// @param {int} height – The height of the compound
+/// @param {decimal} paddingX – Horizontal padding percentage (0.0-1.0)
+/// @param {decimal} paddingY – Vertical padding percentage (0.0-1.0)
+/// @param {anyref} axisRef – Axis grouping reference
+/// @param {numeric} valueRef – Actual value expression
+/// @param {numeric} targetRef – Target value expression
+/// @param {numeric} badThreshold – Optional lower qualitative threshold
+/// @param {numeric} goodThreshold – Optional upper qualitative threshold
+/// @param {string} barColor – Optional value bar color
+/// @param {string} targetColor – Optional target marker color
+/// @returns {string} SVG bullet chart element
+function 'DaxLib.SVG.Compound.Bullet' =
+		(
+			x: INT64,
+			y: INT64,
+			width: INT64,
+			height: INT64,
+			paddingX: DOUBLE,
+			paddingY: DOUBLE,
+			axisRef: ANYREF EXPR,
+			valueRef: NUMERIC EXPR,
+			targetRef: NUMERIC EXPR,
+			badThreshold: NUMERIC,
+			goodThreshold: NUMERIC,
+			barColor: STRING,
+			targetColor: STRING
+		) =>
+
+			VAR _X = x + (width * (IF(ISBLANK(paddingX), 0, paddingX) / 2))
+			VAR _Y = y + (height * (IF(ISBLANK(paddingY), 0, paddingY) / 2))
+			VAR _Width = width * (1 - IF(ISBLANK(paddingX), 0, paddingX))
+			VAR _Height = height * (1 - IF(ISBLANK(paddingY), 0, paddingY))
+
+			VAR _Data =
+				ADDCOLUMNS(
+					VALUES( axisRef ),
+					"@Value", valueRef,
+					"@Target", targetRef
+				)
+
+			VAR _DataValid = FILTER( _Data, NOT ISBLANK( [@Value] ) || NOT ISBLANK( [@Target] ) )
+
+			VAR _Value = AVERAGEX( _DataValid, [@Value] )
+			VAR _Target = AVERAGEX( _DataValid, [@Target] )
+
+			VAR _RawMin =
+				MIN(
+					MIN( 0, MINX( _DataValid, [@Value] ) ),
+					MINX( _DataValid, [@Target] )
+				)
+
+			VAR _RawMax =
+				MAX(
+					MAX( _Value, _Target ),
+					MAXX( _DataValid, [@Value] )
+				)
+
+			VAR _BadThreshold = IF( ISBLANK( badThreshold ), _RawMax * 0.6, badThreshold )
+			VAR _GoodThreshold = IF( ISBLANK( goodThreshold ), _RawMax * 0.85, goodThreshold )
+
+			VAR _DomainMin = MIN( _RawMin, MIN( _BadThreshold, _GoodThreshold ) )
+			VAR _DomainMax = MAX( _RawMax, MAX( _BadThreshold, _GoodThreshold ) )
+
+			VAR _Baseline =
+				IF(
+					_DomainMin <= 0 && _DomainMax >= 0,
+					0,
+					_DomainMin
+				)
+
+			VAR _BandY = _Y + _Height * 0.2
+			VAR _BandHeight = _Height * 0.6
+			VAR _BarY = _Y + _Height * 0.32
+			VAR _BarHeight = _Height * 0.36
+
+			VAR _Band1End = MIN( _DomainMax, _BadThreshold )
+			VAR _Band2End = MIN( _DomainMax, _GoodThreshold )
+
+			VAR _Band1X = DaxLib.SVG.Scale.Normalize( _DomainMin, _DomainMin, _DomainMax, _X, _X + _Width )
+			VAR _Band1W = MAX( 0, DaxLib.SVG.Scale.Normalize( _Band1End, _DomainMin, _DomainMax, _X, _X + _Width ) - _Band1X )
+
+			VAR _Band2X = DaxLib.SVG.Scale.Normalize( _Band1End, _DomainMin, _DomainMax, _X, _X + _Width )
+			VAR _Band2W = MAX( 0, DaxLib.SVG.Scale.Normalize( _Band2End, _DomainMin, _DomainMax, _X, _X + _Width ) - _Band2X )
+
+			VAR _Band3X = DaxLib.SVG.Scale.Normalize( _Band2End, _DomainMin, _DomainMax, _X, _X + _Width )
+			VAR _Band3W = MAX( 0, ( _X + _Width ) - _Band3X )
+
+			VAR _ValueX = DaxLib.SVG.Scale.Normalize( MIN( _Value, _Baseline ), _DomainMin, _DomainMax, _X, _X + _Width )
+			VAR _ValueX2 = DaxLib.SVG.Scale.Normalize( MAX( _Value, _Baseline ), _DomainMin, _DomainMax, _X, _X + _Width )
+			VAR _ValueWidth = ABS( _ValueX2 - _ValueX )
+
+			VAR _TargetX = DaxLib.SVG.Scale.Normalize( _Target, _DomainMin, _DomainMax, _X, _X + _Width )
+
+			VAR _BarColor = IF( NOT ISBLANK( barColor ), barColor, "#0F6CBD" )
+			VAR _TargetColor = IF( NOT ISBLANK( targetColor ), targetColor, "#323130" )
+
+			VAR _Bands =
+				DaxLib.SVG.Element.Rect(
+					_Band1X,
+					_BandY,
+					_Band1W,
+					_BandHeight,
+					0,
+					0,
+					DaxLib.SVG.Attr.Shapes( "#F3F2F1", 1, BLANK(), BLANK(), BLANK(), BLANK(), BLANK() ),
+					BLANK()
+				)
+				& DaxLib.SVG.Element.Rect(
+					_Band2X,
+					_BandY,
+					_Band2W,
+					_BandHeight,
+					0,
+					0,
+					DaxLib.SVG.Attr.Shapes( "#E1DFDD", 1, BLANK(), BLANK(), BLANK(), BLANK(), BLANK() ),
+					BLANK()
+				)
+				& DaxLib.SVG.Element.Rect(
+					_Band3X,
+					_BandY,
+					_Band3W,
+					_BandHeight,
+					0,
+					0,
+					DaxLib.SVG.Attr.Shapes( "#C8C6C4", 1, BLANK(), BLANK(), BLANK(), BLANK(), BLANK() ),
+					BLANK()
+				)
+
+			VAR _ValueBar =
+				DaxLib.SVG.Element.Rect(
+					_ValueX,
+					_BarY,
+					_ValueWidth,
+					_BarHeight,
+					1,
+					1,
+					DaxLib.SVG.Attr.Shapes( _BarColor, 0.9, BLANK(), _BarColor, 1, BLANK(), BLANK() ),
+					BLANK()
+				)
+
+			VAR _TargetMarker =
+				DaxLib.SVG.Element.Line(
+					_TargetX,
+					_Y + _Height * 0.12,
+					_TargetX,
+					_Y + _Height * 0.88,
+					DaxLib.SVG.Attr.Shapes( BLANK(), BLANK(), BLANK(), _TargetColor, 2, BLANK(), BLANK() ),
+					BLANK()
+				)
+
+			RETURN
+				IF( NOT ISEMPTY( _DataValid ) && _Width > 0 && _Height > 0, _Bands & _ValueBar & _TargetMarker )
+
+	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
+
+	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__
+
+/// Creates a Lollipop compound SVG visual
+/// @param {int} x – The x position of the compound
+/// @param {int} y – The y position of the compound
+/// @param {int} width – The width of the compound
+/// @param {int} height – The height of the compound
+/// @param {decimal} paddingX – Horizontal padding percentage (0.0-1.0)
+/// @param {decimal} paddingY – Vertical padding percentage (0.0-1.0)
+/// @param {anyref} axisRef – Axis grouping reference
+/// @param {numeric} measureRef – Value expression
+/// @param {string} lineColor – Optional stem color
+/// @param {string} dotColor – Optional dot color
+/// @param {string} orientation – "Vertical" (default) or "Horizontal"
+/// @returns {string} SVG lollipop chart elements
+function 'DaxLib.SVG.Compound.Lollipop' =
+		(
+			x: INT64,
+			y: INT64,
+			width: INT64,
+			height: INT64,
+			paddingX: DOUBLE,
+			paddingY: DOUBLE,
+			axisRef: ANYREF EXPR,
+			measureRef: NUMERIC EXPR,
+			lineColor: STRING,
+			dotColor: STRING,
+			orientation: STRING
+		) =>
+
+			VAR _X = x + (width * (IF(ISBLANK(paddingX), 0, paddingX) / 2))
+			VAR _Y = y + (height * (IF(ISBLANK(paddingY), 0, paddingY) / 2))
+			VAR _Width = width * (1 - IF(ISBLANK(paddingX), 0, paddingX))
+			VAR _Height = height * (1 - IF(ISBLANK(paddingY), 0, paddingY))
+
+			VAR _Orientation = IF( orientation = "Horizontal", "Horizontal", "Vertical" )
+			VAR _LineColor = IF( NOT ISBLANK( lineColor ), lineColor, "#0F6CBD" )
+			VAR _DotColor = IF( NOT ISBLANK( dotColor ), dotColor, _LineColor )
+
+			VAR _Data =
+				ADDCOLUMNS(
+					VALUES( axisRef ),
+					"@AxisValue", axisRef,
+					"@Value", measureRef
+				)
+
+			VAR _DataValid = FILTER( _Data, NOT ISBLANK( [@Value] ) )
+			VAR _Ordered =
+				ADDCOLUMNS(
+					TOPN( COUNTROWS( _DataValid ), _DataValid, [@AxisValue], ASC ),
+					"@Order", RANKX( _DataValid, [@AxisValue], BLANK(), ASC, DENSE )
+				)
+
+			VAR _Count = COUNTROWS( _Ordered )
+			VAR _Step = DIVIDE( IF( _Orientation = "Horizontal", _Height, _Width ), _Count, 0 )
+
+			VAR _RawMin = MINX( _Ordered, [@Value] )
+			VAR _RawMax = MAXX( _Ordered, [@Value] )
+			VAR _Min = IF( _RawMin > 0, 0, _RawMin )
+			VAR _Max = _RawMax
+
+			VAR _BaseX = IF( _Max = _Min, _X, DaxLib.SVG.Scale.Normalize( _Min, _Min, _Max, _X, _X + _Width ) )
+			VAR _BaseY = IF( _Max = _Min, _Y + _Height, DaxLib.SVG.Scale.Normalize( _Min, _Min, _Max, _Y + _Height, _Y ) )
+
+			VAR _Lollipops =
+				CONCATENATEX(
+					_Ordered,
+					VAR _AxisPos = _Step * ( [@Order] - 0.5 )
+					VAR _ValueX = IF( _Max = _Min, _X, DaxLib.SVG.Scale.Normalize( [@Value], _Min, _Max, _X, _X + _Width ) )
+					VAR _ValueY = IF( _Max = _Min, _Y + _Height, DaxLib.SVG.Scale.Normalize( [@Value], _Min, _Max, _Y + _Height, _Y ) )
+					VAR _Stem =
+						DaxLib.SVG.Element.Line(
+							IF( _Orientation = "Horizontal", _BaseX, _X + _AxisPos ),
+							IF( _Orientation = "Horizontal", _Y + _AxisPos, _BaseY ),
+							IF( _Orientation = "Horizontal", _ValueX, _X + _AxisPos ),
+							IF( _Orientation = "Horizontal", _Y + _AxisPos, _ValueY ),
+							DaxLib.SVG.Attr.Shapes( BLANK(), BLANK(), BLANK(), _LineColor, 1, BLANK(), BLANK() ),
+							BLANK()
+						)
+					VAR _Dot =
+						DaxLib.SVG.Element.Circle(
+							IF( _Orientation = "Horizontal", _ValueX, _X + _AxisPos ),
+							IF( _Orientation = "Horizontal", _Y + _AxisPos, _ValueY ),
+							2,
+							DaxLib.SVG.Attr.Shapes( _DotColor, 0.9, BLANK(), _DotColor, 1, BLANK(), BLANK() ),
+							BLANK()
+						)
+					RETURN _Stem & _Dot,
+					""
+				)
+
+			RETURN
+				IF( NOT ISEMPTY( _Ordered ) && _Width > 0 && _Height > 0, _Lollipops )
+
+	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
+
+	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__
+
+/// Creates a ProgressBar compound SVG visual
+/// @param {int} x – The x position of the compound
+/// @param {int} y – The y position of the compound
+/// @param {int} width – The width of the compound
+/// @param {int} height – The height of the compound
+/// @param {decimal} paddingX – Horizontal padding percentage (0.0-1.0)
+/// @param {decimal} paddingY – Vertical padding percentage (0.0-1.0)
+/// @param {anyref} axisRef – Axis grouping reference
+/// @param {numeric} valueRef – Value expression
+/// @param {numeric} maxValue – Optional max value for normalization
+/// @param {string} fillColor – Optional progress color
+/// @param {string} trackColor – Optional track color
+/// @param {string} orientation – "Horizontal" (default) or "Vertical"
+/// @returns {string} SVG progress bar elements
+function 'DaxLib.SVG.Compound.ProgressBar' =
+		(
+			x: INT64,
+			y: INT64,
+			width: INT64,
+			height: INT64,
+			paddingX: DOUBLE,
+			paddingY: DOUBLE,
+			axisRef: ANYREF EXPR,
+			valueRef: NUMERIC EXPR,
+			maxValue: NUMERIC,
+			fillColor: STRING,
+			trackColor: STRING,
+			orientation: STRING
+		) =>
+
+			VAR _X = x + (width * (IF(ISBLANK(paddingX), 0, paddingX) / 2))
+			VAR _Y = y + (height * (IF(ISBLANK(paddingY), 0, paddingY) / 2))
+			VAR _Width = width * (1 - IF(ISBLANK(paddingX), 0, paddingX))
+			VAR _Height = height * (1 - IF(ISBLANK(paddingY), 0, paddingY))
+
+			VAR _Orientation = IF( orientation = "Vertical", "Vertical", "Horizontal" )
+			VAR _FillColor = IF( NOT ISBLANK( fillColor ), fillColor, "#0F6CBD" )
+			VAR _TrackColor = IF( NOT ISBLANK( trackColor ), trackColor, "#E1DFDD" )
+
+			VAR _Data = ADDCOLUMNS( VALUES( axisRef ), "@Value", valueRef )
+			VAR _DataValid = FILTER( _Data, NOT ISBLANK( [@Value] ) )
+
+			VAR _Value = AVERAGEX( _DataValid, [@Value] )
+			VAR _Max = IF( ISBLANK( maxValue ), MAX( 1, _Value ), MAX( 1, maxValue ) )
+			VAR _Pct = MIN( 1, MAX( 0, DIVIDE( _Value, _Max, 0 ) ) )
+
+			VAR _Track =
+				DaxLib.SVG.Element.Rect(
+					_X,
+					_Y,
+					_Width,
+					_Height,
+					3,
+					3,
+					DaxLib.SVG.Attr.Shapes( _TrackColor, 1, BLANK(), _TrackColor, 1, BLANK(), BLANK() ),
+					BLANK()
+				)
+
+			VAR _FillW = IF( _Orientation = "Horizontal", _Width * _Pct, _Width )
+			VAR _FillH = IF( _Orientation = "Horizontal", _Height, _Height * _Pct )
+			VAR _FillX = _X
+			VAR _FillY = IF( _Orientation = "Horizontal", _Y, _Y + ( _Height - _FillH ) )
+
+			VAR _Fill =
+				DaxLib.SVG.Element.Rect(
+					_FillX,
+					_FillY,
+					_FillW,
+					_FillH,
+					3,
+					3,
+					DaxLib.SVG.Attr.Shapes( _FillColor, 0.95, BLANK(), _FillColor, 1, BLANK(), BLANK() ),
+					BLANK()
+				)
+
+			RETURN
+				IF( NOT ISEMPTY( _DataValid ) && _Width > 0 && _Height > 0, _Track & _Fill )
+
+	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
+
+	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__
+
 /// Creates a Box Plot compound SVG Visual showing statistical distribution
 /// @param {int} x – The x position of the compound
 /// @param {int} y – The y position of the compound
@@ -2608,6 +3135,199 @@ function 'DaxLib.SVG.Visual.Area' =
 					orientation,
 					showAxis,
 					8
+				)
+
+			RETURN
+				DaxLib.SVG.SVG( "100%", "100%", "0 0 120 48", _Marks, BLANK() )
+
+	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
+
+	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__
+
+/// Minimal wrapper for a fluent-style scatter visual
+/// @param {anyref} axisRefColumn – Axis grouping reference
+/// @param {numeric} xMeasureRefExpr – X-value expression
+/// @param {numeric} yMeasureRefExpr – Y-value expression
+/// @param {string} color – Optional point color
+/// @returns {string} SVG data URI with embedded scatter chart
+function 'DaxLib.SVG.Visual.Scatter' =
+		(
+			axisRefColumn: ANYREF EXPR,
+			xMeasureRefExpr: NUMERIC EXPR,
+			yMeasureRefExpr: NUMERIC EXPR,
+			color: STRING
+		) =>
+
+			VAR _Color = IF( NOT ISBLANK( color ), color, DaxLib.SVG.Color.Theme( "Power BI", 1 ) )
+			VAR _Marks =
+				DaxLib.SVG.Compound.Scatter(
+					0,
+					0,
+					120,
+					48,
+					0,
+					0,
+					axisRefColumn,
+					xMeasureRefExpr,
+					yMeasureRefExpr,
+					_Color,
+					2
+				)
+
+			RETURN
+				DaxLib.SVG.SVG( "100%", "100%", "0 0 120 48", _Marks, BLANK() )
+
+	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
+
+	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__
+
+/// Minimal wrapper for a fluent-style histogram visual
+/// @param {anyref} axisRefColumn – Axis grouping reference
+/// @param {numeric} measureRefExpr – Numeric expression to bin
+/// @param {int} bins – Number of histogram bins
+/// @param {string} color – Optional bar color
+/// @returns {string} SVG data URI with embedded histogram chart
+function 'DaxLib.SVG.Visual.Histogram' =
+		(
+			axisRefColumn: ANYREF EXPR,
+			measureRefExpr: NUMERIC EXPR,
+			bins: INT64,
+			color: STRING
+		) =>
+
+			VAR _Color = IF( NOT ISBLANK( color ), color, DaxLib.SVG.Color.Theme( "Power BI", 1 ) )
+			VAR _Marks =
+				DaxLib.SVG.Compound.Histogram(
+					0,
+					0,
+					120,
+					48,
+					0,
+					0,
+					axisRefColumn,
+					measureRefExpr,
+					bins,
+					_Color
+				)
+
+			RETURN
+				DaxLib.SVG.SVG( "100%", "100%", "0 0 120 48", _Marks, BLANK() )
+
+	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
+
+	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__
+
+/// Minimal wrapper for a fluent-style bullet visual
+/// @param {anyref} axisRefColumn – Axis grouping reference
+/// @param {numeric} valueRefExpr – Actual value expression
+/// @param {numeric} targetRefExpr – Target value expression
+/// @param {numeric} badThreshold – Optional lower qualitative threshold
+/// @param {numeric} goodThreshold – Optional upper qualitative threshold
+/// @param {string} color – Optional value bar color
+/// @returns {string} SVG data URI with embedded bullet chart
+function 'DaxLib.SVG.Visual.Bullet' =
+		(
+			axisRefColumn: ANYREF EXPR,
+			valueRefExpr: NUMERIC EXPR,
+			targetRefExpr: NUMERIC EXPR,
+			badThreshold: NUMERIC,
+			goodThreshold: NUMERIC,
+			color: STRING
+		) =>
+
+			VAR _Color = IF( NOT ISBLANK( color ), color, DaxLib.SVG.Color.Theme( "Power BI", 1 ) )
+			VAR _Marks =
+				DaxLib.SVG.Compound.Bullet(
+					0,
+					0,
+					120,
+					48,
+					0,
+					0,
+					axisRefColumn,
+					valueRefExpr,
+					targetRefExpr,
+					badThreshold,
+					goodThreshold,
+					_Color,
+					"#323130"
+				)
+
+			RETURN
+				DaxLib.SVG.SVG( "100%", "100%", "0 0 120 48", _Marks, BLANK() )
+
+	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
+
+	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__
+
+/// Minimal wrapper for a fluent-style lollipop visual
+/// @param {anyref} axisRefColumn – Axis grouping reference
+/// @param {numeric} measureRefExpr – Value expression
+/// @param {string} color – Optional color for stems and dots
+/// @param {string} orientation – Optional orientation: "Vertical" or "Horizontal"
+/// @returns {string} SVG data URI with embedded lollipop chart
+function 'DaxLib.SVG.Visual.Lollipop' =
+		(
+			axisRefColumn: ANYREF EXPR,
+			measureRefExpr: NUMERIC EXPR,
+			color: STRING,
+			orientation: STRING
+		) =>
+
+			VAR _Color = IF( NOT ISBLANK( color ), color, DaxLib.SVG.Color.Theme( "Power BI", 1 ) )
+			VAR _Marks =
+				DaxLib.SVG.Compound.Lollipop(
+					0,
+					0,
+					120,
+					48,
+					0,
+					0,
+					axisRefColumn,
+					measureRefExpr,
+					_Color,
+					_Color,
+					orientation
+				)
+
+			RETURN
+				DaxLib.SVG.SVG( "100%", "100%", "0 0 120 48", _Marks, BLANK() )
+
+	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
+
+	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__
+
+/// Minimal wrapper for a fluent-style progress bar visual
+/// @param {anyref} axisRefColumn – Axis grouping reference
+/// @param {numeric} valueRefExpr – Value expression
+/// @param {numeric} maxValue – Optional max value for normalization
+/// @param {string} color – Optional fill color
+/// @param {string} orientation – Optional orientation: "Horizontal" or "Vertical"
+/// @returns {string} SVG data URI with embedded progress bar
+function 'DaxLib.SVG.Visual.ProgressBar' =
+		(
+			axisRefColumn: ANYREF EXPR,
+			valueRefExpr: NUMERIC EXPR,
+			maxValue: NUMERIC,
+			color: STRING,
+			orientation: STRING
+		) =>
+
+			VAR _Color = IF( NOT ISBLANK( color ), color, DaxLib.SVG.Color.Theme( "Power BI", 1 ) )
+			VAR _Marks =
+				DaxLib.SVG.Compound.ProgressBar(
+					0,
+					0,
+					120,
+					48,
+					0,
+					0,
+					axisRefColumn,
+					valueRefExpr,
+					maxValue,
+					_Color,
+					"#E1DFDD",
+					orientation
 				)
 
 			RETURN
