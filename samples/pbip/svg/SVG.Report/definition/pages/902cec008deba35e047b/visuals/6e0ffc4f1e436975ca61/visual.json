@@ -1,13 +1,13 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.5.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.7.0/schema.json",
   "name": "6e0ffc4f1e436975ca61",
   "position": {
-    "x": 300.56267631844838,
-    "y": 414.38596705040135,
-    "z": 2000,
-    "height": 459.16337805840567,
-    "width": 1403.251775848461,
-    "tabOrder": 1000
+    "x": 204.14978471708781,
+    "y": 618.862436393685,
+    "z": 3000,
+    "height": 387.9914756665072,
+    "width": 1669.5390771104251,
+    "tabOrder": 0
   },
   "visual": {
     "visualType": "pivotTable",
@@ -70,6 +70,20 @@
                       "Entity": "_Measures"
                     }
                   },
+                  "Property": "Compound.ProgressBar"
+                }
+              },
+              "queryRef": "_Measures.Compound.ProgressBar",
+              "nativeQueryRef": "Compound.ProgressBar"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
                   "Property": "Compound.Line"
                 }
               },
@@ -98,11 +112,11 @@
                       "Entity": "_Measures"
                     }
                   },
-                  "Property": "Compound.Bar"
+                  "Property": "Compound.Bars"
                 }
               },
               "queryRef": "_Measures.Compound.Bar",
-              "nativeQueryRef": "Compound.Bar"
+              "nativeQueryRef": "Compound.Bars"
             },
             {
               "field": {
@@ -168,11 +182,11 @@
                       "Entity": "_Measures"
                     }
                   },
-                  "Property": "Jitter and Heatmap"
+                  "Property": "Jitter and Violin"
                 }
               },
-              "queryRef": "_Measures.Jitter and Heatmap",
-              "nativeQueryRef": "Jitter and Heatmap"
+              "queryRef": "_Measures.Jitter and Violin",
+              "nativeQueryRef": "Jitter and Violin"
             },
             {
               "field": {
@@ -292,7 +306,57 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Compounds'"
+                  "Value": "'Table'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "border": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "color": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "ThemeDataColor": {
+                      "ColorId": 0,
+                      "Percent": -0.2
+                    }
+                  }
+                }
+              }
+            },
+            "radius": {
+              "expr": {
+                "Literal": {
+                  "Value": "6D"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "background": [
+        {
+          "properties": {
+            "color": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "ThemeDataColor": {
+                      "ColorId": 0,
+                      "Percent": 0
+                    }
+                  }
                 }
               }
             }
@@ -305,7 +369,7 @@
   "filterConfig": {
     "filters": [
       {
-        "name": "3fbc573019d43aa37825",
+        "name": "d9f82f643c21879dc2be",
         "field": {
           "Column": {
             "Expression": {
@@ -319,7 +383,21 @@
         "type": "Categorical"
       },
       {
-        "name": "52542026103dd71e5977",
+        "name": "3cda5ae9aa30be9791ad",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "_Measures"
+              }
+            },
+            "Property": "Total Cost"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "582084b3088dbaa184de",
         "field": {
           "Measure": {
             "Expression": {
@@ -333,7 +411,35 @@
         "type": "Advanced"
       },
       {
-        "name": "1d5b5b4a0801c11eb5d0",
+        "name": "7fa5e8740649ab190b68",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "_Measures"
+              }
+            },
+            "Property": "Compound.ProgressBar"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "5de75f600ee2155ea88b",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "_Measures"
+              }
+            },
+            "Property": "Compound.Line"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "7b75ca30ba24a7785a1a",
         "field": {
           "Measure": {
             "Expression": {
@@ -347,7 +453,21 @@
         "type": "Advanced"
       },
       {
-        "name": "d68f1c6501087b007207",
+        "name": "2709b28186ad51b12b8c",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "_Measures"
+              }
+            },
+            "Property": "Compound.Bars"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "3cd411e0304a30bab40d",
         "field": {
           "Measure": {
             "Expression": {
@@ -361,7 +481,7 @@
         "type": "Advanced"
       },
       {
-        "name": "6d52f41906038d303098",
+        "name": "71bbdcb6c16089e9e053",
         "field": {
           "Measure": {
             "Expression": {
@@ -375,7 +495,7 @@
         "type": "Advanced"
       },
       {
-        "name": "303ee2ba98090016b012",
+        "name": "8fc201dc66778c5bc168",
         "field": {
           "Measure": {
             "Expression": {
@@ -389,7 +509,7 @@
         "type": "Advanced"
       },
       {
-        "name": "d5d607a6e330623ea717",
+        "name": "62c476e73bed74909331",
         "field": {
           "Measure": {
             "Expression": {
@@ -403,21 +523,7 @@
         "type": "Advanced"
       },
       {
-        "name": "ee6b56c9b92bbbd5daee",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "_Measures"
-              }
-            },
-            "Property": "Jitter and Heatmap"
-          }
-        },
-        "type": "Advanced"
-      },
-      {
-        "name": "ceb5df60eeb5ddb26a85",
+        "name": "15c9aa231b0dc2e8056e",
         "field": {
           "Measure": {
             "Expression": {

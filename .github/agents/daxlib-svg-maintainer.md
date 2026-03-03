@@ -60,6 +60,8 @@ Primary goals for changes:
    - Avoid names that can conflict with existing semantic-model objects (tables, columns, measures, functions).
    - Keep model-independent functions clearly namespaced to reduce collision risk with current/future DAX built-ins.
    - Treat reserved prefixes as unavailable for this library (`Dax`, `DaxLib`).
+   - Treat `Axis` as reserved for function naming: avoid introducing function names or namespace segments that rely on `.Axis`.
+   - Example: parameter names like `axisRef` are allowed; function names like `DaxLib.SVG.Axis.NewHelper` are disallowed.
 
 9. **Apply DAX Performance Tuner authoring rules**
    - Reuse repeated expressions with variable caching.
@@ -73,9 +75,17 @@ Primary goals for changes:
 
 10. **Be aware of new DAX functions (including `TABLEOF`)**
    - Treat `TABLEOF` as an available modern DAX option and evaluate it for readability/performance where appropriate.
+   - Treat `ISDATETIME` as an available DAX function where engine support exists; use it for date/time type checks instead of heuristic string/number inference.
    - Before using newly introduced functions, verify compatibility across target engines and semantic model modes used by this library.
+   - If editor/static diagnostics disagree with Microsoft Learn for newer functions, treat diagnostics as advisory and validate against the target semantic model/runtime.
    - Respect `TABLEOF` support constraints from Microsoft Learn (not supported in DirectQuery mode when used in calculated columns or RLS rules).
    - If compatibility is uncertain, prefer established cross-mode-safe patterns already adopted in this repository.
+
+11. **Avoid sibling virtual-column references inside a single `ADDCOLUMNS`**
+   - In the same `ADDCOLUMNS` call (same iterator row/projection), do not rely on one newly created `@` column from another sibling expression.
+   - This includes patterns like `[@TickValue]` used by `@Pos` or `@Label`, and `[@Label]` used by `@EstimatedWidth` when both are created in the same `ADDCOLUMNS`.
+   - Prefer recomputing from base inputs in-place, or split into two staged `ADDCOLUMNS` steps.
+   - This prevents unresolved-column errors such as: `Column '@Label' cannot be found or may not be used in this expression`.
 
 ---
 

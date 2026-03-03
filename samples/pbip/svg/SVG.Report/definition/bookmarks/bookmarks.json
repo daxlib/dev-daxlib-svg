@@ -1,0 +1,13 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/bookmarksMetadata/1.0.0/schema.json",
+  "items": [
+    {
+      "name": "dd732f501e8bde845650",
+      "displayName": "Tabs",
+      "children": [
+        "16c67410932208885c09",
+        "f7ade160006d0a69543b"
+      ]
+    }
+  ]
+}

@@ -1,13 +1,13 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.7.0/schema.json",
-  "name": "6b2659fe769ef8292b0d",
+  "name": "acb4b55a2e878070d09a",
   "position": {
-    "x": 12.465988233877127,
-    "y": 535.92549410133756,
-    "z": 11000,
-    "height": 62.684739833843459,
-    "width": 159.19933926055481,
-    "tabOrder": 13000
+    "x": 14.455979974634062,
+    "y": 730.19755558098211,
+    "z": 18000,
+    "height": 72.000190034285353,
+    "width": 156.64906210162084,
+    "tabOrder": 17000
   },
   "visual": {
     "visualType": "slicer",
@@ -20,14 +20,14 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "x"
+                      "Entity": "Orientation"
                     }
                   },
-                  "Property": "x"
+                  "Property": "Orientation"
                 }
               },
-              "queryRef": "x.x",
-              "nativeQueryRef": "x",
+              "queryRef": "Orientation.Orientation",
+              "nativeQueryRef": "Orientation",
               "active": true
             }
           ]
@@ -51,13 +51,20 @@
       "general": [
         {
           "properties": {
+            "orientation": {
+              "expr": {
+                "Literal": {
+                  "Value": "1D"
+                }
+              }
+            },
             "filter": {
               "filter": {
                 "Version": 2,
                 "From": [
                   {
-                    "Name": "x",
-                    "Entity": "x",
+                    "Name": "o",
+                    "Entity": "Orientation",
                     "Type": 0
                   }
                 ],
@@ -70,10 +77,10 @@
                             "Column": {
                               "Expression": {
                                 "SourceRef": {
-                                  "Source": "x"
+                                  "Source": "o"
                                 }
                               },
-                              "Property": "x"
+                              "Property": "Orientation"
                             }
                           }
                         ],
@@ -81,7 +88,7 @@
                           [
                             {
                               "Literal": {
-                                "Value": "0L"
+                                "Value": "'Horizontal'"
                               }
                             }
                           ]
@@ -90,13 +97,6 @@
                     }
                   }
                 ]
-              }
-            },
-            "orientation": {
-              "expr": {
-                "Literal": {
-                  "Value": "1D"
-                }
               }
             }
           }
@@ -176,13 +176,6 @@
                   "Value": "false"
                 }
               }
-            },
-            "transparency": {
-              "expr": {
-                "Literal": {
-                  "Value": "0D"
-                }
-              }
             }
           }
         }
@@ -190,23 +183,50 @@
       "title": [
         {
           "properties": {
-            "titleWrap": {
+            "show": {
               "expr": {
                 "Literal": {
-                  "Value": "true"
+                  "Value": "false"
                 }
               }
-            }
-          }
-        }
-      ],
-      "border": [
-        {
-          "properties": {
-            "width": {
+            },
+            "text": {
               "expr": {
                 "Literal": {
-                  "Value": "1D"
+                  "Value": "'All'"
+                }
+              }
+            },
+            "fontColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "ThemeDataColor": {
+                      "ColorId": 0,
+                      "Percent": -0.1
+                    }
+                  }
+                }
+              }
+            },
+            "fontFamily": {
+              "expr": {
+                "Literal": {
+                  "Value": "'''Segoe UI Semibold'', wf_segoe-ui_semibold, helvetica, arial, sans-serif'"
+                }
+              }
+            },
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "11D"
+                }
+              }
+            },
+            "alignment": {
+              "expr": {
+                "Literal": {
+                  "Value": "'center'"
                 }
               }
             }
@@ -215,5 +235,23 @@
       ]
     },
     "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "cbd15297bcb43e009d1d",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Orientation"
+              }
+            },
+            "Property": "Orientation"
+          }
+        },
+        "type": "Categorical"
+      }
+    ]
   }
 }
