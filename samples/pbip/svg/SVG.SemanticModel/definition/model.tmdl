@@ -32,6 +32,8 @@ ref table Height
 ref table Axis
 ref table x
 ref table y
+ref table Cards
+ref table Orientation
 
 ref cultureInfo en-GB
 
