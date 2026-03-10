@@ -95,6 +95,25 @@ jobs:
       - name: Copy package files
         run: cp -rv source-repo/src/* "upstream-repo/${{ steps.package.outputs.folder }}/"
 
+      # Merge TMDL function files into a single lib/functions.tmdl
+      # Supports two layouts that can coexist or be used independently:
+      # - lib/functions.tmdl (single file, used as base content)
+      # - lib/functions/**/*.tmdl (multiple files, appended in sorted path order)
+      # The lib/functions/ directory is removed from the output after merging.
+      - name: Merge TMDL files
+        working-directory: upstream-repo
+        run: |
+          FUNCTIONS_FILE="${{ steps.package.outputs.folder }}/lib/functions.tmdl"
+          FUNCTIONS_DIR="${{ steps.package.outputs.folder }}/lib/functions"
+          if [ -d "${FUNCTIONS_DIR}" ]; then
+            find "${FUNCTIONS_DIR}" -name '*.tmdl' -type f | sort | while IFS= read -r f; do
+              echo "Merging ${f}"
+              test -s "${FUNCTIONS_FILE}" && printf '\n' >> "${FUNCTIONS_FILE}"
+              cat "${f}" >> "${FUNCTIONS_FILE}"
+            done
+            rm -rf "${FUNCTIONS_DIR}"
+          fi
+
       # Replace the package ID and version placeholders in functions.tmdl
       - name: Replace placeholders
         working-directory: upstream-repo
