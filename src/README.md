@@ -21,13 +21,16 @@ For detailed examples, check out the [PBIP file](https://github.com/daxlib/dev-d
 | Category | Description |
 |---|---|
 | **SVG Wrapper** | Wraps one or more `Elements`, `Defs`, `Compounds`, applying required metadata and `<SVG>` tags |
-| **Elements** | SVG primitives (i.e. `<Rect>`, `<Circle>`, `<line>`) |
-| **Compounds** | Complex components (i.e. boxplot, violin) made from `Elements` |
-| **Defs** | Define reusable SVG elements (i.e. `<linearGradient>`, `<clipPath>`, and shapes) |
-| **Attributes** | Create Attributes (i.e. fill, stroke, opacity) string that can be applied to `Elements` and `Defs` |
-| **Transforms** | Create Transform strings |
-| **Scales** | Mapping values between scales |
-| **Colors** | Themes and functions for colour manipulation |
+| **Scales** | Mapping values between scales (`Normalize`, `NiceNum`, `NiceRange`) |
+| **Data** | Shared data helpers for building axis/value tables and computing ranges (`AxisMeasure`, `Range`) |
+| **Axes** | Axis layout, rendering, point mapping, and baseline computation (`MaxTickLabelWidth`, `Layout`, `Render`, `Point`, `Baseline`) |
+| **Attributes** | Create attribute strings for shapes, text, and strokes (`Shapes`, `Txt`, `Stroke`) |
+| **Transforms** | Create SVG transform strings (translate, rotate, scale, skew) |
+| **Defs** | Define reusable SVG elements: gradients, clip paths, and shapes (`GradientStop`, `LinearGradient`, `RadialGradient`, `ClipPath`, `Circle`, `Rect`, `Line`, `Paths`) |
+| **Elements** | SVG primitives: `Defs`, `UseDef`, `Group`, `Circle`, `Rect`, `Line`, `Paths`, `Ellipse`, `Polygon`, `Polyline`, `Txt` |
+| **Compounds** | Complex components built from Elements: `Pill`, `Bars`, `Line`, `Area`, `Jitter`, `ProgressBar`, `Boxplot`, `Violin`, `Heatmap` |
+| **Viz** | Minimal wrapper functions with defaults: `Bars`, `Line`, `Area`, `ProgressBar`, `Pill`, `Boxplot`, `Jitter`, `Heatmap`, `Violin` |
+| **Colors** | Theme palettes and color manipulation: `Theme`, `PerformanceTheme`, `Int.ToHex`, `Hex.ToInt`, `RGB.ToHex`, `Hex.Interpolate` |
 
 ## Documentation
 

@@ -1,13 +1,13 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.7.0/schema.json",
-  "name": "6b2659fe769ef8292b0d",
+  "name": "cdf88cffbc02604cc087",
   "position": {
-    "x": 12.465988233877127,
-    "y": 535.92549410133756,
-    "z": 11000,
-    "height": 62.684739833843459,
-    "width": 159.19933926055481,
-    "tabOrder": 13000
+    "x": 13.460984104255594,
+    "y": 666.269953120917,
+    "z": 9000,
+    "height": 64.674731574600386,
+    "width": 158.20434339017635,
+    "tabOrder": 16000
   },
   "visual": {
     "visualType": "slicer",
@@ -20,14 +20,14 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "x"
+                      "Entity": "Axis"
                     }
                   },
-                  "Property": "x"
+                  "Property": "Axis"
                 }
               },
-              "queryRef": "x.x",
-              "nativeQueryRef": "x",
+              "queryRef": "Axis.Axis",
+              "nativeQueryRef": "Axis",
               "active": true
             }
           ]
@@ -56,8 +56,8 @@
                 "Version": 2,
                 "From": [
                   {
-                    "Name": "x",
-                    "Entity": "x",
+                    "Name": "a",
+                    "Entity": "Axis",
                     "Type": 0
                   }
                 ],
@@ -70,10 +70,10 @@
                             "Column": {
                               "Expression": {
                                 "SourceRef": {
-                                  "Source": "x"
+                                  "Source": "a"
                                 }
                               },
-                              "Property": "x"
+                              "Property": "Axis"
                             }
                           }
                         ],
@@ -81,7 +81,7 @@
                           [
                             {
                               "Literal": {
-                                "Value": "0L"
+                                "Value": "true"
                               }
                             }
                           ]

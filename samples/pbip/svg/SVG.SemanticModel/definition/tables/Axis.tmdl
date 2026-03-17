@@ -1,6 +1,12 @@
 table Axis
 	lineageTag: 29385c8b-397c-4898-9dee-425c0e94c1bd
 
+	measure 'Axes Toggle' =
+			
+			SELECTEDVALUE( 'Axis'[Axis], false )
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 45a2ad12-9d6f-4898-a8a9-b4f69c1bff6b
+
 	column Axis
 		formatString: """TRUE"";""TRUE"";""FALSE"""
 		lineageTag: a4119565-86c0-408f-a5ec-eee20acb2392

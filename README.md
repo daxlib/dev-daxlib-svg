@@ -6,6 +6,10 @@ This is the official development repository for the [**DaxLib.SVG**](https://dax
 
 The library is officially distributed via [daxlib.org](https://daxlib.org/package/DaxLib.SVG/), which is the recommended and supported way to consume it.
 
+## Agent Guidance
+
+For Copilot/Coding Agent repository instructions and skills, see [.github/agents/daxlib-svg-maintainer.md](.github/agents/daxlib-svg-maintainer.md).
+
 This repository is where we:
 
 - Manage ongoing development

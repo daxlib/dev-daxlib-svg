@@ -1,0 +1,24 @@
+table Orientation
+	lineageTag: 5b7cddff-b2c6-4d9f-ac25-920a83b53a62
+
+	column Orientation
+		lineageTag: b3e53e20-f08f-4514-87f6-ad1fb505e800
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Orientation]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Orientation = calculated
+		mode: import
+		source =
+				
+				DATATABLE(
+				    "Orientation", STRING,
+				    {
+				        {"Horizontal"},
+				        {"Vertical"}
+				    })
+
+	annotation PBI_Id = fd6d589499964680aa11e0eeb4e0ceb5
+

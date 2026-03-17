@@ -1,0 +1,80 @@
+table Cards
+	lineageTag: af6f98fc-8b42-4bf7-be69-52bd1653a0dc
+
+	measure Card =
+			
+			SWITCH(
+			    SELECTEDVALUE( Cards[Compound] ),
+			    "Compound.Bars", [Compound.Bars],
+			    "Compound.Line", [Compound.Line],
+			    "Compound.Area", [Compound.Area],
+			    "Compound.Jitter", [Compound.Jitter],
+			    "Compound.ProgressBar", [Compound.ProgressBar],
+			    "Compound.Boxplot", [Compound.BoxPlot],
+			    "Compound.Violin", [Compound.Violin],
+			    "Compound.Heatmap", [Compound.Heatmap],
+			    "Compound.Pill", [Compound.Pill],
+			    "Element.Txt", [Txt],
+			    "Element.Rect", [Rect],
+			    "Element.Line", [Line],
+			    "Element.Path", [Path],
+			    "Element.Circle", [Circle],
+			    "Element.Use", [Use],
+			    "Defs.LinearGradient", [Linear Gradient],
+			    "Defs.RadialGradient", [Radial Gradient],
+			    "Defs.ClipPath", [Clip Path]
+			)
+		lineageTag: 197396a2-dde4-4eba-a67a-2aebc997dfaf
+		dataCategory: ImageUrl
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Compound
+		lineageTag: e842f33a-2b6e-49c4-bbbe-2b34db54d31c
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Compound]
+		sortByColumn: Order
+
+		annotation SummarizationSetBy = Automatic
+
+	column Order
+		formatString: 0
+		lineageTag: ab2add2d-0b72-46d9-b719-f8326b9c30fb
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Order]
+
+		annotation SummarizationSetBy = User
+
+	partition Cards = calculated
+		mode: import
+		source =
+				
+				DATATABLE(
+				    "Compound", STRING,
+				    "Order", INTEGER,
+				    {
+				        {"Compound.Bars", 2},
+				        {"Compound.Line", 3},
+				        {"Compound.Area", 4},
+				        {"Compound.Jitter", 5},
+				        {"Compound.ProgressBar", 7},
+				        {"Compound.Boxplot", 8},
+				        {"Compound.Violin", 9},
+				        {"Compound.Heatmap", 10},
+				        // {"Compound.Pill", 11},
+				        {"Element.Txt", 12},
+				        {"Element.Rect", 13},
+				        {"Element.Line", 14},
+				        {"Element.Path", 15},
+				        {"Element.Circle", 16},
+				        {"Element.Use", 17},
+				        {"Defs.LinearGradient", 18},
+				        {"Defs.RadialGradient", 19},
+				        {"Defs.ClipPath", 20}
+				    }
+				)
+
+	annotation PBI_Id = df604a6701ee4d3cb3629b873e0a5bb3
+
