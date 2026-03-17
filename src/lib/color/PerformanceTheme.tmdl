@@ -1,0 +1,67 @@
+/// Returns a color for the specified performance level and theme
+/// @param {string} themeName – The theme name: "Stoplight", "Colorblind", "Corporate", "Pastel", or "Grayscale"
+/// @param {string} variant – The performance level ("veryBad", "bad", "neutral", "good", "veryGood")
+/// @returns {string} hex color code representing the performance level
+function 'DaxLib.SVG.Color.PerformanceTheme' =
+		(
+			themeName: STRING,
+			variant: STRING
+		) =>
+			
+			VAR Themes =
+				DATATABLE(
+				"ThemeName", STRING,
+				"Variant", STRING,
+				"Color", STRING,
+				{
+					// Stoplight - Classic red/yellow/green
+					{"Stoplight", "veryBad",  "#D04848"}, // Red
+					{"Stoplight", "bad",      "#F07857"}, // Orange-red
+					{"Stoplight", "neutral",  "#FFBF49"}, // Amber
+					{"Stoplight", "good",     "#4CAF50"}, // Green
+					{"Stoplight", "veryGood", "#2E8B57"}, // Sea green
+					
+					// Colorblind-friendly
+					{"Colorblind", "veryBad",  "#8F2D56"}, // Wine red
+					{"Colorblind", "bad",      "#D95980"}, // Light raspberry
+					{"Colorblind", "neutral",  "#FFC857"}, // Yellow
+					{"Colorblind", "good",     "#41B3A3"}, // Teal
+					{"Colorblind", "veryGood", "#1D4E89"}, // Navy blue
+					
+					// Corporate - Blue theme for business use
+					{"Corporate", "veryBad",  "#BC2F4A"}, // Red accent
+					{"Corporate", "bad",      "#E36F6F"}, // Light red
+					{"Corporate", "neutral",  "#BDBDBD"}, // Gray
+					{"Corporate", "good",     "#6BB5D8"}, // Light blue
+					{"Corporate", "veryGood", "#114D85"}, // Dark blue
+					
+					// Pastel - Soft colors for gentler visualization
+					{"Pastel", "veryBad",  "#F8AFA6"}, // Soft red
+					{"Pastel", "bad",      "#FAD48E"}, // Soft orange
+					{"Pastel", "neutral",  "#F5F5F5"}, // Light gray
+					{"Pastel", "good",     "#A6DCEF"}, // Soft blue
+					{"Pastel", "veryGood", "#A6E4D0"}, // Soft green
+					
+					// Grayscale - For black and white or muted presentations
+					{"Grayscale", "veryBad",  "#4D4D4D"}, // Dark gray
+					{"Grayscale", "bad",      "#7D7D7D"}, // Gray
+					{"Grayscale", "neutral",  "#ADADAD"}, // Medium gray
+					{"Grayscale", "good",     "#D3D3D3"}, // Light gray
+					{"Grayscale", "veryGood", "#F9F9F9"}  // Near white
+				}
+			)
+
+			VAR _variant = 		IF( ISBLANK( variant ), "neutral", variant )
+			VAR _themeName = 	IF( ISBLANK( themeName ), "Stoplight", themeName )
+			
+			VAR SelectedColor =
+				MAXX(
+					FILTER( Themes, [Variant] = _variant && [ThemeName] = _themeName),
+					[Color]
+				)
+			
+			RETURN SelectedColor
+
+	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
+
+	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__

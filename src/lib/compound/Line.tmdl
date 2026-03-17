@@ -1,0 +1,185 @@
+/// Creates a Line compound SVG Visual for a numeric axis
+/// @param {int} x – The x position of the compound
+/// @param {int} y – The y position of the compound
+/// @param {int} width – The width of the compound
+/// @param {int} height – The height of the compound
+/// @param {decimal} paddingX – The horizontal padding percentage (0.0-1.0, e.g., 0.1 = 10% padding)
+/// @param {decimal} paddingY – The vertical padding percentage (0.0-1.0, e.g., 0.1 = 10% padding)
+/// @param {anyref} axisRef – The column that the measure will be evaluated against
+/// @param {numeric} measureRef – The measure to evaluate
+/// @param {string} lineColor – The hex color of the line, e.g., "#01B8AA"
+/// @param {string} minMarkColor – Optional: The hex color for the minimum value marker
+/// @param {string} maxMarkColor – Optional: The hex color for the maximum value marker
+/// @param {boolean} showAxis – Optional: show axes when TRUE, defaults to FALSE
+/// @param {int} axisFontSize – Optional: axis label font size, defaults to 10
+/// @returns {string} An SVG line chart element that visualizes the measure across the specified axis.
+function 'DaxLib.SVG.Compound.Line' =
+		(
+			x: INT64,
+			y: INT64,
+			width: INT64,
+			height: INT64,
+			paddingX: DOUBLE,
+			paddingY: DOUBLE,
+			axisRef: ANYREF EXPR,
+			measureRef: NUMERIC EXPR,
+			lineColor: STRING,
+			minMarkColor: STRING,
+			maxMarkColor: STRING,
+			showAxis: BOOLEAN,
+			axisFontSize: INT64
+		) =>
+
+			// Apply padding to dimensions
+			VAR _X = 			x + (width * (IF(ISBLANK(paddingX), 0, paddingX) / 2))
+			VAR _Y = 			y + (height * (IF(ISBLANK(paddingY), 0, paddingY) / 2))
+			VAR _Width = 		width * (1 - IF(ISBLANK(paddingX), 0, paddingX))
+			VAR _Height = 		height * (1 - IF(ISBLANK(paddingY), 0, paddingY))
+
+			VAR _ShowAxis = IF( ISBLANK( showAxis ), FALSE(), showAxis )
+			VAR _AxisFontSize = IF( ISBLANK( axisFontSize ), 10, axisFontSize )
+			VAR _AxisIsDate = ISDATETIME( MAX( axisRef ) )
+			VAR _LineColor = IF( NOT ISBLANK( lineColor ), lineColor, "#01B8AA" )
+			VAR _MinMarkColor = IF( NOT ISBLANK( minMarkColor ), minMarkColor, _LineColor )
+			VAR _MaxMarkColor = IF( NOT ISBLANK( maxMarkColor ), maxMarkColor, _LineColor )
+	
+			VAR _Data = DaxLib.SVG.Data.AxisMeasure( axisRef, measureRef, "Auto" )
+			VAR _DataNonBlank = FILTER( _Data, NOT ISBLANK( [@Value] ) )
+			VAR _RawYMin = MINX( _DataNonBlank, [@Value] )
+			VAR _RawYMax = MAXX( _DataNonBlank, [@Value] )
+			VAR _Range = DaxLib.SVG.Data.Range( _RawYMin, _RawYMax, TRUE() )
+
+			// Define axis scales		
+			VAR _XMin = 	MINX( _DataNonBlank, [@AxisIndex] )
+			VAR _XMax = 	MAXX( _DataNonBlank, [@AxisIndex] )
+			VAR _RawYMin2 = MINX( _Range, [@Baseline] )
+			VAR _RawYMax2 = MAXX( _Range, [@Max] )
+
+			// Compute nice range for value axis
+			VAR _NiceY = DaxLib.SVG.Scale.NiceRange( _RawYMin2, _RawYMax2, 5, TRUE() )
+			VAR _YMin = MINX( _NiceY, [@NiceMin] )
+			VAR _YMax = MINX( _NiceY, [@NiceMax] )
+			VAR _YTickCount = MINX( _NiceY, [@NiceTickCount] )
+
+			// Axis layout
+			VAR _MaxTickLabelWidth = DaxLib.SVG.Axes.MaxTickLabelWidth( _YMin, _YMax, _YTickCount, _AxisFontSize, 0.56, FALSE() )
+			VAR _Layout = DaxLib.SVG.Axes.Layout( _X, _Y, _Width, _Height, _ShowAxis, _AxisFontSize, _MaxTickLabelWidth )
+			VAR _PlotX = MINX( _Layout, [@PlotX] )
+			VAR _PlotY = MINX( _Layout, [@PlotY] )
+			VAR _PlotWidth = MINX( _Layout, [@PlotWidth] )
+			VAR _PlotHeight = MINX( _Layout, [@PlotHeight] )
+
+			//Points
+			VAR _Points = 
+				CONCATENATEX(
+					_DataNonBlank,
+					IF( 
+						NOT ISBLANK( [@Value] ),
+						VAR _Point = DaxLib.SVG.Axes.Point( "Vertical", [@AxisIndex], [@Value], _XMin, _XMax, _YMin, _YMax, _PlotX, _PlotY, _PlotWidth, _PlotHeight )
+						RETURN COMBINEVALUES( ",", MINX( _Point, [@X] ), MINX( _Point, [@Y] ) )
+					),
+					" ",
+					[@AxisIndex],
+					ASC
+				)
+
+			// Line Element
+			VAR _LineElement =
+				DaxLib.SVG.Element.Polyline(
+					_Points,		// points
+					DaxLib.SVG.Attr.Shapes(
+						"none",		// fill
+						BLANK(),	// fillOpacity
+						BLANK(),	// fillRule
+						_LineColor, // stroke
+						1,			// stroke
+						BLANK(),	// strokeOpacity
+						BLANK()		// opacity
+					),
+					BLANK()			// transforms
+				)
+
+			// Single Point Element
+			VAR _SinglePoint = DaxLib.SVG.Axes.Point( "Vertical", MAXX( _DataNonBlank, [@AxisIndex] ), MAXX( _DataNonBlank, [@Value] ), _XMin, _XMax, _YMin, _YMax, _PlotX, _PlotY, _PlotWidth, _PlotHeight )
+			VAR _SinglePointElement =
+				DaxLib.SVG.Element.Circle(
+					MINX( _SinglePoint, [@X] ),
+					MINX( _SinglePoint, [@Y] ),
+					2,           	// r
+					DaxLib.SVG.Attr.Shapes(
+						_LineColor, // fill
+						BLANK(),    // fillOpacity
+						BLANK(),    // fillRule
+						BLANK(),    // stroke
+						BLANK(),    // strokeWidth
+						BLANK(),    // strokeOpacity
+						BLANK()     // opacity
+					),
+					BLANK()         // transforms
+				)
+
+			// Combined elements
+			VAR _CombinedElement = 
+				IF(
+					COUNTROWS( _DataNonBlank ) = 1,
+					_SinglePointElement,
+					_LineElement
+				)
+
+			// Min and Max value markers
+			VAR _MinValueRow = TOPN( 1, _DataNonBlank, [@Value], ASC )
+			VAR _MinValueAxisIdx = MINX( _MinValueRow, [@AxisIndex] )
+			VAR _MinValueVal = MINX( _MinValueRow, [@Value] )
+			VAR _MinPointData = DaxLib.SVG.Axes.Point( "Vertical", _MinValueAxisIdx, _MinValueVal, _XMin, _XMax, _YMin, _YMax, _PlotX, _PlotY, _PlotWidth, _PlotHeight )
+			VAR _MaxValueRow = TOPN( 1, _DataNonBlank, [@Value], DESC )
+			VAR _MaxValueAxisIdx = MINX( _MaxValueRow, [@AxisIndex] )
+			VAR _MaxValueVal = MAXX( _MaxValueRow, [@Value] )
+			VAR _MaxPointData = DaxLib.SVG.Axes.Point( "Vertical", _MaxValueAxisIdx, _MaxValueVal, _XMin, _XMax, _YMin, _YMax, _PlotX, _PlotY, _PlotWidth, _PlotHeight )
+			VAR _MinMarkHalo =
+				DaxLib.SVG.Element.Circle(
+					MINX( _MinPointData, [@X] ),
+					MINX( _MinPointData, [@Y] ),
+					3.5,
+					DaxLib.SVG.Attr.Shapes( "white", 0.7, BLANK(), BLANK(), BLANK(), BLANK(), BLANK() ),
+					BLANK()
+				)
+			VAR _MinMark =
+				DaxLib.SVG.Element.Circle(
+					MINX( _MinPointData, [@X] ),
+					MINX( _MinPointData, [@Y] ),
+					2.5,
+					DaxLib.SVG.Attr.Shapes( _MinMarkColor, BLANK(), BLANK(), BLANK(), BLANK(), BLANK(), BLANK() ),
+					BLANK()
+				)
+			VAR _MaxMarkHalo =
+				DaxLib.SVG.Element.Circle(
+					MINX( _MaxPointData, [@X] ),
+					MINX( _MaxPointData, [@Y] ),
+					3.5,
+					DaxLib.SVG.Attr.Shapes( "white", 0.7, BLANK(), BLANK(), BLANK(), BLANK(), BLANK() ),
+					BLANK()
+				)
+			VAR _MaxMark =
+				DaxLib.SVG.Element.Circle(
+					MINX( _MaxPointData, [@X] ),
+					MINX( _MaxPointData, [@Y] ),
+					2.5,
+					DaxLib.SVG.Attr.Shapes( _MaxMarkColor, BLANK(), BLANK(), BLANK(), BLANK(), BLANK(), BLANK() ),
+					BLANK()
+				)
+			VAR _MinMaxMarks =
+				IF(
+					COUNTROWS( _DataNonBlank ) > 2,
+					IF( NOT ISBLANK( minMarkColor ), _MinMarkHalo & _MinMark )
+						& IF( NOT ISBLANK( maxMarkColor ), _MaxMarkHalo & _MaxMark )
+				)
+
+			VAR _AxisElements = DaxLib.SVG.Axes.Render( _PlotX, _PlotY, _PlotWidth, _PlotHeight, _XMin, _XMax, _YMin, _YMax, _ShowAxis, _AxisFontSize, _AxisIsDate, FALSE(), 5, _YTickCount )
+
+			RETURN
+				
+				IF( NOT ISEMPTY( _DataNonBlank ) && _PlotWidth > 0 && _PlotHeight > 0, _CombinedElement & _MinMaxMarks & _AxisElements )
+
+	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
+
+	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__

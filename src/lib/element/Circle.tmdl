@@ -1,0 +1,27 @@
+/// Generates a circle SVG element
+/// @param {string} cx – The x position of the center
+/// @param {string} cy – The y position of the center
+/// @param {string} r – The radius
+/// @param {string} attributes – Optional: Direct SVG attributes to apply (e.g., "fill='red' stroke-width='2'"), can generate with DaxLib.SVG.Attr.* or manually
+/// @param {string} transforms – Optional: transformation to apply (can be generated with DaxLib.SVG.Transforms)
+/// @returns {string} <circle> element
+function 'DaxLib.SVG.Element.Circle' = 
+		(
+			cx: STRING,
+			cy: STRING,
+			r: STRING,
+			attributes: STRING,
+			transforms: STRING
+		) =>
+
+			"<circle" &
+			" cx='" & cx & "'" &
+			" cy='" & cy & "'" &
+			" r='" & r & "'" &
+			IF( NOT ISBLANK( attributes ), " " & attributes & " " ) &
+			IF( NOT ISBLANK( transforms ), " transform='" & transforms & "'" ) & 
+			"/>"
+
+	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
+
+	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__

@@ -1,0 +1,21 @@
+/// Generates SVG group element
+/// Transformations applied to the <g> element are performed on its child elements, and its attributes are inherited by its children. It can also group multiple elements to be referenced later with the <use> element.
+/// @param {string} contents – Content to group (recommend including all content in a single _SvgGroup variable defined upstream)
+/// @param {string} opacity – Optional: Opacity for entire group (0-1, optional)
+/// @param {string} transforms – Optional: Transform (e.g., "translate(50,50) rotate(45)") (can be generated with DaxLib.SVG.Transforms)
+/// @returns {string} <g> element
+function 'DaxLib.SVG.Element.Group' =
+		(
+			contents : STRING,
+			opacity : STRING,
+			transforms : STRING
+		) =>
+
+			"<g" &
+			IF( NOT ISBLANK( transforms ), " transform='" & transforms & "'" ) &
+			IF( NOT ISBLANK( opacity ), " opacity='" & opacity & "'" ) &
+			">" & contents & "</g>"
+
+	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
+
+	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__

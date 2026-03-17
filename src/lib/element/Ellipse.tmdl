@@ -1,0 +1,30 @@
+/// Generates an ellipse SVG element
+/// @param {string} cx – The x position of the center
+/// @param {string} cy – The y position of the center
+/// @param {string} rx – The x radius
+/// @param {string} ry – The y radius
+/// @param {string} attributes – Optional: Direct SVG attributes to apply (e.g., "fill='none' stroke='blue'"), can generate with DaxLib.SVG.Attr.* or manually
+/// @param {string} transforms – Optional: transformation to apply (can be generated with DaxLib.SVG.Transforms)
+/// @returns {string} <ellipse> element
+function 'DaxLib.SVG.Element.Ellipse' = 
+		(
+			cx: STRING,
+			cy: STRING,
+			rx: STRING,
+			ry: STRING,
+			attributes: STRING,
+			transforms: STRING
+		) =>
+
+			"<ellipse" &
+			" cx='" & cx & "'" &
+			" cy='" & cy & "'" &
+			" rx='" & rx & "'" &
+			" ry='" & ry & "'" &
+			IF( NOT ISBLANK( attributes ), " " & attributes & " " ) &
+			IF( NOT ISBLANK( transforms ), " transform='" & transforms & "'" ) & 
+			"/>"
+
+	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
+
+	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__

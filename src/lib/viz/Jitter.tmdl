@@ -1,0 +1,31 @@
+/// Renders a jitter plot as an SVG data URI showing value distribution as scattered points
+/// @param {anyref} axisRefColumn – Axis reference column
+/// @param {numeric} measureRefExpr – Measure expression
+/// @param {string} color – Optional point color
+/// @param {int} width – Optional: SVG width, defaults to 120
+/// @param {int} height – Optional: SVG height, defaults to 48
+/// @returns {string} SVG data URI with embedded jitter plot
+function 'DaxLib.SVG.Viz.Jitter' =
+		(
+			axisRefColumn: ANYREF EXPR,
+			measureRefExpr: NUMERIC EXPR,
+			color: STRING,
+			width: INT64,
+			height: INT64
+		) =>
+
+			VAR _W = IF( ISBLANK( width ), 120, width )
+			VAR _H = IF( ISBLANK( height ), 48, height )
+			VAR _Color = IF( NOT ISBLANK( color ), color, DaxLib.SVG.Color.Theme( "Power BI", 1 ) )
+			VAR _Marks =
+				DaxLib.SVG.Compound.Jitter(
+					0, 0, _W, _H, 0, 0,
+					axisRefColumn, measureRefExpr, _Color, BLANK()
+				)
+
+			RETURN
+				IF( NOT ISBLANK( _Marks ), DaxLib.SVG.SVG( "100%", "100%", "0 0 " & _W & " " & _H, _Marks, BLANK() ) )
+
+	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
+
+	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__

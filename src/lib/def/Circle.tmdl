@@ -1,0 +1,29 @@
+/// Create a reusable circle definition
+/// @param {string} defId – The unique identifier for the circle
+/// @param {string} cx – X center coordinate
+/// @param {string} cy – Y center coordinate
+/// @param {string} r – Radius
+/// @param {string} attributes – Optional: Direct SVG attributes to apply (e.g., "fill='none' stroke='blue'"), can generate with DaxLib.SVG.Attr.* or manually
+/// @param {string} transforms – Optional: transformation to apply (can be generated with DaxLib.SVG.Transforms)
+/// @returns {string} <circle> definition
+function 'DaxLib.SVG.Def.Circle' = 
+		(
+			defId: STRING,
+			cx: STRING,
+			cy: STRING,  
+			r: STRING,
+			attributes: STRING,
+			transforms: STRING
+		) =>
+
+			"<circle id='" & defId & "'" &
+			" cx='" & cx & "'" &
+			" cy='" & cy & "'" &
+			" r='" & r & "'" &
+			IF( NOT ISBLANK( attributes ), " " & attributes & " " ) &
+			IF( NOT ISBLANK( transforms ), " transform='" & transforms & "'" ) &
+			"/>"
+
+	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
+
+	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__

@@ -1,0 +1,216 @@
+/// Renders cartesian axis lines, ticks, and labels
+/// @param {numeric} plotX – Plot area X origin
+/// @param {numeric} plotY – Plot area Y origin
+/// @param {numeric} plotWidth – Plot area width
+/// @param {numeric} plotHeight – Plot area height
+/// @param {numeric} xAxisMin – X-axis minimum value
+/// @param {numeric} xAxisMax – X-axis maximum value
+/// @param {numeric} yAxisMin – Y-axis minimum value
+/// @param {numeric} yAxisMax – Y-axis maximum value
+/// @param {boolean} showAxis – Whether axes are enabled
+/// @param {int} axisFontSize – Axis label font size
+/// @param {boolean} xAxisIsDate – Whether X-axis values represent dates
+/// @param {boolean} yAxisIsDate – Whether Y-axis values represent dates
+/// @param {int} tickCountX – Number of X-axis ticks (default 5)
+/// @param {int} tickCountY – Number of Y-axis ticks (default 4)
+/// @returns {string} Axis SVG string or blank when axes are disabled
+function 'DaxLib.SVG.Axes.Render' =
+		(
+			plotX: NUMERIC VAL,
+			plotY: NUMERIC VAL,
+			plotWidth: NUMERIC VAL,
+			plotHeight: NUMERIC VAL,
+			xAxisMin: NUMERIC VAL,
+			xAxisMax: NUMERIC VAL,
+			yAxisMin: NUMERIC VAL,
+			yAxisMax: NUMERIC VAL,
+			showAxis: BOOLEAN,
+			axisFontSize: INT64,
+			xAxisIsDate: BOOLEAN,
+			yAxisIsDate: BOOLEAN,
+			tickCountX: INT64,
+			tickCountY: INT64
+		) =>
+
+			VAR _ShowAxis = IF( ISBLANK( showAxis ), FALSE(), showAxis )
+			VAR _AxisFontSize = IF( ISBLANK( axisFontSize ), 10, axisFontSize )
+			VAR _AxisFontFamily = "Segoe UI"
+			VAR _AxisColor = "#605E5C"
+			VAR _AxisLineStrokeWidth = 1
+			VAR _TickLength = 3
+			VAR _TickPadding = 4
+			VAR _TickCountX = IF( ISBLANK( tickCountX ) || tickCountX < 1, 5, tickCountX )
+			VAR _TickCountY = IF( ISBLANK( tickCountY ) || tickCountY < 1, 4, tickCountY )
+			VAR _XAxisIsDate = IF( ISBLANK( xAxisIsDate ), FALSE(), xAxisIsDate )
+			VAR _YAxisIsDate = IF( ISBLANK( yAxisIsDate ), FALSE(), yAxisIsDate )
+			VAR _XAxisSpan = ABS( xAxisMax - xAxisMin )
+			VAR _YAxisSpan = ABS( yAxisMax - yAxisMin )
+			VAR _XAxisDecimals = IF( _XAxisSpan >= 100, 0, IF( _XAxisSpan >= 10, 1, 2 ) )
+			VAR _YAxisDecimals = IF( _YAxisSpan >= 100, 0, IF( _YAxisSpan >= 10, 1, 2 ) )
+
+			VAR _XTickBase =
+				ADDCOLUMNS(
+					GENERATESERIES( 0, _TickCountX - 1, 1 ),
+					"@TickValue",
+						IF(
+							_TickCountX = 1,
+							xAxisMin,
+							xAxisMin + DIVIDE( [Value], _TickCountX - 1, 0 ) * ( xAxisMax - xAxisMin )
+						),
+					"@TickIndex", [Value]
+				)
+
+			VAR _XTickTable =
+				ADDCOLUMNS(
+					_XTickBase,
+					"@Pos",
+						IF(
+							xAxisMax = xAxisMin,
+							plotX + plotWidth / 2,
+							DaxLib.SVG.Scale.Normalize( [@TickValue], xAxisMin, xAxisMax, plotX, plotX + plotWidth )
+						),
+					"@Label",
+						FORMAT(
+							IF(
+								_XAxisIsDate,
+								[@TickValue],
+								ROUND( [@TickValue], _XAxisDecimals )
+							),
+							IF( _XAxisIsDate, "dd-mmm-yy", "General Number" )
+						),
+					"@Anchor",
+						IF(
+							[@TickIndex] = 0, "start",
+							IF( [@TickIndex] = _TickCountX - 1, "end", "middle" )
+						)
+				)
+
+			// Detect X-axis label overlap and filter to first/last when needed
+			VAR _XLabelWidthFactor = 0.56
+			VAR _MaxXLabelLen = MAXX( _XTickTable, LEN( [@Label] ) )
+			VAR _EstXLabelWidth = _MaxXLabelLen * _AxisFontSize * _XLabelWidthFactor
+			VAR _XLabelsOverlap = _EstXLabelWidth * _TickCountX > plotWidth * 0.9
+
+			VAR _XTickRendered =
+				FILTER(
+					_XTickTable,
+					NOT _XLabelsOverlap || [@TickIndex] = 0 || [@TickIndex] = _TickCountX - 1
+				)
+
+			VAR _YTickBase =
+				ADDCOLUMNS(
+					GENERATESERIES( 0, _TickCountY - 1, 1 ),
+					"@TickValue",
+						IF(
+							_TickCountY = 1,
+							yAxisMin,
+							yAxisMin + DIVIDE( [Value], _TickCountY - 1, 0 ) * ( yAxisMax - yAxisMin )
+						)
+				)
+
+			VAR _YTickTable =
+				ADDCOLUMNS(
+					_YTickBase,
+					"@Pos",
+						IF(
+							yAxisMax = yAxisMin,
+							plotY + plotHeight / 2,
+							DaxLib.SVG.Scale.Normalize( [@TickValue], yAxisMin, yAxisMax, plotY + plotHeight, plotY )
+						),
+					"@Label",
+						FORMAT(
+							IF(
+								_YAxisIsDate,
+								[@TickValue],
+								ROUND( [@TickValue], _YAxisDecimals )
+							),
+							IF( _YAxisIsDate, "dd-mmm-yy", "General Number" )
+						)
+				)
+
+			// Detect Y-axis label overlap and filter to first/last when needed
+			VAR _EstYLabelHeight = _AxisFontSize * 1.5
+			VAR _YLabelsOverlap = _EstYLabelHeight * _TickCountY > plotHeight * 0.9
+
+			VAR _YTickRendered =
+				FILTER(
+					_YTickTable,
+					NOT _YLabelsOverlap || [Value] = 0 || [Value] = _TickCountY - 1
+				)
+
+			VAR _XAxisLine =
+				DaxLib.SVG.Element.Line(
+					plotX,
+					plotY + plotHeight,
+					plotX + plotWidth,
+					plotY + plotHeight,
+					DaxLib.SVG.Attr.Shapes( BLANK(), BLANK(), BLANK(), _AxisColor, _AxisLineStrokeWidth, BLANK(), BLANK() ),
+					BLANK()
+				)
+
+			VAR _YAxisLine =
+				DaxLib.SVG.Element.Line(
+					plotX,
+					plotY,
+					plotX,
+					plotY + plotHeight,
+					DaxLib.SVG.Attr.Shapes( BLANK(), BLANK(), BLANK(), _AxisColor, _AxisLineStrokeWidth, BLANK(), BLANK() ),
+					BLANK()
+				)
+
+			VAR _XTicks =
+				CONCATENATEX(
+					_XTickRendered,
+					DaxLib.SVG.Element.Line(
+						[@Pos],
+						plotY + plotHeight,
+						[@Pos],
+						plotY + plotHeight + _TickLength,
+						DaxLib.SVG.Attr.Shapes( BLANK(), BLANK(), BLANK(), _AxisColor, 1, BLANK(), BLANK() ),
+						BLANK()
+					)
+					&
+					DaxLib.SVG.Element.Txt(
+						[@Pos],
+						plotY + plotHeight + _TickLength + _TickPadding,
+						[@Label],
+						BLANK(),
+						BLANK(),
+						DaxLib.SVG.Attr.Shapes( _AxisColor, BLANK(), BLANK(), BLANK(), BLANK(), BLANK(), BLANK() )
+						& DaxLib.SVG.Attr.Txt( _AxisFontFamily, _AxisFontSize, BLANK(), BLANK(), [@Anchor], "hanging", BLANK(), BLANK(), BLANK() ),
+						BLANK()
+					),
+					""
+				)
+
+			VAR _YTicks =
+				CONCATENATEX(
+					_YTickRendered,
+					DaxLib.SVG.Element.Line(
+						plotX - _TickLength,
+						[@Pos],
+						plotX,
+						[@Pos],
+						DaxLib.SVG.Attr.Shapes( BLANK(), BLANK(), BLANK(), _AxisColor, 1, BLANK(), BLANK() ),
+						BLANK()
+					)
+					&
+					DaxLib.SVG.Element.Txt(
+						plotX - _TickLength - _TickPadding,
+						[@Pos],
+						[@Label],
+						BLANK(),
+						BLANK(),
+						DaxLib.SVG.Attr.Shapes( _AxisColor, BLANK(), BLANK(), BLANK(), BLANK(), BLANK(), BLANK() )
+						& DaxLib.SVG.Attr.Txt( _AxisFontFamily, _AxisFontSize, BLANK(), BLANK(), "end", "middle", BLANK(), BLANK(), BLANK() ),
+						BLANK()
+					),
+					""
+				)
+
+			RETURN
+				IF( _ShowAxis, _XAxisLine & _YAxisLine & _XTicks & _YTicks )
+
+	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
+
+	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__

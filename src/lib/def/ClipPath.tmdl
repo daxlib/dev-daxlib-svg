@@ -1,0 +1,17 @@
+/// Creates a clipping mask definition
+/// @param {string} defId – The unique identifier for the clip path. (Example: "cut-top", "mask-circle")
+/// @param {string} contents – The SVG element(s) that make up the clipping path (typically a single shape)
+/// @returns {string} <clipPath> definition
+function 'DaxLib.SVG.Def.ClipPath' =
+		(
+			defId : STRING,
+			contents: STRING
+		) =>
+			
+			"<clipPath id='" & defId & "'>" &
+			contents &
+			"</clipPath>"
+
+	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
+
+	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__

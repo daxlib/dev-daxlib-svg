@@ -1,0 +1,32 @@
+/// Returns a "nice" rounded number close to the given value
+/// Used for choosing human-friendly tick intervals and axis bounds
+/// @param {numeric} rawValue – The raw value to round to a nice number
+/// @param {boolean} roundMode – TRUE for rounding to nearest nice number (for intervals), FALSE for ceiling to next nice number (for range extents)
+/// @returns {numeric} A human-friendly number (1, 2, 2.5, 5, or 10 scaled by the appropriate power of 10)
+function 'DaxLib.SVG.Scale.NiceNum' =
+		(
+			rawValue: NUMERIC VAL,
+			roundMode: BOOLEAN
+		) =>
+
+			VAR _Value = ABS( rawValue )
+			VAR _RoundMode = IF( ISBLANK( roundMode ), TRUE(), roundMode )
+			VAR _Exponent = IF( _Value = 0, 0, INT( LOG10( _Value ) ) )
+			VAR _Fraction = IF( _Value = 0, 0, _Value / POWER( 10, _Exponent ) )
+			VAR _NiceFraction =
+				IF(
+					_Value = 0,
+					0,
+					IF(
+						_RoundMode,
+						IF( _Fraction < 1.5, 1, IF( _Fraction < 3, 2, IF( _Fraction < 7, 5, 10 ) ) ),
+						IF( _Fraction <= 1, 1, IF( _Fraction <= 2, 2, IF( _Fraction <= 5, 5, 10 ) ) )
+					)
+				)
+
+			RETURN
+				_NiceFraction * POWER( 10, _Exponent )
+
+	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
+
+	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__

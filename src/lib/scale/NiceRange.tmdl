@@ -1,0 +1,41 @@
+/// Computes a "nice" axis range with rounded min, max, and tick interval
+/// Returns values suitable for human-friendly axis labelling
+/// @param {numeric} dataMin – Minimum value from source data
+/// @param {numeric} dataMax – Maximum value from source data
+/// @param {int} maxTicks – Desired maximum number of ticks (default 5)
+/// @param {boolean} includeZero – Whether to include zero in the range when data is fully positive
+/// @returns {table} Single-row table with @NiceMin, @NiceMax, @NiceInterval, @NiceTickCount
+function 'DaxLib.SVG.Scale.NiceRange' =
+		(
+			dataMin: NUMERIC VAL,
+			dataMax: NUMERIC VAL,
+			maxTicks: INT64,
+			includeZero: BOOLEAN
+		) =>
+
+			VAR _MaxTicks = IF( ISBLANK( maxTicks ) || maxTicks < 2, 5, maxTicks )
+			VAR _IncludeZero = IF( ISBLANK( includeZero ), FALSE(), includeZero )
+			VAR _DataMin = IF( _IncludeZero && dataMin > 0, 0, dataMin )
+			VAR _DataMax = dataMax
+			VAR _Range = _DataMax - _DataMin
+			VAR _NiceInterval =
+				IF(
+					_Range = 0,
+					IF( _DataMax = 0, 1, DaxLib.SVG.Scale.NiceNum( ABS( _DataMax ) * 0.2, TRUE() ) ),
+					DaxLib.SVG.Scale.NiceNum( _Range / ( _MaxTicks - 1 ), TRUE() )
+				)
+			VAR _NiceMin = INT( _DataMin / _NiceInterval ) * _NiceInterval
+			VAR _NiceMax = -INT( -_DataMax / _NiceInterval ) * _NiceInterval
+			VAR _NiceTickCount = INT( ( _NiceMax - _NiceMin ) / _NiceInterval ) + 1
+
+			RETURN
+				ROW(
+					"@NiceMin", _NiceMin,
+					"@NiceMax", _NiceMax,
+					"@NiceInterval", _NiceInterval,
+					"@NiceTickCount", _NiceTickCount
+				)
+
+	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
+
+	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__

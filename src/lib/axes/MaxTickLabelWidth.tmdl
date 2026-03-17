@@ -1,0 +1,62 @@
+/// Estimates the maximum Y-axis tick label width for layout reservation
+/// @param {numeric} axisMin – Axis minimum value
+/// @param {numeric} axisMax – Axis maximum value
+/// @param {int} tickCount – Number of ticks to estimate
+/// @param {int} axisFontSize – Axis font size
+/// @param {decimal} labelWidthFactor – Font width factor (Segoe UI default: 0.56)
+/// @param {boolean} axisIsDate – Whether the axis values represent dates
+/// @returns {numeric} Estimated max label width in pixels
+function 'DaxLib.SVG.Axes.MaxTickLabelWidth' =
+		(
+			axisMin: NUMERIC VAL,
+			axisMax: NUMERIC VAL,
+			tickCount: INT64,
+			axisFontSize: INT64,
+			labelWidthFactor: DOUBLE,
+			axisIsDate: BOOLEAN
+		) =>
+
+			VAR _TickCount = IF( ISBLANK( tickCount ) || tickCount < 1, 1, tickCount )
+			VAR _AxisFontSize = IF( ISBLANK( axisFontSize ), 10, axisFontSize )
+			VAR _LabelWidthFactor = IF( ISBLANK( labelWidthFactor ), 0.56, labelWidthFactor )
+			VAR _AxisIsDate = IF( ISBLANK( axisIsDate ), FALSE(), axisIsDate )
+			VAR _NumericSpan = ABS( axisMax - axisMin )
+			VAR _NumericDecimals = IF( _NumericSpan >= 100, 0, IF( _NumericSpan >= 10, 1, 2 ) )
+
+			VAR _TickBase =
+				ADDCOLUMNS(
+					GENERATESERIES( 0, _TickCount - 1, 1 ),
+					"@TickValue",
+						IF(
+							_TickCount = 1,
+							axisMin,
+							axisMin + DIVIDE( [Value], _TickCount - 1, 0 ) * ( axisMax - axisMin )
+						)
+				)
+
+			VAR _LabelTable =
+				ADDCOLUMNS(
+					_TickBase,
+					"@Label",
+						FORMAT(
+							IF(
+								_AxisIsDate,
+								[@TickValue],
+								ROUND( [@TickValue], _NumericDecimals )
+							),
+							IF( _AxisIsDate, "dd-mmm-yy", "General Number" )
+						)
+				)
+
+			VAR _MeasuredLabelTable =
+				ADDCOLUMNS(
+					_LabelTable,
+					"@EstimatedWidth", LEN( [@Label] ) * _AxisFontSize * _LabelWidthFactor
+				)
+
+			RETURN
+				MAXX( _MeasuredLabelTable, [@EstimatedWidth] )
+
+	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
+
+	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__

@@ -1,0 +1,32 @@
+/// Create a reusable rectangle definition
+/// @param {string} defId – The unique identifier for the rectangle
+/// @param {string} width – The width of the rectangle (pixels or percentage)
+/// @param {string} height – The height of the rectangle (pixels or percentage)
+/// @param {string} rx – Optional: x radius for rounded corners
+/// @param {string} ry – Optional: y radius for rounded corners
+/// @param {string} attributes – Optional: Direct SVG attributes to apply (e.g., "fill='none' stroke='blue'"), can generate with DaxLib.SVG.Attr.* or manually
+/// @param {string} transforms – Optional: transformation to apply (can be generated with DaxLib.SVG.Transforms)
+/// @returns {string} <rect> definition
+function 'DaxLib.SVG.Def.Rect' = 
+		(
+			defId: STRING,
+			width: STRING,
+			height: STRING,
+			rx: STRING,
+			ry: STRING,
+			attributes: STRING,
+			transforms: STRING
+		) =>
+
+			"<rect id='" & defId & "'" &
+			" width='" & width & "'" &
+			" height='" & height & "'" &
+			IF(NOT ISBLANK( rx ), " rx='" & rx & "'" ) & 
+			IF(NOT ISBLANK( ry ), " ry='" & ry & "'" ) &
+			IF( NOT ISBLANK( attributes ), " " & attributes & " " ) &
+			IF( NOT ISBLANK( transforms ), " transform='" & transforms & "'" ) &
+			"/>"	
+
+	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
+
+	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__

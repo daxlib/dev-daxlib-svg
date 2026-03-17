@@ -1,0 +1,37 @@
+/// Text-specific attributes
+/// @param {string} fontFamily – Font family for text
+/// @param {int} fontSize – Font size for text
+/// @param {string} fontWeight – Weight ("normal", "bold", "lighter", "100-900")
+/// @param {string} fontStyle – Style ("normal", "italic", "oblique")
+/// @param {string} textAnchor – Anchor ("start", "middle", "end")
+/// @param {string} baseline – Dominant baseline
+/// @param {string} textDecoration – Decoration ("none", "underline", "overline", "line-through")
+/// @param {string} letterSpacing – Space between letters
+/// @param {string} wordSpacing – Space between words
+/// @returns {string} An attribute string that can be used directly in SVG text elements
+function 'DaxLib.SVG.Attr.Txt' = 
+		(
+			fontFamily: STRING,
+			fontSize: INT64,
+			fontWeight: STRING,
+			fontStyle: STRING,
+			textAnchor: STRING,
+			baseline: STRING,
+			textDecoration: STRING,
+			letterSpacing: STRING,
+			wordSpacing: STRING
+		) =>
+
+			IF( NOT ISBLANK( fontFamily ),     "font-family='" & fontFamily & "' ") &
+			IF( NOT ISBLANK( fontSize ),       "font-size='" & fontSize & "' ") &
+			IF( NOT ISBLANK( fontWeight ),     "font-weight='" & fontWeight & "' ") &
+			IF( NOT ISBLANK( fontStyle ),      "font-style='" & fontStyle & "' ") &
+			IF( NOT ISBLANK( textAnchor ),     "text-anchor='" & textAnchor & "' ") &
+			IF( NOT ISBLANK( baseline ),       "dominant-baseline='" & baseline & "' ") &
+			IF( NOT ISBLANK( textDecoration ), "text-decoration='" & textDecoration & "' ") &
+			IF( NOT ISBLANK( letterSpacing ),  "letter-spacing='" & letterSpacing & "' ") &
+			IF( NOT ISBLANK( wordSpacing ),    "word-spacing='" & wordSpacing & "' ")
+
+	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
+
+	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__

@@ -1,0 +1,33 @@
+/// Creates a text SVG element
+/// @param {string} x – The x position of the text
+/// @param {string} y – The y position of the text
+/// @param {string} txt – The text content
+/// @param {string} dx – Optional: x offset from position
+/// @param {string} dy – Optional: y offset from position
+/// @param {string} attributes – Optional: Direct SVG attributes to apply (e.g., "text-anchor='middle' dominant-baseline='middle'"), can generate with DaxLib.SVG.Attr.* or manually
+/// @param {string} transforms – Optional: additional transforms (e.g. "scale(1.2) translate(10,10)") (can be generated with DaxLib.SVG.Transforms)
+/// @returns {string} <text> element
+function 'DaxLib.SVG.Element.Txt' =
+		(
+			x: STRING,
+			y: STRING,
+			txt: STRING,
+			dx: STRING,
+			dy: STRING,
+			attributes: STRING,
+			transforms: STRING
+		) =>
+
+			"<text" &
+			" x='" & x & "'" &
+			" y='" & y & "'" &
+			IF(NOT ISBLANK( dx ), " dx='" & dx & "'" ) & 
+			IF(NOT ISBLANK( dy ), " dy='" & dy & "'" ) &
+			IF( NOT ISBLANK( attributes ), " " & attributes & " " ) &
+			IF( NOT ISBLANK( transforms ), " transform='" & transforms & "'" ) &
+			">" & txt & 
+			"</text>"
+
+	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
+
+	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__

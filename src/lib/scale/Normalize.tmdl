@@ -1,0 +1,22 @@
+/// Map a value from one value scale to another
+/// Used for scaling values to fit within SVG dimensions
+/// @param {numeric} inputValue – The value to map
+/// @param {numeric} fromMin – The minimum value of the original scale
+/// @param {numeric} fromMax – The maximum value of the original scale
+/// @param {numeric} toMin – The minimum value of the new scale
+/// @param {numeric} toMax – The maximum value of the new scale
+/// @returns {decimal} mapped value
+function 'DaxLib.SVG.Scale.Normalize' =
+		(
+			inputValue: NUMERIC VAL,
+			fromMin: NUMERIC VAL,
+			fromMax: NUMERIC VAL,
+			toMin: NUMERIC VAL,
+			toMax: NUMERIC VAL
+		) =>
+			
+			( ( inputValue - fromMin ) / ( fromMax - fromMin ) ) * ( toMax - toMin ) + toMin
+
+	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
+
+	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__

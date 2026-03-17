@@ -1,0 +1,23 @@
+/// RGB to Hex conversion
+/// @param {int} red – The red value (0-255)
+/// @param {int} green – The green value (0-255)
+/// @param {int} blue – The blue value (0-255)
+/// @param {decimal} alpha – Optional: The alpha value (0-1)
+/// @returns {string} hex color code
+function 'DaxLib.SVG.Color.RGB.ToHex' =
+		(
+			red: INT64,
+			green: INT64,
+			blue: INT64,
+			alpha: DOUBLE
+		) =>
+		
+			"#" &
+			DaxLib.SVG.Color.Int.ToHex( red, 2 ) &
+			DaxLib.SVG.Color.Int.ToHex( green, 2 ) &
+			DaxLib.SVG.Color.Int.ToHex( blue, 2 ) &
+			IF( NOT ISBLANK( alpha ), DaxLib.SVG.Color.Int.ToHex( alpha * 255, 2 ) )
+
+	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
+
+	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__

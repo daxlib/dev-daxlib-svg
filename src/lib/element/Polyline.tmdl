@@ -1,0 +1,21 @@
+/// Creates a polyline (connected points)
+/// @param {string} points – Space-separated x,y coordinate pairs (e.g., "0,10 20,30 40,15")
+/// @param {string} attributes – Optional: Direct SVG attributes to apply (e.g., "marker-start='url(#dot)' vector-effect='non-scaling-stroke'"), can generate with DaxLib.SVG.Attr.* or manually
+/// @param {string} transforms – Optional: transformation to apply (can be generated with DaxLib.SVG.Transforms)
+/// @returns {string} <polyline> element
+function 'DaxLib.SVG.Element.Polyline' =
+		(
+			points: STRING,
+			attributes: STRING,
+			transforms: STRING
+		) =>
+
+			"<polyline" &
+			" points='" & points & "'" &
+			IF( NOT ISBLANK( attributes ), " " & attributes & " " ) &
+			IF( NOT ISBLANK( transforms ), " transform='" & transforms & "'" ) & 
+			"/>"
+
+	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
+
+	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__
