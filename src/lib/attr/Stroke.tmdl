@@ -1,15 +1,15 @@
 /// Comprehensive stroke attributes function
-/// @param {string} stroke – Stroke color (e.g., "#FF0000", "red")
-/// @param {int} strokeWidth – Stroke width
-/// @param {decimal} strokeOpacity – Stroke opacity (0-1)
-/// @param {string} strokeDasharray – Stroke dasharray pattern (e.g., "5,5" for dashed)
-/// @param {string} strokeDashoffset – Stroke dashoffset
-/// @param {string} strokeLinecap – Stroke linecap ("butt", "round", "square")
-/// @param {string} strokeLinejoin – Stroke linejoin ("miter", "round", "bevel")
-/// @param {string} strokeMiterlimit – Miter limit for stroke joins
-/// @param {string} markerStart – Marker for start of line (e.g., 'url(#arrowStart)')
-/// @param {string} markerMid – Marker for middle points of line
-/// @param {string} markerEnd – Marker for end of line (e.g., 'url(#arrowEnd)')
+/// @param {string} [stroke] – Stroke color (e.g., "#FF0000", "red"). Omitted if not specified
+/// @param {int} [strokeWidth] – Stroke width. Omitted if not specified
+/// @param {decimal} [strokeOpacity] – Stroke opacity (0-1). Omitted if not specified
+/// @param {string} [strokeDasharray] – Stroke dasharray pattern (e.g., "5,5" for dashed). Omitted if not specified
+/// @param {string} [strokeDashoffset] – Stroke dashoffset. Omitted if not specified
+/// @param {string} [strokeLinecap] – Stroke linecap ("butt", "round", "square"). Omitted if not specified
+/// @param {string} [strokeLinejoin] – Stroke linejoin ("miter", "round", "bevel"). Omitted if not specified
+/// @param {string} [strokeMiterlimit] – Miter limit for stroke joins. Omitted if not specified
+/// @param {string} [markerStart] – Marker for start of line (e.g., 'url(#arrowStart)'). Omitted if not specified
+/// @param {string} [markerMid] – Marker for middle points of line. Omitted if not specified
+/// @param {string} [markerEnd] – Marker for end of line (e.g., 'url(#arrowEnd)'). Omitted if not specified
 /// @returns {string} An attribute string that can be used directly in SVG elements
 function 'DaxLib.SVG.Attr.Stroke' = 
 		(

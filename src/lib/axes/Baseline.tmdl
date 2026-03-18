@@ -1,5 +1,12 @@
 /// Maps the numeric baseline to plot coordinates honoring orientation
-/// @returns {table} Single-row table with @BaseX and @BaseY
+/// @param {string} orientation – "Horizontal" or "Vertical"
+/// @param {numeric val} yMin – Y-axis minimum value
+/// @param {numeric val} yMax – Y-axis maximum value
+/// @param {numeric val} plotX – Plot area X origin
+/// @param {numeric val} plotY – Plot area Y origin
+/// @param {numeric val} plotWidth – Plot area width
+/// @param {numeric val} plotHeight – Plot area height
+/// @returns {table} Single-row table with `@BaseX` and `@BaseY`
 function 'DaxLib.SVG.Axes.Baseline' =
 		(
 			orientation: STRING,

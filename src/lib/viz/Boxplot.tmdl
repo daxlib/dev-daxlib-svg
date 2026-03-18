@@ -1,15 +1,15 @@
 /// Renders a box plot as an SVG data URI showing statistical distribution
-/// @param {anyref} axisRefColumn – Axis reference column
-/// @param {numeric} measureRefExpr – Measure expression
-/// @param {string} color – Optional box fill color
-/// @param {boolean} showOutliers – Optional: show outlier points
-/// @param {int} width – Optional: SVG width, defaults to 120
-/// @param {int} height – Optional: SVG height, defaults to 48
+/// @param {anyref expr} axisRef – Axis reference column
+/// @param {numeric expr} measureRef – Measure expression
+/// @param {string} [color] – Optional box fill color. Defaults to theme color
+/// @param {boolean} [showOutliers] – Optional: show outlier points. Defaults to FALSE
+/// @param {int} [width] – Optional: SVG width, defaults to 120
+/// @param {int} [height] – Optional: SVG height, defaults to 48
 /// @returns {string} SVG data URI with embedded box plot
 function 'DaxLib.SVG.Viz.Boxplot' =
 		(
-			axisRefColumn: ANYREF EXPR,
-			measureRefExpr: NUMERIC EXPR,
+			axisRef: ANYREF EXPR,
+			measureRef: NUMERIC EXPR,
 			color: STRING,
 			showOutliers: BOOLEAN,
 			width: INT64,
@@ -22,7 +22,7 @@ function 'DaxLib.SVG.Viz.Boxplot' =
 			VAR _Marks =
 				DaxLib.SVG.Compound.Boxplot(
 					0, 0, _W, _H, 0, 0,
-					axisRefColumn, measureRefExpr, _Color, "#605E5C", showOutliers, BLANK()
+					axisRef, measureRef, _Color, "#605E5C", showOutliers, BLANK()
 				)
 
 			RETURN

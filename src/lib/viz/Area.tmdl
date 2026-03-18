@@ -1,15 +1,15 @@
 /// Renders an area chart as an SVG data URI showing measure values across an axis with filled area
-/// @param {anyref} axisRefColumn – Axis reference column
-/// @param {numeric} measureRefExpr – Measure expression
-/// @param {string} color – Optional series color
-/// @param {boolean} showAxis – Optional axis toggle
-/// @param {int} width – Optional: SVG width, defaults to 120
-/// @param {int} height – Optional: SVG height, defaults to 48
+/// @param {anyref expr} axisRef – Axis reference column
+/// @param {numeric expr} measureRef – Measure expression
+/// @param {string} [color] – Optional series color. Defaults to theme color
+/// @param {boolean} [showAxis] – Optional axis toggle. Defaults to FALSE
+/// @param {int} [width] – Optional: SVG width, defaults to 120
+/// @param {int} [height] – Optional: SVG height, defaults to 48
 /// @returns {string} SVG data URI with embedded area chart
 function 'DaxLib.SVG.Viz.Area' =
 		(
-			axisRefColumn: ANYREF EXPR,
-			measureRefExpr: NUMERIC EXPR,
+			axisRef: ANYREF EXPR,
+			measureRef: NUMERIC EXPR,
 			color: STRING,
 			showAxis: BOOLEAN,
 			width: INT64,
@@ -22,7 +22,7 @@ function 'DaxLib.SVG.Viz.Area' =
 			VAR _Marks =
 				DaxLib.SVG.Compound.Area(
 					0, 0, _W, _H, 0, 0,
-					axisRefColumn, measureRefExpr, _Color, 0.24, _Color, BLANK(), BLANK(), showAxis, 8
+					axisRef, measureRef, _Color, 0.24, _Color, BLANK(), BLANK(), showAxis, 8
 				)
 
 			RETURN

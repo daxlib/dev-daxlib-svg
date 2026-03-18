@@ -1,18 +1,18 @@
 /// Renders cartesian axis lines, ticks, and labels
-/// @param {numeric} plotX – Plot area X origin
-/// @param {numeric} plotY – Plot area Y origin
-/// @param {numeric} plotWidth – Plot area width
-/// @param {numeric} plotHeight – Plot area height
-/// @param {numeric} xAxisMin – X-axis minimum value
-/// @param {numeric} xAxisMax – X-axis maximum value
-/// @param {numeric} yAxisMin – Y-axis minimum value
-/// @param {numeric} yAxisMax – Y-axis maximum value
-/// @param {boolean} showAxis – Whether axes are enabled
-/// @param {int} axisFontSize – Axis label font size
-/// @param {boolean} xAxisIsDate – Whether X-axis values represent dates
-/// @param {boolean} yAxisIsDate – Whether Y-axis values represent dates
-/// @param {int} tickCountX – Number of X-axis ticks (default 5)
-/// @param {int} tickCountY – Number of Y-axis ticks (default 4)
+/// @param {numeric val} plotX – Plot area X origin
+/// @param {numeric val} plotY – Plot area Y origin
+/// @param {numeric val} plotWidth – Plot area width
+/// @param {numeric val} plotHeight – Plot area height
+/// @param {numeric val} xAxisMin – X-axis minimum value
+/// @param {numeric val} xAxisMax – X-axis maximum value
+/// @param {numeric val} yAxisMin – Y-axis minimum value
+/// @param {numeric val} yAxisMax – Y-axis maximum value
+/// @param {boolean} [showAxis] – Whether axes are enabled. Defaults to FALSE
+/// @param {int} [axisFontSize] – Axis label font size. Defaults to 10
+/// @param {boolean} [xAxisIsDate] – Whether X-axis values represent dates. Defaults to FALSE
+/// @param {boolean} [yAxisIsDate] – Whether Y-axis values represent dates. Defaults to FALSE
+/// @param {int} [tickCountX] – Number of X-axis ticks (default 5)
+/// @param {int} [tickCountY] – Number of Y-axis ticks (default 4)
 /// @returns {string} Axis SVG string or blank when axes are disabled
 function 'DaxLib.SVG.Axes.Render' =
 		(

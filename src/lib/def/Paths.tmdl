@@ -1,8 +1,8 @@
 /// Create a reusable path definition
 /// @param {string} defId – The unique identifier for the path
 /// @param {string} d – The path data string (e.g., "M10 10 L90 90")
-/// @param {string} attributes – Optional: Direct SVG attributes to apply (e.g., "fill='none' stroke='blue'"), can generate with DaxLib.SVG.Attr.* or manually
-/// @param {string} transforms – Optional: transformation to apply (can be generated with DaxLib.SVG.Transforms)
+/// @param {string} [attributes] – Optional: Direct SVG attributes to apply (e.g., "fill='none' stroke='blue'"), can generate with DaxLib.SVG.Attr.* or manually. Omitted if not specified
+/// @param {string} [transforms] – Optional: transformation to apply (can be generated with DaxLib.SVG.Transforms). Omitted if not specified
 /// @returns {string} <path> definition
 function 'DaxLib.SVG.Def.Paths' =
 		(

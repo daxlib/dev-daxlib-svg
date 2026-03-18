@@ -1,12 +1,12 @@
 /// Builds a shared axis/value data table for compound visuals
-/// @param {anyref} axisRefColumn – Axis reference column evaluated in current filter context
-/// @param {numeric} measureRefExpr – Measure expression evaluated per axis value
+/// @param {anyref expr} axisRef – Axis reference column evaluated in current filter context
+/// @param {numeric expr} measureRef – Measure expression evaluated per axis value
 /// @param {string} axisMode – "Auto", "Numeric", or "Categorical"
-/// @returns {table} Standardized table with @AxisValue, @AxisIndex, and @Value
+/// @returns {table} Standardized table with `@AxisValue`, `@AxisIndex`, and `@Value`
 function 'DaxLib.SVG.Data.AxisMeasure' =
 		(
-			axisRefColumn: ANYREF EXPR,
-			measureRefExpr: NUMERIC EXPR,
+			axisRef: ANYREF EXPR,
+			measureRef: NUMERIC EXPR,
 			axisMode: STRING
 		) =>
 
@@ -17,7 +17,7 @@ function 'DaxLib.SVG.Data.AxisMeasure' =
 					"Auto"
 				)
 
-			VAR _AxisSample = MAX( axisRefColumn )
+			VAR _AxisSample = MAX( axisRef )
 			VAR _AxisIsNumeric = ISNUMBER( _AxisSample ) || ISDATETIME( _AxisSample )
 			VAR _UseNumericAxis =
 				IF(
@@ -28,9 +28,9 @@ function 'DaxLib.SVG.Data.AxisMeasure' =
 
 			VAR _WithValues =
 				ADDCOLUMNS(
-					VALUES( axisRefColumn ),
-					"@AxisValue", axisRefColumn,
-					"@Value", measureRefExpr
+					VALUES( axisRef ),
+					"@AxisValue", axisRef,
+					"@Value", measureRef
 				)
 
 			VAR _Indexed =
@@ -40,7 +40,7 @@ function 'DaxLib.SVG.Data.AxisMeasure' =
 						IF(
 							_UseNumericAxis,
 							[@AxisValue],
-							RANK( DENSE, CALCULATETABLE( VALUES( axisRefColumn ), ALLSELECTED() ) )
+							RANK( DENSE, CALCULATETABLE( VALUES( axisRef ), ALLSELECTED() ) )
 						)
 				)
 

@@ -1,13 +1,13 @@
 /// Text-specific attributes
-/// @param {string} fontFamily – Font family for text
-/// @param {int} fontSize – Font size for text
-/// @param {string} fontWeight – Weight ("normal", "bold", "lighter", "100-900")
-/// @param {string} fontStyle – Style ("normal", "italic", "oblique")
-/// @param {string} textAnchor – Anchor ("start", "middle", "end")
-/// @param {string} baseline – Dominant baseline
-/// @param {string} textDecoration – Decoration ("none", "underline", "overline", "line-through")
-/// @param {string} letterSpacing – Space between letters
-/// @param {string} wordSpacing – Space between words
+/// @param {string} [fontFamily] – Font family for text. Omitted if not specified
+/// @param {int} [fontSize] – Font size for text. Omitted if not specified
+/// @param {string} [fontWeight] – Weight ("normal", "bold", "lighter", "100-900"). Omitted if not specified
+/// @param {string} [fontStyle] – Style ("normal", "italic", "oblique"). Omitted if not specified
+/// @param {string} [textAnchor] – Anchor ("start", "middle", "end"). Omitted if not specified
+/// @param {string} [baseline] – Dominant baseline. Omitted if not specified
+/// @param {string} [textDecoration] – Decoration ("none", "underline", "overline", "line-through"). Omitted if not specified
+/// @param {string} [letterSpacing] – Space between letters. Omitted if not specified
+/// @param {string} [wordSpacing] – Space between words. Omitted if not specified
 /// @returns {string} An attribute string that can be used directly in SVG text elements
 function 'DaxLib.SVG.Attr.Txt' = 
 		(

@@ -1,9 +1,9 @@
 /// Generates transform string for SVG elements
-/// @param {string} translate – Translation coordinates (e.g., "10,20")
-/// @param {string} rotate – Rotation with optional center point (e.g., "45" or "45 50 50")
-/// @param {string} scale – Scale factors (e.g., "2" or "2,1.5")
-/// @param {string} skewX – Horizontal skew angle in degrees
-/// @param {string} skewY – Vertical skew angle in degrees
+/// @param {string} [translate] – Translation coordinates (e.g., "10,20"). Omitted if not specified
+/// @param {string} [rotate] – Rotation with optional center point (e.g., "45" or "45 50 50"). Omitted if not specified
+/// @param {string} [scale] – Scale factors (e.g., "2" or "2,1.5"). Omitted if not specified
+/// @param {string} [skewX] – Horizontal skew angle in degrees. Omitted if not specified
+/// @param {string} [skewY] – Vertical skew angle in degrees. Omitted if not specified
 /// @returns {string} A transform attribute value that can be used with the transform attribute of SVG elements.
 function 'DaxLib.SVG.Transforms' = 
 		(

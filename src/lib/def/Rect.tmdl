@@ -2,10 +2,10 @@
 /// @param {string} defId – The unique identifier for the rectangle
 /// @param {string} width – The width of the rectangle (pixels or percentage)
 /// @param {string} height – The height of the rectangle (pixels or percentage)
-/// @param {string} rx – Optional: x radius for rounded corners
-/// @param {string} ry – Optional: y radius for rounded corners
-/// @param {string} attributes – Optional: Direct SVG attributes to apply (e.g., "fill='none' stroke='blue'"), can generate with DaxLib.SVG.Attr.* or manually
-/// @param {string} transforms – Optional: transformation to apply (can be generated with DaxLib.SVG.Transforms)
+/// @param {string} [rx] – Optional: x radius for rounded corners. Omitted if not specified
+/// @param {string} [ry] – Optional: y radius for rounded corners. Omitted if not specified
+/// @param {string} [attributes] – Optional: Direct SVG attributes to apply (e.g., "fill='none' stroke='blue'"), can generate with DaxLib.SVG.Attr.* or manually. Omitted if not specified
+/// @param {string} [transforms] – Optional: transformation to apply (can be generated with DaxLib.SVG.Transforms). Omitted if not specified
 /// @returns {string} <rect> definition
 function 'DaxLib.SVG.Def.Rect' = 
 		(

@@ -1,6 +1,6 @@
 /// Int to Hex conversion
 /// @param {int} number – The integer to convert
-/// @param {int} padTo – Optional: Minimum number of characters in result
+/// @param {int} [padTo] – Optional: Minimum number of characters in result. Defaults to minimum digits needed
 /// @returns {string} Hexadecimal representation of the integer
 function 'DaxLib.SVG.Color.Int.ToHex' =
 		(

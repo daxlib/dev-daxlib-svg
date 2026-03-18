@@ -1,10 +1,10 @@
 /// Renders a progress bar as an SVG data URI showing value progression
-/// @param {numeric} valueRefExpr – Value expression
-/// @param {numeric} trackRefExpr – Track measure (maximum value, can vary per context)
-/// @param {string} color – Optional fill color
-/// @param {string} orientation – Optional orientation: "Horizontal" or "Vertical"
-/// @param {int} width – Optional: SVG width, defaults to 120
-/// @param {int} height – Optional: SVG height, defaults to 48
+/// @param {numeric expr} valueRefExpr – Value expression
+/// @param {numeric expr} trackRefExpr – Track measure (maximum value)
+/// @param {string} [color] – Optional fill color. Defaults to theme color
+/// @param {string} [orientation] – Optional orientation: "Horizontal" or "Vertical". Defaults to "Horizontal"
+/// @param {int} [width] – Optional: SVG width, defaults to 120
+/// @param {int} [height] – Optional: SVG height, defaults to 48
 /// @returns {string} SVG data URI with embedded progress bar
 function 'DaxLib.SVG.Viz.ProgressBar' =
 		(

@@ -3,10 +3,10 @@
 /// @param {int} y – The y position of the compound
 /// @param {int} width – The width of the compound
 /// @param {int} height – The height of the compound
-/// @param {decimal} paddingX – The horizontal padding percentage (0.0-1.0, e.g., 0.1 = 10% padding)
-/// @param {decimal} paddingY – The vertical padding percentage (0.0-1.0, e.g., 0.1 = 10% padding)
-/// @param {anyref} axisRef – The column that the measure will be evaluated against
-/// @param {numeric} measureRef – The measure to evaluate
+/// @param {decimal} [paddingX] – The horizontal padding percentage (0.0-1.0, e.g., 0.1 = 10% padding). Defaults to 0
+/// @param {decimal} [paddingY] – The vertical padding percentage (0.0-1.0, e.g., 0.1 = 10% padding). Defaults to 0
+/// @param {anyref expr} axisRef – The column that the measure will be evaluated against
+/// @param {numeric expr} measureRef – The measure to evaluate
 /// @param {int} samples – Number of density calculation points (default 50)
 /// @param {numeric} bandwidth – Kernel bandwidth for smoothing (default auto-calculated)
 /// @param {string} color – The hex color for high density areas (e.g., "#01B8AA")

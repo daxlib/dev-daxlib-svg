@@ -3,13 +3,15 @@
 /// @param {int} y – The y position of the compound
 /// @param {int} width – The width of the compound
 /// @param {int} height – The height of the compound
-/// @param {decimal} paddingX – The horizontal padding percentage (0.0-1.0, e.g., 0.1 = 10% padding)
-/// @param {decimal} paddingY – The vertical padding percentage (0.0-1.0, e.g., 0.1 = 10% padding)
-/// @param {anyref} axisRef – The column that the measure will be evaluated against
-/// @param {numeric} measureRef – The measure to evaluate
-/// @param {string} barColor – The hex color of the bars, e.g., "#01B8AA"
-/// @param {boolean} showAxis – Optional: show axes when TRUE, defaults to FALSE
-/// @param {int} axisFontSize – Optional: axis label font size, defaults to 10
+/// @param {decimal} [paddingX] – The horizontal padding percentage (0.0-1.0, e.g., 0.1 = 10% padding). Defaults to 0
+/// @param {decimal} [paddingY] – The vertical padding percentage (0.0-1.0, e.g., 0.1 = 10% padding). Defaults to 0
+/// @param {anyref expr} axisRef – The column that the measure will be evaluated against
+/// @param {numeric expr} measureRef – The measure to evaluate
+/// @param {string} [barColor] – The hex color of the bars. Defaults to "#01B8AA"
+/// @param {string} [minMarkColor] – Optional: The hex color for the minimum value bar. Omitted if not specified
+/// @param {string} [maxMarkColor] – Optional: The hex color for the maximum value bar. Omitted if not specified
+/// @param {boolean} [showAxis] – Optional: show axes when TRUE, defaults to FALSE
+/// @param {int} [axisFontSize] – Optional: axis label font size, defaults to 10
 /// @returns {string} SVG markup string.
 function 'DaxLib.SVG.Compound.Bars' = 
 		(
@@ -22,6 +24,8 @@ function 'DaxLib.SVG.Compound.Bars' =
 			axisRef: ANYREF EXPR,
 			measureRef: NUMERIC EXPR,
 			barColor: STRING,
+			minMarkColor: STRING,
+			maxMarkColor: STRING,
 			showAxis: BOOLEAN,
 			axisFontSize: INT64
 		) =>
@@ -35,6 +39,7 @@ function 'DaxLib.SVG.Compound.Bars' =
 			VAR _ShowAxis = IF( ISBLANK( showAxis ), FALSE(), showAxis )
 			VAR _AxisFontSize = IF( ISBLANK( axisFontSize ), 10, axisFontSize )
 			VAR _AxisIsDate = ISDATETIME( MAX( axisRef ) )
+			VAR _BarColor = IF( NOT ISBLANK( barColor ), barColor, "#01B8AA" )
 		
 			VAR _Data = DaxLib.SVG.Data.AxisMeasure( axisRef, measureRef, "Auto" )
 			VAR _DataNonBlank = FILTER( _Data, NOT ISBLANK( [@Value] ) )
@@ -87,6 +92,11 @@ function 'DaxLib.SVG.Compound.Bars' =
 			VAR _Baseline = DaxLib.SVG.Axes.Baseline( "Vertical", _YMin, _YMax, _PlotX, _PlotY, _PlotWidth, _PlotHeight )
 			VAR _BaseX = MINX( _Baseline, [@BaseX] )
 			VAR _BaseY = MINX( _Baseline, [@BaseY] )
+
+			// Determine min and max values for bar highlighting
+			VAR _VisibleMinValue = MINX( _DataVisible, [@Value] )
+			VAR _VisibleMaxValue = MAXX( _DataVisible, [@Value] )
+			VAR _CanHighlight = COUNTROWS( _DataNonBlank ) > 2 && _VisibleMinValue <> _VisibleMaxValue
 		
 		//Bars
 		VAR _Bars = 
@@ -97,6 +107,10 @@ function 'DaxLib.SVG.Compound.Bars' =
 					VAR _SlotCenter = ( [@SlotIndex] + 0.5 ) * _SlotWidth
 					VAR _BarCategoryStart = _PlotX + _SlotCenter - _BarThickness / 2
 					VAR _ValueY = IF( _YMax = _YMin, _PlotY + _PlotHeight / 2, DaxLib.SVG.Scale.Normalize( [@Value], _YMin, _YMax, _PlotY + _PlotHeight, _PlotY ) )
+					VAR _ThisBarColor =
+						IF( _CanHighlight && NOT ISBLANK( minMarkColor ) && [@Value] = _VisibleMinValue, minMarkColor,
+						IF( _CanHighlight && NOT ISBLANK( maxMarkColor ) && [@Value] = _VisibleMaxValue, maxMarkColor,
+						_BarColor ) )
 
 					RETURN
 						DaxLib.SVG.Element.Rect(
@@ -107,7 +121,7 @@ function 'DaxLib.SVG.Compound.Bars' =
 							0,
 							0,
 							DaxLib.SVG.Attr.Shapes(
-								IF( NOT ISBLANK( barColor ), barColor, "#01B8AA" ),
+							_ThisBarColor,
 								BLANK(),
 								BLANK(),
 								BLANK(),

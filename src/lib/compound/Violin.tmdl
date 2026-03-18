@@ -3,14 +3,14 @@
 /// @param {int} y – The y position of the compound
 /// @param {int} width – The width of the compound
 /// @param {int} height – The height of the compound
-/// @param {decimal} paddingX – The horizontal padding percentage (0.0-1.0, e.g., 0.1 = 10% padding)
-/// @param {decimal} paddingY – The vertical padding percentage (0.0-1.0, e.g., 0.1 = 10% padding)
-/// @param {anyref} axisRef – The column that the measure will be evaluated against
-/// @param {numeric} measureRef – The measure to evaluate
+/// @param {decimal} [paddingX] – The horizontal padding percentage (0.0-1.0, e.g., 0.1 = 10% padding). Defaults to 0
+/// @param {decimal} [paddingY] – The vertical padding percentage (0.0-1.0, e.g., 0.1 = 10% padding). Defaults to 0
+/// @param {anyref expr} axisRef – The column that the measure will be evaluated against
+/// @param {numeric expr} measureRef – The measure to evaluate
 /// @param {int} samples – Number of density calculation points
 /// @param {numeric} bandwidth – Kernel bandwidth for smoothing
 /// @param {string} color – Fill color for the violin shape
-/// @param {string} orientation – Optional: "Horizontal" (default) or "Vertical"
+/// @param {string} [orientation] – Optional: "Horizontal" (default) or "Vertical"
 /// @returns {string} An SVG violin plot showing the probability density of data using kernel density estimation
 function 'DaxLib.SVG.Compound.Violin' =
 		(
@@ -136,19 +136,43 @@ function 'DaxLib.SVG.Compound.Violin' =
 				ASC
 			)
 
-		// Bottom/Left half curve (mirrored)
+		// Bottom/Left half curve (mirrored) – uses S Bézier for smooth mirror with control points
+		VAR _PointsWithNext = 
+			NATURALLEFTOUTERJOIN(
+				_Points,
+				SELECTCOLUMNS(
+					_Points,
+					"Value", [Value] - 1,
+					"@NextX", [@X],
+					"@NextY", [@Y]
+				)
+			)
+
 		VAR _BottomCurve = 
 			CONCATENATEX(
-				_WithControlPoints,
-				VAR _MirroredY = IF( _Orientation = "Horizontal", _CenterY + (_CenterY - [@Y]), [@Y] )
-				VAR _MirroredCY = IF( _Orientation = "Horizontal", _CenterY + (_CenterY - [@CY]), [@CY] )
+				_PointsWithNext,
 				VAR _MirroredX = IF( _Orientation = "Horizontal", [@X], _CenterX + (_CenterX - [@X]) )
-				VAR _MirroredCX = IF( _Orientation = "Horizontal", [@CX], _CenterX + (_CenterX - [@CX]) )
+				VAR _MirroredY = IF( _Orientation = "Horizontal", _CenterY + (_CenterY - [@Y]), [@Y] )
+				VAR _MCX = IF( _Orientation = "Horizontal",
+					[@NextX] + ( [@X] - [@NextX] ) / 2,
+					_CenterX + ( _CenterX - ( [@NextX] + ( [@X] - [@NextX] ) / 2 ) )
+				)
+				VAR _MCY = IF( _Orientation = "Horizontal",
+					_CenterY + ( _CenterY - [@Y] ),
+					[@NextY] + ( [@Y] - [@NextY] ) / 2
+				)
 				RETURN
 					IF(
-						[Value] = 0,
-						"",
-						"S " & _MirroredCX & " " & _MirroredCY & ", " & _MirroredX & " " & _MirroredY
+						ISBLANK( [@NextX] ),
+						"L " & _MirroredX & " " & _MirroredY,
+						IF(
+							[Value] = 0,
+							IF( _Orientation = "Horizontal",
+								"S " & _MCX & " " & _CenterY & ", " & [@X] & " " & _CenterY,
+								"S " & _CenterX & " " & _MCY & ", " & _CenterX & " " & [@Y]
+							),
+							"S " & _MCX & " " & _MCY & ", " & _MirroredX & " " & _MirroredY
+						)
 					),
 				" ",
 				[Value],

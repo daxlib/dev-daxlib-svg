@@ -1,6 +1,6 @@
 /// Returns a color for the specified performance level and theme
-/// @param {string} themeName – The theme name: "Stoplight", "Colorblind", "Corporate", "Pastel", or "Grayscale"
-/// @param {string} variant – The performance level ("veryBad", "bad", "neutral", "good", "veryGood")
+/// @param {string} [themeName] – The theme name: "Stoplight", "Colorblind", "Corporate", "Pastel", or "Grayscale". Defaults to "Stoplight"
+/// @param {string} [variant] – The performance level ("veryBad", "bad", "neutral", "good", "veryGood"). Defaults to "neutral"
 /// @returns {string} hex color code representing the performance level
 function 'DaxLib.SVG.Color.PerformanceTheme' =
 		(

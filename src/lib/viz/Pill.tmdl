@@ -1,8 +1,8 @@
 /// Renders a pill-shaped badge as an SVG data URI with centered text
 /// @param {string} txt – The text to display
-/// @param {string} color – Optional pill color
-/// @param {int} width – Optional: SVG width, defaults to 120
-/// @param {int} height – Optional: SVG height, defaults to 48
+/// @param {string} [color] – Optional pill color. Defaults to theme color
+/// @param {int} [width] – Optional: SVG width, defaults to 120
+/// @param {int} [height] – Optional: SVG height, defaults to 48
 /// @returns {string} SVG data URI with a pill-shaped badge
 function 'DaxLib.SVG.Viz.Pill' =
 		(

@@ -1,7 +1,7 @@
 /// Create a gradient stop element
 /// @param {string} offset – Stop position
 /// @param {string} color – color value (hex or named color)
-/// @param {string} opacity – Optional: opacity value
+/// @param {string} [opacity] – Optional: opacity value. Omitted if not specified
 /// @returns {string} <stop> element
 function 'DaxLib.SVG.Def.GradientStop' = 
 		(

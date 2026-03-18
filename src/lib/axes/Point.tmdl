@@ -1,5 +1,16 @@
 /// Maps axis/value data to plot coordinates honoring orientation
-/// @returns {table} Single-row table with @X and @Y
+/// @param {string} orientation – "Horizontal" or "Vertical"
+/// @param {numeric val} axisIndex – The axis index value to map
+/// @param {numeric val} measureValue – The measure value to map
+/// @param {numeric val} xMin – X-axis minimum value
+/// @param {numeric val} xMax – X-axis maximum value
+/// @param {numeric val} yMin – Y-axis minimum value
+/// @param {numeric val} yMax – Y-axis maximum value
+/// @param {numeric val} plotX – Plot area X origin
+/// @param {numeric val} plotY – Plot area Y origin
+/// @param {numeric val} plotWidth – Plot area width
+/// @param {numeric val} plotHeight – Plot area height
+/// @returns {table} Single-row table with `@X` and `@Y`
 function 'DaxLib.SVG.Axes.Point' =
 		(
 			orientation: STRING,

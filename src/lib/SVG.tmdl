@@ -1,9 +1,9 @@
 /// Wraps content in SVG container for Power BI visualization
 /// @param {string} width – width (pixels or percentage)
 /// @param {string} height – height (pixels or percentage)
-/// @param {string} viewbox – Optional: viewBox (e.g., "0 0 100 100")
+/// @param {string} [viewbox] – Optional: viewBox (e.g., "0 0 100 100"). Omitted if not specified
 /// @param {string} contents – To include one or more SVG elements (e.g., from DaxLib.SVG.Element functions)
-/// @param {numeric} sortValue – Optional: sort value for ordering in tables
+/// @param {numeric} [sortValue] – Optional: sort value for ordering in tables. Omitted if not specified
 /// @returns {string} SVG string
 function 'DaxLib.SVG.SVG' =
 		(

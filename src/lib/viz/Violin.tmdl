@@ -1,14 +1,14 @@
 /// Renders a violin plot as an SVG data URI showing probability density distribution
-/// @param {anyref} axisRefColumn – Axis reference column
-/// @param {numeric} measureRefExpr – Measure expression
-/// @param {string} color – Optional fill color
-/// @param {int} width – Optional: SVG width, defaults to 120
-/// @param {int} height – Optional: SVG height, defaults to 48
+/// @param {anyref expr} axisRef – Axis reference column
+/// @param {numeric expr} measureRef – Measure expression
+/// @param {string} [color] – Optional fill color. Defaults to theme color
+/// @param {int} [width] – Optional: SVG width, defaults to 120
+/// @param {int} [height] – Optional: SVG height, defaults to 48
 /// @returns {string} SVG data URI with embedded violin plot
 function 'DaxLib.SVG.Viz.Violin' =
 		(
-			axisRefColumn: ANYREF EXPR,
-			measureRefExpr: NUMERIC EXPR,
+			axisRef: ANYREF EXPR,
+			measureRef: NUMERIC EXPR,
 			color: STRING,
 			width: INT64,
 			height: INT64
@@ -20,7 +20,7 @@ function 'DaxLib.SVG.Viz.Violin' =
 			VAR _Marks =
 				DaxLib.SVG.Compound.Violin(
 					0, 0, _W, _H, 0, 0,
-					axisRefColumn, measureRefExpr, 50, 1, _Color, BLANK()
+					axisRef, measureRef, 50, 1, _Color, BLANK()
 				)
 
 			RETURN

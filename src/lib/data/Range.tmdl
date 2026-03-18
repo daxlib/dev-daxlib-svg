@@ -1,8 +1,8 @@
 /// Computes min/max/baseline values from shaped scalar range inputs
-/// @param {numeric} dataMin – Minimum value from source data
-/// @param {numeric} dataMax – Maximum value from source data
-/// @param {boolean} includeZero – Use zero baseline when range is fully positive
-/// @returns {table} Single-row table with @Min, @Max, and @Baseline
+/// @param {numeric val} dataMin – Minimum value from source data
+/// @param {numeric val} dataMax – Maximum value from source data
+/// @param {boolean} [includeZero] – Use zero baseline when range is fully positive. Defaults to FALSE
+/// @returns {table} Single-row table with `@Min`, `@Max`, and `@Baseline`
 function 'DaxLib.SVG.Data.Range' =
 		(
 			dataMin: NUMERIC VAL,
