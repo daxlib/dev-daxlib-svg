@@ -1,11 +1,11 @@
 /// Renders an area chart as an SVG data URI showing measure values across an axis with filled area
 /// @param {anyref expr} axisRef – Axis reference column
 /// @param {numeric expr} measureRef – Measure expression
-/// @param {string} [color] – Optional series color. Defaults to theme color
+/// @param {string} [color] – Optional series color. Defaults to Power BI theme color
 /// @param {boolean} [showAxis] – Optional axis toggle. Defaults to FALSE
-/// @param {int} [width] – Optional: SVG width, defaults to 120
-/// @param {int} [height] – Optional: SVG height, defaults to 48
-/// @returns {string} SVG data URI with embedded area chart
+/// @param {int} [width] – Optional: SVG width. Defaults to 120
+/// @param {int} [height] – Optional: SVG height. Defaults to 48
+/// @returns {string} SVG Area Chart
 function 'DaxLib.SVG.Viz.Area' =
 		(
 			axisRef: ANYREF EXPR,

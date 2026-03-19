@@ -1,4 +1,4 @@
-/// Generates a STRING of common shape attributes that can be passed to DaxLib.SVG.Element.* or DaxLib.SVG.Def.* functions
+/// Generates a STRING of common shape attributes that can be passed to `DaxLib.SVG.Element.*` or `DaxLib.SVG.Def.*` functions
 /// @param {string} [fill] – Fill color or gradient reference. Omitted if not specified
 /// @param {decimal} [fillOpacity] – Fill opacity (0-1). Omitted if not specified
 /// @param {string} [fillRule] – Fill rule ("nonzero" or "evenodd"). Omitted if not specified

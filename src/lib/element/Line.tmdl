@@ -3,8 +3,8 @@
 /// @param {string} y1 – Starting Y position (top edge is 0)
 /// @param {string} x2 – Ending X position (left edge is 0)
 /// @param {string} y2 – Ending Y position (top edge is 0)
-/// @param {string} [attributes] – Optional: Direct SVG attributes to apply (e.g., "stroke-dasharray='5,5' marker-end='url(#arrow)'"), can generate with DaxLib.SVG.Attr.* or manually. Omitted if not specified
-/// @param {string} [transforms] – Optional: transformation to apply (can be generated with DaxLib.SVG.Transforms). Omitted if not specified
+/// @param {string} [attributes] – Optional: Direct SVG attributes to apply (e.g., "stroke-dasharray='5,5' marker-end='url(#arrow)'"), can generate with `DaxLib.SVG.Attr.*` or manually
+/// @param {string} [transforms] – Optional: Transformation to apply (can be generated with `DaxLib.SVG.Transforms`)
 /// @returns {string} <line> element
 function 'DaxLib.SVG.Element.Line' =
 		(

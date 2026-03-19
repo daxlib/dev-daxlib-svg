@@ -3,10 +3,10 @@
 /// @param {string} y – The y position
 /// @param {string} width – The width (pixels or percentage)
 /// @param {string} height – The height (pixels or percentage)
-/// @param {string} [rx] – Optional: x radius for rounded corners. Omitted if not specified
-/// @param {string} [ry] – Optional: y radius for rounded corners. Omitted if not specified
-/// @param {string} [attributes] – Optional: Direct SVG attributes to apply (e.g., "fill='red' stroke-width='2'"), can generate with DaxLib.SVG.Attr.* or manually. Omitted if not specified
-/// @param {string} [transforms] – Optional: transformation to apply (can be generated with DaxLib.SVG.Transforms). Omitted if not specified
+/// @param {string} [rx] – Optional: x radius for rounded corners
+/// @param {string} [ry] – Optional: y radius for rounded corners
+/// @param {string} [attributes] – Optional: Direct SVG attributes to apply (e.g., "fill='red' stroke-width='2'"), can generate with `DaxLib.SVG.Attr.*` or manually
+/// @param {string} [transforms] – Optional: Transformation to apply (can be generated with `DaxLib.SVG.Transforms`)
 /// @returns {string} <rect> element
 function 'DaxLib.SVG.Element.Rect' =
 		(

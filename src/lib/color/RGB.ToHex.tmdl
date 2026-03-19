@@ -2,7 +2,7 @@
 /// @param {int} red – The red value (0-255)
 /// @param {int} green – The green value (0-255)
 /// @param {int} blue – The blue value (0-255)
-/// @param {decimal} [alpha] – Optional: The alpha value (0-1). Omitted if not specified
+/// @param {decimal} [alpha] – Optional: The alpha value (0-1)
 /// @returns {string} hex color code
 function 'DaxLib.SVG.Color.RGB.ToHex' =
 		(

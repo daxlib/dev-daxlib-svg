@@ -2,8 +2,8 @@
 /// Returns values suitable for human-friendly axis labelling
 /// @param {numeric val} dataMin – Minimum value from source data
 /// @param {numeric val} dataMax – Maximum value from source data
-/// @param {int} [maxTicks] – Desired maximum number of ticks (default 5)
-/// @param {boolean} [includeZero] – Whether to include zero in the range when data is fully positive. Default FALSE.
+/// @param {int} [maxTicks] – Optional: Desired maximum number of ticks. Defaults to 5
+/// @param {boolean} [includeZero] – Optional: Whether to include zero in the range when data is fully positive. Defaults to FALSE.
 /// @returns {table} Single-row table with `@NiceMin`, `@NiceMax`, `@NiceInterval`, `@NiceTickCount`
 function 'DaxLib.SVG.Scale.NiceRange' =
 		(

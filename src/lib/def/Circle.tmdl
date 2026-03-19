@@ -3,8 +3,8 @@
 /// @param {string} cx – X center coordinate
 /// @param {string} cy – Y center coordinate
 /// @param {string} r – Radius
-/// @param {string} [attributes] – Optional: Direct SVG attributes to apply (e.g., "fill='none' stroke='blue'"), can generate with DaxLib.SVG.Attr.* or manually. Omitted if not specified
-/// @param {string} [transforms] – Optional: transformation to apply (can be generated with DaxLib.SVG.Transforms). Omitted if not specified
+/// @param {string} [attributes] – Optional: Direct SVG attributes to apply (e.g., "fill='none' stroke='blue'"), can generate with `DaxLib.SVG.Attr.*` or manually
+/// @param {string} [transforms] – Optional: transformation to apply (can be generated with `DaxLib.SVG.Transforms`)
 /// @returns {string} <circle> definition
 function 'DaxLib.SVG.Def.Circle' = 
 		(

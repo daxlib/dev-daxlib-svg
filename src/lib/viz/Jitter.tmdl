@@ -1,10 +1,10 @@
 /// Renders a jitter plot as an SVG data URI showing value distribution as scattered points
 /// @param {anyref expr} axisRef – Axis reference column
 /// @param {numeric expr} measureRef – Measure expression
-/// @param {string} [color] – Optional point color. Defaults to theme color
-/// @param {int} [width] – Optional: SVG width, defaults to 120
-/// @param {int} [height] – Optional: SVG height, defaults to 48
-/// @returns {string} SVG data URI with embedded jitter plot
+/// @param {string} [color] – Optional point color. Defaults to Power BI theme color
+/// @param {int} [width] – Optional: SVG width. Defaults to 120
+/// @param {int} [height] – Optional: SVG height. Defaults to 48
+/// @returns {string} SVG Jitter Plot
 function 'DaxLib.SVG.Viz.Jitter' =
 		(
 			axisRef: ANYREF EXPR,

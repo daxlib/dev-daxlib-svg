@@ -1,10 +1,10 @@
 /// Estimates the maximum Y-axis tick label width for layout reservation
 /// @param {numeric val} axisMin – Axis minimum value
 /// @param {numeric val} axisMax – Axis maximum value
-/// @param {int} [tickCount] – Number of ticks to estimate. Defaults to 1
-/// @param {int} [axisFontSize] – Axis font size. Defaults to 10
-/// @param {decimal} [labelWidthFactor] – Font width factor. Defaults to 0.56 (Segoe UI)
-/// @param {boolean} [axisIsDate] – Whether the axis values represent dates. Defaults to FALSE
+/// @param {int} [tickCount] – Optional: Number of ticks to estimate. Defaults to 1
+/// @param {int} [axisFontSize] – Optional: Axis font size. Defaults to 10
+/// @param {decimal} [labelWidthFactor] – Optional: Font width factor. Defaults to 0.56 (Segoe UI)
+/// @param {boolean} [axisIsDate] – Optional: Whether the axis values represent dates. Defaults to FALSE
 /// @returns {numeric} Estimated max label width in pixels
 function 'DaxLib.SVG.Axes.MaxTickLabelWidth' =
 		(

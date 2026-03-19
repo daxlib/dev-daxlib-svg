@@ -7,12 +7,12 @@
 /// @param {numeric val} xAxisMax – X-axis maximum value
 /// @param {numeric val} yAxisMin – Y-axis minimum value
 /// @param {numeric val} yAxisMax – Y-axis maximum value
-/// @param {boolean} [showAxis] – Whether axes are enabled. Defaults to FALSE
-/// @param {int} [axisFontSize] – Axis label font size. Defaults to 10
-/// @param {boolean} [xAxisIsDate] – Whether X-axis values represent dates. Defaults to FALSE
-/// @param {boolean} [yAxisIsDate] – Whether Y-axis values represent dates. Defaults to FALSE
-/// @param {int} [tickCountX] – Number of X-axis ticks (default 5)
-/// @param {int} [tickCountY] – Number of Y-axis ticks (default 4)
+/// @param {boolean} [showAxis] – Optional: Whether axes are enabled. Defaults to FALSE
+/// @param {int} [axisFontSize] – Optional: Axis label font size. Defaults to 10
+/// @param {boolean} [xAxisIsDate] – Optional: Whether X-axis values represent dates. Defaults to FALSE
+/// @param {boolean} [yAxisIsDate] – Optional: Whether Y-axis values represent dates. Defaults to FALSE
+/// @param {int} [tickCountX] – Optional: Number of X-axis ticks. Defaults to 5
+/// @param {int} [tickCountY] – Optional: Number of Y-axis ticks. Defaults to 4
 /// @returns {string} Axis SVG string or blank when axes are disabled
 function 'DaxLib.SVG.Axes.Render' =
 		(

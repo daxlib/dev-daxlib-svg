@@ -2,10 +2,10 @@
 /// @param {string} x – The x position of the text
 /// @param {string} y – The y position of the text
 /// @param {string} txt – The text content
-/// @param {string} [dx] – Optional: x offset from position. Omitted if not specified
-/// @param {string} [dy] – Optional: y offset from position. Omitted if not specified
-/// @param {string} [attributes] – Optional: Direct SVG attributes to apply (e.g., "text-anchor='middle' dominant-baseline='middle'"), can generate with DaxLib.SVG.Attr.* or manually. Omitted if not specified
-/// @param {string} [transforms] – Optional: additional transforms (e.g. "scale(1.2) translate(10,10)") (can be generated with DaxLib.SVG.Transforms). Omitted if not specified
+/// @param {string} [dx] – Optional: x offset from position
+/// @param {string} [dy] – Optional: y offset from position
+/// @param {string} [attributes] – Optional: Direct SVG attributes to apply (e.g., "text-anchor='middle' dominant-baseline='middle'"), can generate with `DaxLib.SVG.Attr.*` or manually
+/// @param {string} [transforms] – Optional: Additional transforms (e.g. "scale(1.2) translate(10,10)") (can be generated with `DaxLib.SVG.Transforms`)
 /// @returns {string} <text> element
 function 'DaxLib.SVG.Element.Txt' =
 		(

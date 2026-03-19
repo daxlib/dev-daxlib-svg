@@ -1,10 +1,10 @@
 /// Create a linear gradient definition
 /// @param {string} defId – The unique identifier for the gradient
-/// @param {string} stops – Concatenated list of one or more DaxLib.SVG.Def.GradientStop elements
-/// @param {string} [x1] – Optional: Start X position. Omitted if not specified
-/// @param {string} [y1] – Optional: Start Y position. Omitted if not specified
-/// @param {string} [x2] – Optional: End X position. Omitted if not specified
-/// @param {string} [y2] – Optional: End Y position. Omitted if not specified
+/// @param {string} stops – Concatenated list of one or more `DaxLib.SVG.Def.GradientStop` elements
+/// @param {string} [x1] – Optional: Start X position
+/// @param {string} [y1] – Optional: Start Y position
+/// @param {string} [x2] – Optional: End X position
+/// @param {string} [y2] – Optional: End Y position
 /// @returns {string} <linearGradient> definition
 function 'DaxLib.SVG.Def.LinearGradient' = 
 		(

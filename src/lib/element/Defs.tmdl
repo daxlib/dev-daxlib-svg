@@ -1,4 +1,4 @@
-/// Create a <defs> element from one or more DaxLib.SVG.Def.* elements
+/// Create a <defs> element from one or more `DaxLib.SVG.Def.*` elements
 /// @param {string} defs – Concatenated list of def elements to include in a <defs> block
 /// @returns {string} <defs> element
 function 'DaxLib.SVG.Element.Defs' = 

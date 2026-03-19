@@ -1,11 +1,11 @@
 /// Renders a progress bar as an SVG data URI showing value progression
 /// @param {numeric expr} valueRefExpr – Value expression
 /// @param {numeric expr} trackRefExpr – Track measure (maximum value)
-/// @param {string} [color] – Optional fill color. Defaults to theme color
+/// @param {string} [color] – Optional fill color. Defaults to Power BI theme color
 /// @param {string} [orientation] – Optional orientation: "Horizontal" or "Vertical". Defaults to "Horizontal"
-/// @param {int} [width] – Optional: SVG width, defaults to 120
-/// @param {int} [height] – Optional: SVG height, defaults to 48
-/// @returns {string} SVG data URI with embedded progress bar
+/// @param {int} [width] – Optional: SVG width. Defaults to 120
+/// @param {int} [height] – Optional: SVG height. Defaults to 48
+/// @returns {string} SVG Progress Bar
 function 'DaxLib.SVG.Viz.ProgressBar' =
 		(
 			valueRefExpr: NUMERIC EXPR,

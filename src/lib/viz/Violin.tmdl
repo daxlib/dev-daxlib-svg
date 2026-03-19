@@ -1,10 +1,10 @@
 /// Renders a violin plot as an SVG data URI showing probability density distribution
 /// @param {anyref expr} axisRef – Axis reference column
 /// @param {numeric expr} measureRef – Measure expression
-/// @param {string} [color] – Optional fill color. Defaults to theme color
-/// @param {int} [width] – Optional: SVG width, defaults to 120
-/// @param {int} [height] – Optional: SVG height, defaults to 48
-/// @returns {string} SVG data URI with embedded violin plot
+/// @param {string} [color] – Optional fill color. Defaults to Power BI theme color
+/// @param {int} [width] – Optional: SVG width. Defaults to 120
+/// @param {int} [height] – Optional: SVG height. Defaults to 48
+/// @returns {string} SVG Violin Plot
 function 'DaxLib.SVG.Viz.Violin' =
 		(
 			axisRef: ANYREF EXPR,

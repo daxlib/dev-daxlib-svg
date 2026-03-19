@@ -3,15 +3,15 @@
 /// @param {int} y – The y position of the compound
 /// @param {int} width – The width of the compound
 /// @param {int} height – The height of the compound
-/// @param {decimal} [paddingX] – The horizontal padding percentage (0.0-1.0, e.g., 0.1 = 10% padding). Defaults to 0
-/// @param {decimal} [paddingY] – The vertical padding percentage (0.0-1.0, e.g., 0.1 = 10% padding). Defaults to 0
+/// @param {decimal} [paddingX] – Optional: The horizontal padding percentage (0.0-1.0, e.g., 0.1 = 10% padding). Defaults to 0
+/// @param {decimal} [paddingY] – Optional: The vertical padding percentage (0.0-1.0, e.g., 0.1 = 10% padding). Defaults to 0
 /// @param {anyref expr} axisRef – The column that the measure will be evaluated against
 /// @param {numeric expr} measureRef – The measure to evaluate
 /// @param {int} samples – Number of density calculation points
 /// @param {numeric} bandwidth – Kernel bandwidth for smoothing
 /// @param {string} color – Fill color for the violin shape
 /// @param {string} [orientation] – Optional: "Horizontal" (default) or "Vertical"
-/// @returns {string} An SVG violin plot showing the probability density of data using kernel density estimation
+/// @returns {string} SVG Violin Plot
 function 'DaxLib.SVG.Compound.Violin' =
 		(
 			x: INT64,

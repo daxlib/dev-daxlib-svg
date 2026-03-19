@@ -1,7 +1,7 @@
 /// Returns a "nice" rounded number close to the given value.
 /// Used for choosing human-friendly tick intervals and axis bounds
 /// @param {numeric val} rawValue – The raw value to round to a nice number
-/// @param {boolean} [roundMode] – TRUE for rounding to nearest nice number (for intervals), FALSE for ceiling to next nice number (for range extents). Default TRUE.
+/// @param {boolean} [roundMode] – Optional: TRUE for rounding to nearest nice number (for intervals), FALSE for ceiling to next nice number (for range extents). Defaults to TRUE.
 /// @returns {numeric} A human-friendly number (1, 2, 2.5, 5, or 10 scaled by the appropriate power of 10)
 function 'DaxLib.SVG.Scale.NiceNum' =
 		(

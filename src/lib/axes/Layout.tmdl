@@ -3,8 +3,8 @@
 /// @param {numeric val} y – Content y
 /// @param {numeric val} width – Content width
 /// @param {numeric val} height – Content height
-/// @param {boolean} [showAxis] – Whether axes are enabled. Defaults to FALSE
-/// @param {int} [axisFontSize] – Axis font size. Defaults to 10
+/// @param {boolean} [showAxis] – Optional: Whether axes are enabled. Defaults to FALSE
+/// @param {int} [axisFontSize] – Optional: Axis font size. Defaults to 10
 /// @param {numeric val} maxTickLabelWidth – Estimated max y-label width
 /// @returns {table} Single-row table with `@PlotX`, `@PlotY`, `@PlotWidth`, `@PlotHeight`
 function 'DaxLib.SVG.Axes.Layout' =

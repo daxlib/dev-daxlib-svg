@@ -1,12 +1,12 @@
 /// Create a radial gradient definition
 /// @param {string} defId – The unique identifier for the gradient
-/// @param {string} stops – Concatenated list of one or more DaxLib.SVG.Def.GradientStop elements
-/// @param {string} [cx] – Optional: Center X position. Omitted if not specified
-/// @param {string} [cy] – Optional: Center Y position. Omitted if not specified
-/// @param {string} [r] – Optional: Radius. Omitted if not specified
-/// @param {string} [fx] – Optional: Focus X position. Omitted if not specified
-/// @param {string} [fy] – Optional: Focus Y position. Omitted if not specified
-/// @param {string} [fr] – Optional: Focus radius. Omitted if not specified
+/// @param {string} stops – Concatenated list of one or more `DaxLib.SVG.Def.GradientStop` elements
+/// @param {string} [cx] – Optional: Center X position
+/// @param {string} [cy] – Optional: Center Y position
+/// @param {string} [r] – Optional: Radius
+/// @param {string} [fx] – Optional: Focus X position
+/// @param {string} [fy] – Optional: Focus Y position
+/// @param {string} [fr] – Optional: Focus radius
 /// @returns {string} <radialGradient> definition
 function 'DaxLib.SVG.Def.RadialGradient' = 
 		(

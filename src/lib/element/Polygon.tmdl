@@ -1,7 +1,7 @@
 /// Creates a polygon (closed shape)
 /// @param {string} points – Space-separated x,y coordinate pairs (e.g., "0,10 20,30 40,15")
-/// @param {string} [attributes] – Optional: Direct SVG attributes to apply (e.g., "fill-rule='nonzero' vector-effect='non-scaling-stroke'"), can generate with DaxLib.SVG.Attr.* or manually. Omitted if not specified
-/// @param {string} [transforms] – Optional: transformation to apply (can be generated with DaxLib.SVG.Transforms). Omitted if not specified
+/// @param {string} [attributes] – Optional: Direct SVG attributes to apply (e.g., "fill-rule='nonzero' vector-effect='non-scaling-stroke'"), can generate with `DaxLib.SVG.Attr.*` or manually
+/// @param {string} [transforms] – Optional: Transformation to apply (can be generated with `DaxLib.SVG.Transforms`)
 /// @returns {string} <polygon> element
 function 'DaxLib.SVG.Element.Polygon' =
 		(
