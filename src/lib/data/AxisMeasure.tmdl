@@ -1,0 +1,57 @@
+/// Builds a shared axis/value data table for compound visuals
+/// @param {anyref expr} axisRef – Axis reference column evaluated in current filter context
+/// @param {numeric expr} measureRef – Measure expression evaluated per axis value
+/// @param {string} axisMode – "Auto", "Numeric", or "Categorical"
+/// @returns {table} Standardized table with `@AxisValue`, `@AxisIndex`, and `@Value`
+function 'DaxLib.SVG.Data.AxisMeasure' =
+		(
+			axisRef: ANYREF EXPR,
+			measureRef: NUMERIC EXPR,
+			axisMode: STRING
+		) =>
+
+			VAR _AxisMode =
+				IF(
+					axisMode = "Numeric" || axisMode = "Categorical",
+					axisMode,
+					"Auto"
+				)
+
+			VAR _AxisSample = MAX( axisRef )
+			VAR _AxisIsNumeric = ISNUMBER( _AxisSample ) || ISDATETIME( _AxisSample )
+			VAR _UseNumericAxis =
+				IF(
+					_AxisMode = "Numeric",
+					TRUE(),
+					IF( _AxisMode = "Categorical", FALSE(), _AxisIsNumeric )
+				)
+
+			VAR _WithValues =
+				ADDCOLUMNS(
+					VALUES( axisRef ),
+					"@AxisValue", axisRef,
+					"@Value", measureRef
+				)
+
+			VAR _Indexed =
+				ADDCOLUMNS(
+					_WithValues,
+					"@AxisIndex",
+						IF(
+							_UseNumericAxis,
+							[@AxisValue],
+							RANK( DENSE, CALCULATETABLE( VALUES( axisRef ), ALLSELECTED() ) )
+						)
+				)
+
+			RETURN
+				TOPN(
+					COUNTROWS( _Indexed ),
+					_Indexed,
+					[@AxisIndex], ASC,
+					[@AxisValue], ASC
+				)
+
+	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
+
+	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__

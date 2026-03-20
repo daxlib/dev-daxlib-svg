@@ -1,0 +1,20 @@
+/// Create a gradient stop element
+/// @param {string} offset – Stop position
+/// @param {string} color – Color value (hex or named color)
+/// @param {string} [opacity] – Optional: Opacity value
+/// @returns {string} <stop> element
+function 'DaxLib.SVG.Def.GradientStop' = 
+		(
+			offset: STRING,
+			color: STRING,
+			opacity: STRING
+		) =>
+
+			"<stop offset='" & offset & 
+			"' stop-color='" & color & "'" &
+			IF( NOT ISBLANK( opacity ), " stop-opacity='" & opacity & "'" ) &
+			"/>"
+
+	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
+
+	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__

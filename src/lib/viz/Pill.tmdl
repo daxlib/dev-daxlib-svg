@@ -1,0 +1,28 @@
+/// Renders a pill-shaped badge as an SVG data URI with centered text
+/// @param {string} txt – The text to display
+/// @param {string} [color] – Optional pill color. Defaults to Power BI theme color
+/// @param {int} [width] – Optional: SVG width. Defaults to 120
+/// @param {int} [height] – Optional: SVG height. Defaults to 48
+/// @returns {string} SVG Pill
+function 'DaxLib.SVG.Viz.Pill' =
+		(
+			txt: STRING,
+			color: STRING,
+			width: INT64,
+			height: INT64
+		) =>
+
+			VAR _W = IF( ISBLANK( width ), 120, width )
+			VAR _H = IF( ISBLANK( height ), 48, height )
+			VAR _Color = IF( NOT ISBLANK( color ), color, DaxLib.SVG.Color.Theme( "Power BI", 1 ) )
+			VAR _Marks =
+				DaxLib.SVG.Compound.Pill(
+					0, 0, _W, _H, 0, 0, txt, _Color
+				)
+
+			RETURN
+				IF( NOT ISBLANK( _Marks ), DaxLib.SVG.SVG( "100%", "100%", "0 0 " & _W & " " & _H, _Marks, BLANK() ) )
+
+	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
+
+	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__

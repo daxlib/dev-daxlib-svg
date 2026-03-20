@@ -1,0 +1,37 @@
+/// Create a radial gradient definition
+/// @param {string} defId – The unique identifier for the gradient
+/// @param {string} stops – Concatenated list of one or more `DaxLib.SVG.Def.GradientStop` elements
+/// @param {string} [cx] – Optional: Center X position
+/// @param {string} [cy] – Optional: Center Y position
+/// @param {string} [r] – Optional: Radius
+/// @param {string} [fx] – Optional: Focus X position
+/// @param {string} [fy] – Optional: Focus Y position
+/// @param {string} [fr] – Optional: Focus radius
+/// @returns {string} <radialGradient> definition
+function 'DaxLib.SVG.Def.RadialGradient' = 
+		(
+			defId: STRING,
+			stops: STRING,
+			cx: STRING,
+			cy: STRING,
+			r: STRING,
+			fx: STRING,
+			fy: STRING,
+			fr: STRING
+		) =>
+
+			"<radialGradient" & 
+			" id='" & defId & "'" &
+			IF( NOT ISBLANK( cx ), " cx='" & cx & "'" ) &
+			IF( NOT ISBLANK( cy ), " cy='" & cy & "'" ) &
+			IF( NOT ISBLANK( r ),  " r='" & r & "'" ) &
+			IF( NOT ISBLANK( fx ), " fx='" & fx & "'" ) &
+			IF( NOT ISBLANK( fy ), " fy='" & fy & "'" ) &
+			IF( NOT ISBLANK( fr ), " fr='" & fr & "'" ) &
+			">" &
+			stops &
+			"</radialGradient>"
+	
+	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
+
+	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__

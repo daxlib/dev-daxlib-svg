@@ -1,0 +1,15 @@
+/// Create a <defs> element from one or more `DaxLib.SVG.Def.*` elements
+/// @param {string} defs – Concatenated list of def elements to include in a <defs> block
+/// @returns {string} <defs> element
+function 'DaxLib.SVG.Element.Defs' = 
+		(
+			defs: STRING    // concatenated list of elements to include in a <defs> block
+		) =>
+
+			"<defs>" &
+			defs &  
+			"</defs>"
+
+	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
+
+	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__

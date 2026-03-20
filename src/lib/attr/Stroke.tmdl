@@ -1,0 +1,55 @@
+/// Comprehensive stroke attributes function
+/// @param {string} [stroke] – Stroke color (e.g., "#FF0000", "red"). Omitted if not specified
+/// @param {int} [strokeWidth] – Stroke width. Omitted if not specified
+/// @param {decimal} [strokeOpacity] – Stroke opacity (0-1). Omitted if not specified
+/// @param {string} [strokeDasharray] – Stroke dasharray pattern (e.g., "5,5" for dashed). Omitted if not specified
+/// @param {string} [strokeDashoffset] – Stroke dashoffset. Omitted if not specified
+/// @param {string} [strokeLinecap] – Stroke linecap ("butt", "round", "square"). Omitted if not specified
+/// @param {string} [strokeLinejoin] – Stroke linejoin ("miter", "round", "bevel"). Omitted if not specified
+/// @param {string} [strokeMiterlimit] – Miter limit for stroke joins. Omitted if not specified
+/// @param {string} [markerStart] – Marker for start of line (e.g., 'url(#arrowStart)'). Omitted if not specified
+/// @param {string} [markerMid] – Marker for middle points of line. Omitted if not specified
+/// @param {string} [markerEnd] – Marker for end of line (e.g., 'url(#arrowEnd)'). Omitted if not specified
+/// @returns {string} An attribute string that can be used directly in SVG elements
+function 'DaxLib.SVG.Attr.Stroke' = 
+		(
+			stroke: STRING,
+			strokeWidth: INT64,
+			strokeOpacity: DOUBLE,
+			strokeDasharray: STRING,
+			strokeDashoffset: STRING,
+			strokeLinecap: STRING,
+			strokeLinejoin: STRING,
+			strokeMiterlimit: STRING,
+			markerStart: STRING,
+			markerMid: STRING,
+			markerEnd: STRING
+		) =>
+			VAR _Stroke =           IF(NOT ISBLANK(stroke),           "stroke='" & stroke & "' ")
+			VAR _StrokeWidth =      IF(NOT ISBLANK(strokeWidth),      "stroke-width='" & strokeWidth & "' ")
+			VAR _StrokeOpacity =    IF(NOT ISBLANK(strokeOpacity),    "stroke-opacity='" & strokeOpacity & "' ")
+			VAR _StrokeDasharray =  IF(NOT ISBLANK(strokeDasharray),  "stroke-dasharray='" & strokeDasharray & "' ")
+			VAR _StrokeDashoffset = IF(NOT ISBLANK(strokeDashoffset), "stroke-dashoffset='" & strokeDashoffset & "' ")
+			VAR _StrokeLinecap =    IF(NOT ISBLANK(strokeLinecap),    "stroke-linecap='" & strokeLinecap & "' ")
+			VAR _StrokeLinejoin =   IF(NOT ISBLANK(strokeLinejoin),   "stroke-linejoin='" & strokeLinejoin & "' ")
+			VAR _StrokeMiterlimit = IF(NOT ISBLANK(strokeMiterlimit), "stroke-miterlimit='" & strokeMiterlimit & "' ")
+			VAR _MarkerStart =      IF(NOT ISBLANK(markerStart),      "marker-start='" & markerStart & "' ")
+			VAR _MarkerMid =        IF(NOT ISBLANK(markerMid),        "marker-mid='" & markerMid & "' ")
+			VAR _MarkerEnd =        IF(NOT ISBLANK(markerEnd),        "marker-end='" & markerEnd & "' ")
+			
+			RETURN
+				_Stroke &
+				_StrokeWidth &
+				_StrokeOpacity &
+				_StrokeDasharray &
+				_StrokeDashoffset &
+				_StrokeLinecap &
+				_StrokeLinejoin &
+				_StrokeMiterlimit &
+				_MarkerStart &
+				_MarkerMid &
+				_MarkerEnd
+
+	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
+
+	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__
