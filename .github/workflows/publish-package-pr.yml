@@ -85,11 +85,13 @@ jobs:
             echo "action=Add" >> $GITHUB_OUTPUT
             git checkout -b "${BRANCH_NAME}"
           fi
-              
-      # Create the package folder if it doesn't exist
+
+      # Create the package folder (clean any previous content first)
       - name: Create package folder
         working-directory: upstream-repo
-        run: mkdir -p "${{ steps.package.outputs.folder }}"
+        run: |
+          rm -rf "${{ steps.package.outputs.folder }}"
+          mkdir -p "${{ steps.package.outputs.folder }}"
 
       # Copy package files to the new folder
       - name: Copy package files
