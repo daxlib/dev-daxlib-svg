@@ -1,0 +1,20 @@
+/// Create an SVG path element	
+/// @param {string} d – The path data string (e.g., "M10 10 L90 90")
+/// @param {string} [attributes] – Optional: Direct SVG attributes to apply (e.g., "pathLength='100' fill-rule='evenodd'"), can generate with `DaxLib.SVG.Attr.*` or manually
+/// @param {string} [transforms] – Optional: Transformation to apply (can be generated with `DaxLib.SVG.Transforms`)
+/// @returns {string} <path> element
+function 'DaxLib.SVG.Element.Paths' =
+		(
+			d: STRING,
+			attributes: STRING,
+			transforms: STRING
+		) =>
+
+			"<path d='" & d & "'" &
+			IF( NOT ISBLANK( attributes ), " " & attributes & " " ) &
+			IF( NOT ISBLANK( transforms ), " transform='" & transforms & "'" ) & 
+			"/>"
+
+	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
+
+	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__

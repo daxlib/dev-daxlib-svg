@@ -1,0 +1,32 @@
+/// Create a reusable line definition
+/// @param {string} defId – The unique identifier for the line
+/// @param {string} x1 – The x position of the start point
+/// @param {string} y1 – The y position of the start point
+/// @param {string} x2 – The x position of the end point
+/// @param {string} y2 – The y position of the end point
+/// @param {string} [attributes] – Optional: Direct SVG attributes to apply (e.g., "stroke-width='2' stroke='blue'"), can generate with `DaxLib.SVG.Attr.*` or manually
+/// @param {string} [transforms] – Optional: Transformation to apply (can be generated with `DaxLib.SVG.Transforms`)
+/// @returns {string} <line> definition
+function 'DaxLib.SVG.Def.Line' = 
+		(
+			defId: STRING,
+			x1: STRING,
+			y1: STRING,
+			x2: STRING,
+			y2: STRING,
+			attributes: STRING,
+			transforms: STRING
+		) =>
+
+			"<line id='" & defId & "'" &
+			" x1='" & x1 & "'" &
+			" y1='" & y1 & "'" &
+			" x2='" & x2 & "'" &
+			" y2='" & y2 & "'" &
+			IF( NOT ISBLANK( attributes ), " " & attributes & " " ) &
+			IF( NOT ISBLANK( transforms ), " transform='" & transforms & "'" ) &
+			"/>"
+				
+	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
+
+	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__

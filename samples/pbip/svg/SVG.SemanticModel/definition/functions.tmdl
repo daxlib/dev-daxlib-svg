@@ -1462,9 +1462,9 @@ function 'DataGoblins.SampleData.Dates' = ```
 /// Wraps content in SVG container for Power BI visualization
 /// @param {string} width – width (pixels or percentage)
 /// @param {string} height – height (pixels or percentage)
-/// @param {string} viewbox – Optional: viewBox (e.g., "0 0 100 100")
+/// @param {string} [viewbox] – Optional: viewBox (e.g., "0 0 100 100"). Omitted if not specified
 /// @param {string} contents – To include one or more SVG elements (e.g., from DaxLib.SVG.Element functions)
-/// @param {numeric} sortValue – Optional: sort value for ordering in tables
+/// @param {numeric} [sortValue] – Optional: sort value for ordering in tables. Omitted if not specified
 /// @returns {string} SVG string
 function 'DaxLib.SVG.SVG' =
 		(
@@ -1483,7 +1483,7 @@ function 'DaxLib.SVG.SVG' =
 			IF( NOT ISBLANK( sortValue ), "<desc>" & FORMAT( sortValue, "000000000000" ) & "</desc>" ) &
 			contents &
 			"</svg>"
-	lineageTag: 9f009e7b-12a1-45fd-bc4d-ab67ccfc4140
+	lineageTag: 125904d9-e26f-4cf6-ba05-b3ac3119edf6
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -1491,11 +1491,11 @@ function 'DaxLib.SVG.SVG' =
 
 /// Map a value from one value scale to another
 /// Used for scaling values to fit within SVG dimensions
-/// @param {numeric} inputValue – The value to map
-/// @param {numeric} fromMin – The minimum value of the original scale
-/// @param {numeric} fromMax – The maximum value of the original scale
-/// @param {numeric} toMin – The minimum value of the new scale
-/// @param {numeric} toMax – The maximum value of the new scale
+/// @param {numeric val} inputValue – The value to map
+/// @param {numeric val} fromMin – The minimum value of the original scale
+/// @param {numeric val} fromMax – The maximum value of the original scale
+/// @param {numeric val} toMin – The minimum value of the new scale
+/// @param {numeric val} toMax – The maximum value of the new scale
 /// @returns {decimal} mapped value
 function 'DaxLib.SVG.Scale.Normalize' =
 		(
@@ -1507,16 +1507,16 @@ function 'DaxLib.SVG.Scale.Normalize' =
 		) =>
 		
 			( ( inputValue - fromMin ) / ( fromMax - fromMin ) ) * ( toMax - toMin ) + toMin
-	lineageTag: 36b3c46c-7aa6-4a13-8ead-3693c14e58f2
+	lineageTag: 2a770ba5-9790-48d2-b7cb-2cde9092c594
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
 	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__
 
-/// Returns a "nice" rounded number close to the given value
+/// Returns a "nice" rounded number close to the given value.
 /// Used for choosing human-friendly tick intervals and axis bounds
-/// @param {numeric} rawValue – The raw value to round to a nice number
-/// @param {boolean} roundMode – TRUE for rounding to nearest nice number (for intervals), FALSE for ceiling to next nice number (for range extents)
+/// @param {numeric val} rawValue – The raw value to round to a nice number
+/// @param {boolean} [roundMode] – TRUE for rounding to nearest nice number (for intervals), FALSE for ceiling to next nice number (for range extents). Default TRUE.
 /// @returns {numeric} A human-friendly number (1, 2, 2.5, 5, or 10 scaled by the appropriate power of 10)
 function 'DaxLib.SVG.Scale.NiceNum' =
 		(
@@ -1541,7 +1541,7 @@ function 'DaxLib.SVG.Scale.NiceNum' =
 		
 			RETURN
 				_NiceFraction * POWER( 10, _Exponent )
-	lineageTag: 6222f8b8-19b5-4123-8047-1857253692c9
+	lineageTag: 197f9a77-b3e3-49bd-891c-751d65e5a879
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -1549,11 +1549,11 @@ function 'DaxLib.SVG.Scale.NiceNum' =
 
 /// Computes a "nice" axis range with rounded min, max, and tick interval
 /// Returns values suitable for human-friendly axis labelling
-/// @param {numeric} dataMin – Minimum value from source data
-/// @param {numeric} dataMax – Maximum value from source data
-/// @param {int} maxTicks – Desired maximum number of ticks (default 5)
-/// @param {boolean} includeZero – Whether to include zero in the range when data is fully positive
-/// @returns {table} Single-row table with @NiceMin, @NiceMax, @NiceInterval, @NiceTickCount
+/// @param {numeric val} dataMin – Minimum value from source data
+/// @param {numeric val} dataMax – Maximum value from source data
+/// @param {int} [maxTicks] – Desired maximum number of ticks (default 5)
+/// @param {boolean} [includeZero] – Whether to include zero in the range when data is fully positive. Default FALSE.
+/// @returns {table} Single-row table with `@NiceMin`, `@NiceMax`, `@NiceInterval`, `@NiceTickCount`
 function 'DaxLib.SVG.Scale.NiceRange' =
 		(
 			dataMin: NUMERIC VAL,
@@ -1584,21 +1584,21 @@ function 'DaxLib.SVG.Scale.NiceRange' =
 					"@NiceInterval", _NiceInterval,
 					"@NiceTickCount", _NiceTickCount
 				)
-	lineageTag: 6d89a705-7e11-4e86-9c84-d748c8c6b00e
+	lineageTag: 234dd9aa-7d4f-4171-a7e7-318110c709d0
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
 	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__
 
 /// Builds a shared axis/value data table for compound visuals
-/// @param {anyref} axisRefColumn – Axis reference column evaluated in current filter context
-/// @param {numeric} measureRefExpr – Measure expression evaluated per axis value
+/// @param {anyref expr} axisRef – Axis reference column evaluated in current filter context
+/// @param {numeric expr} measureRef – Measure expression evaluated per axis value
 /// @param {string} axisMode – "Auto", "Numeric", or "Categorical"
-/// @returns {table} Standardized table with @AxisValue, @AxisIndex, and @Value
+/// @returns {table} Standardized table with `@AxisValue`, `@AxisIndex`, and `@Value`
 function 'DaxLib.SVG.Data.AxisMeasure' =
 		(
-			axisRefColumn: ANYREF EXPR,
-			measureRefExpr: NUMERIC EXPR,
+			axisRef: ANYREF EXPR,
+			measureRef: NUMERIC EXPR,
 			axisMode: STRING
 		) =>
 		
@@ -1609,7 +1609,7 @@ function 'DaxLib.SVG.Data.AxisMeasure' =
 					"Auto"
 				)
 		
-			VAR _AxisSample = MAX( axisRefColumn )
+			VAR _AxisSample = MAX( axisRef )
 			VAR _AxisIsNumeric = ISNUMBER( _AxisSample ) || ISDATETIME( _AxisSample )
 			VAR _UseNumericAxis =
 				IF(
@@ -1620,9 +1620,9 @@ function 'DaxLib.SVG.Data.AxisMeasure' =
 		
 			VAR _WithValues =
 				ADDCOLUMNS(
-					VALUES( axisRefColumn ),
-					"@AxisValue", axisRefColumn,
-					"@Value", measureRefExpr
+					VALUES( axisRef ),
+					"@AxisValue", axisRef,
+					"@Value", measureRef
 				)
 		
 			VAR _Indexed =
@@ -1632,7 +1632,7 @@ function 'DaxLib.SVG.Data.AxisMeasure' =
 						IF(
 							_UseNumericAxis,
 							[@AxisValue],
-							RANK( DENSE, CALCULATETABLE( VALUES( axisRefColumn ), ALLSELECTED() ) )
+							RANK( DENSE, CALCULATETABLE( VALUES( axisRef ), ALLSELECTED() ) )
 						)
 				)
 		
@@ -1643,17 +1643,17 @@ function 'DaxLib.SVG.Data.AxisMeasure' =
 					[@AxisIndex], ASC,
 					[@AxisValue], ASC
 				)
-	lineageTag: 773a204e-cd61-470b-bc56-ea553e76d3b0
+	lineageTag: 3258b28a-3351-4411-8a58-d88be5603060
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
 	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__
 
 /// Computes min/max/baseline values from shaped scalar range inputs
-/// @param {numeric} dataMin – Minimum value from source data
-/// @param {numeric} dataMax – Maximum value from source data
-/// @param {boolean} includeZero – Use zero baseline when range is fully positive
-/// @returns {table} Single-row table with @Min, @Max, and @Baseline
+/// @param {numeric val} dataMin – Minimum value from source data
+/// @param {numeric val} dataMax – Maximum value from source data
+/// @param {boolean} [includeZero] – Use zero baseline when range is fully positive. Defaults to FALSE
+/// @returns {table} Single-row table with `@Min`, `@Max`, and `@Baseline`
 function 'DaxLib.SVG.Data.Range' =
 		(
 			dataMin: NUMERIC VAL,
@@ -1672,19 +1672,19 @@ function 'DaxLib.SVG.Data.Range' =
 					"@Max", _Max,
 					"@Baseline", _Baseline
 				)
-	lineageTag: 99afc807-78ea-4b20-8640-ea43d5e07764
+	lineageTag: 1b1db473-6254-42bf-9826-ba960b292ad1
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
 	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__
 
 /// Estimates the maximum Y-axis tick label width for layout reservation
-/// @param {numeric} axisMin – Axis minimum value
-/// @param {numeric} axisMax – Axis maximum value
-/// @param {int} tickCount – Number of ticks to estimate
-/// @param {int} axisFontSize – Axis font size
-/// @param {decimal} labelWidthFactor – Font width factor (Segoe UI default: 0.56)
-/// @param {boolean} axisIsDate – Whether the axis values represent dates
+/// @param {numeric val} axisMin – Axis minimum value
+/// @param {numeric val} axisMax – Axis maximum value
+/// @param {int} [tickCount] – Number of ticks to estimate. Defaults to 1
+/// @param {int} [axisFontSize] – Axis font size. Defaults to 10
+/// @param {decimal} [labelWidthFactor] – Font width factor. Defaults to 0.56 (Segoe UI)
+/// @param {boolean} [axisIsDate] – Whether the axis values represent dates. Defaults to FALSE
 /// @returns {numeric} Estimated max label width in pixels
 function 'DaxLib.SVG.Axes.MaxTickLabelWidth' =
 		(
@@ -1736,21 +1736,21 @@ function 'DaxLib.SVG.Axes.MaxTickLabelWidth' =
 		
 			RETURN
 				MAXX( _MeasuredLabelTable, [@EstimatedWidth] )
-	lineageTag: ba3e1e2e-cedc-4b07-908c-4a8bae0fcd5d
+	lineageTag: f0bcca26-97ae-4378-8ecb-e066a808d745
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
 	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__
 
 /// Calculates axis-aware plot area bounds
-/// @param {numeric} x – Content x
-/// @param {numeric} y – Content y
-/// @param {numeric} width – Content width
-/// @param {numeric} height – Content height
-/// @param {boolean} showAxis – Whether axes are enabled
-/// @param {int} axisFontSize – Axis font size
-/// @param {numeric} maxTickLabelWidth – Estimated max y-label width
-/// @returns {table} Single-row table with @PlotX, @PlotY, @PlotWidth, @PlotHeight
+/// @param {numeric val} x – Content x
+/// @param {numeric val} y – Content y
+/// @param {numeric val} width – Content width
+/// @param {numeric val} height – Content height
+/// @param {boolean} [showAxis] – Whether axes are enabled. Defaults to FALSE
+/// @param {int} [axisFontSize] – Axis font size. Defaults to 10
+/// @param {numeric val} maxTickLabelWidth – Estimated max y-label width
+/// @returns {table} Single-row table with `@PlotX`, `@PlotY`, `@PlotWidth`, `@PlotHeight`
 function 'DaxLib.SVG.Axes.Layout' =
 		(
 			x: NUMERIC VAL,
@@ -1779,27 +1779,27 @@ function 'DaxLib.SVG.Axes.Layout' =
 					"@PlotWidth", MAX( 0, width - _ReservedYAxisWidth ),
 					"@PlotHeight", MAX( 0, height - _ReservedXAxisHeight - _ReservedTopPadding )
 				)
-	lineageTag: a6e6ec0b-7c84-4c5b-a79f-4bc4d2a7a608
+	lineageTag: b71e598b-5e7d-439b-8d4e-93f7fabd46dc
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
 	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__
 
 /// Renders cartesian axis lines, ticks, and labels
-/// @param {numeric} plotX – Plot area X origin
-/// @param {numeric} plotY – Plot area Y origin
-/// @param {numeric} plotWidth – Plot area width
-/// @param {numeric} plotHeight – Plot area height
-/// @param {numeric} xAxisMin – X-axis minimum value
-/// @param {numeric} xAxisMax – X-axis maximum value
-/// @param {numeric} yAxisMin – Y-axis minimum value
-/// @param {numeric} yAxisMax – Y-axis maximum value
-/// @param {boolean} showAxis – Whether axes are enabled
-/// @param {int} axisFontSize – Axis label font size
-/// @param {boolean} xAxisIsDate – Whether X-axis values represent dates
-/// @param {boolean} yAxisIsDate – Whether Y-axis values represent dates
-/// @param {int} tickCountX – Number of X-axis ticks (default 5)
-/// @param {int} tickCountY – Number of Y-axis ticks (default 4)
+/// @param {numeric val} plotX – Plot area X origin
+/// @param {numeric val} plotY – Plot area Y origin
+/// @param {numeric val} plotWidth – Plot area width
+/// @param {numeric val} plotHeight – Plot area height
+/// @param {numeric val} xAxisMin – X-axis minimum value
+/// @param {numeric val} xAxisMax – X-axis maximum value
+/// @param {numeric val} yAxisMin – Y-axis minimum value
+/// @param {numeric val} yAxisMax – Y-axis maximum value
+/// @param {boolean} [showAxis] – Whether axes are enabled. Defaults to FALSE
+/// @param {int} [axisFontSize] – Axis label font size. Defaults to 10
+/// @param {boolean} [xAxisIsDate] – Whether X-axis values represent dates. Defaults to FALSE
+/// @param {boolean} [yAxisIsDate] – Whether Y-axis values represent dates. Defaults to FALSE
+/// @param {int} [tickCountX] – Number of X-axis ticks (default 5)
+/// @param {int} [tickCountY] – Number of Y-axis ticks (default 4)
 /// @returns {string} Axis SVG string or blank when axes are disabled
 function 'DaxLib.SVG.Axes.Render' =
 		(
@@ -1997,14 +1997,25 @@ function 'DaxLib.SVG.Axes.Render' =
 		
 			RETURN
 				IF( _ShowAxis, _XAxisLine & _YAxisLine & _XTicks & _YTicks )
-	lineageTag: 19008d4e-cb78-4dd6-87a9-5f5fccef7b90
+	lineageTag: 56b518de-b8d7-4772-bd47-b54a2d51d34e
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
 	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__
 
 /// Maps axis/value data to plot coordinates honoring orientation
-/// @returns {table} Single-row table with @X and @Y
+/// @param {string} orientation – "Horizontal" or "Vertical"
+/// @param {numeric val} axisIndex – The axis index value to map
+/// @param {numeric val} measureValue – The measure value to map
+/// @param {numeric val} xMin – X-axis minimum value
+/// @param {numeric val} xMax – X-axis maximum value
+/// @param {numeric val} yMin – Y-axis minimum value
+/// @param {numeric val} yMax – Y-axis maximum value
+/// @param {numeric val} plotX – Plot area X origin
+/// @param {numeric val} plotY – Plot area Y origin
+/// @param {numeric val} plotWidth – Plot area width
+/// @param {numeric val} plotHeight – Plot area height
+/// @returns {table} Single-row table with `@X` and `@Y`
 function 'DaxLib.SVG.Axes.Point' =
 		(
 			orientation: STRING,
@@ -2033,14 +2044,21 @@ function 'DaxLib.SVG.Axes.Point' =
 					"@X", IF( _Orientation = "Horizontal", _ValueX, _AxisX ),
 					"@Y", IF( _Orientation = "Horizontal", _AxisY, _ValueY )
 				)
-	lineageTag: 4d198d1a-462b-4d85-87dd-613422d4a714
+	lineageTag: a25d406b-0e38-462f-a341-beaf88698732
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
 	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__
 
 /// Maps the numeric baseline to plot coordinates honoring orientation
-/// @returns {table} Single-row table with @BaseX and @BaseY
+/// @param {string} orientation – "Horizontal" or "Vertical"
+/// @param {numeric val} yMin – Y-axis minimum value
+/// @param {numeric val} yMax – Y-axis maximum value
+/// @param {numeric val} plotX – Plot area X origin
+/// @param {numeric val} plotY – Plot area Y origin
+/// @param {numeric val} plotWidth – Plot area width
+/// @param {numeric val} plotHeight – Plot area height
+/// @returns {table} Single-row table with `@BaseX` and `@BaseY`
 function 'DaxLib.SVG.Axes.Baseline' =
 		(
 			orientation: STRING,
@@ -2061,20 +2079,20 @@ function 'DaxLib.SVG.Axes.Baseline' =
 					"@BaseX", IF( _Orientation = "Horizontal", _BaseX, plotX ),
 					"@BaseY", IF( _Orientation = "Horizontal", plotY, _BaseY )
 				)
-	lineageTag: c23b08f1-b954-4b78-951e-57c98ff64779
+	lineageTag: 8b04d656-0307-4afb-a3d2-a7823db7cef7
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
 	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__
 
 /// Generates a STRING of common shape attributes that can be passed to DaxLib.SVG.Element.* or DaxLib.SVG.Def.* functions
-/// @param {string} fill – Fill color or gradient reference
-/// @param {decimal} fillOpacity – Fill opacity (0-1)
-/// @param {string} fillRule – Fill rule ("nonzero" or "evenodd")
-/// @param {string} stroke – Stroke color
-/// @param {int} strokeWidth – Stroke width
-/// @param {decimal} strokeOpacity – Stroke opacity (0-1)
-/// @param {decimal} opacity – Overall opacity (0-1)
+/// @param {string} [fill] – Fill color or gradient reference. Omitted if not specified
+/// @param {decimal} [fillOpacity] – Fill opacity (0-1). Omitted if not specified
+/// @param {string} [fillRule] – Fill rule ("nonzero" or "evenodd"). Omitted if not specified
+/// @param {string} [stroke] – Stroke color. Omitted if not specified
+/// @param {int} [strokeWidth] – Stroke width. Omitted if not specified
+/// @param {decimal} [strokeOpacity] – Stroke opacity (0-1). Omitted if not specified
+/// @param {decimal} [opacity] – Overall opacity (0-1). Omitted if not specified
 /// @returns {string} An attribute string that can be used directly in SVG elements
 function 'DaxLib.SVG.Attr.Shapes' =
 		(
@@ -2094,22 +2112,22 @@ function 'DaxLib.SVG.Attr.Shapes' =
 			IF( NOT ISBLANK( strokeWidth ),   "stroke-width='" & strokeWidth & "' ") &
 			IF( NOT ISBLANK( strokeOpacity ), "stroke-opacity='" & strokeOpacity & "' ") &
 			IF( NOT ISBLANK( opacity ),       "opacity='" & opacity & "' ")
-	lineageTag: 738d6177-4def-45f3-9abf-3fb01d4e956e
+	lineageTag: 88be58d2-ca70-4157-9aed-1538f9f2c29e
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
 	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__
 
 /// Text-specific attributes
-/// @param {string} fontFamily – Font family for text
-/// @param {int} fontSize – Font size for text
-/// @param {string} fontWeight – Weight ("normal", "bold", "lighter", "100-900")
-/// @param {string} fontStyle – Style ("normal", "italic", "oblique")
-/// @param {string} textAnchor – Anchor ("start", "middle", "end")
-/// @param {string} baseline – Dominant baseline
-/// @param {string} textDecoration – Decoration ("none", "underline", "overline", "line-through")
-/// @param {string} letterSpacing – Space between letters
-/// @param {string} wordSpacing – Space between words
+/// @param {string} [fontFamily] – Font family for text. Omitted if not specified
+/// @param {int} [fontSize] – Font size for text. Omitted if not specified
+/// @param {string} [fontWeight] – Weight ("normal", "bold", "lighter", "100-900"). Omitted if not specified
+/// @param {string} [fontStyle] – Style ("normal", "italic", "oblique"). Omitted if not specified
+/// @param {string} [textAnchor] – Anchor ("start", "middle", "end"). Omitted if not specified
+/// @param {string} [baseline] – Dominant baseline. Omitted if not specified
+/// @param {string} [textDecoration] – Decoration ("none", "underline", "overline", "line-through"). Omitted if not specified
+/// @param {string} [letterSpacing] – Space between letters. Omitted if not specified
+/// @param {string} [wordSpacing] – Space between words. Omitted if not specified
 /// @returns {string} An attribute string that can be used directly in SVG text elements
 function 'DaxLib.SVG.Attr.Txt' =
 		(
@@ -2133,24 +2151,24 @@ function 'DaxLib.SVG.Attr.Txt' =
 			IF( NOT ISBLANK( textDecoration ), "text-decoration='" & textDecoration & "' ") &
 			IF( NOT ISBLANK( letterSpacing ),  "letter-spacing='" & letterSpacing & "' ") &
 			IF( NOT ISBLANK( wordSpacing ),    "word-spacing='" & wordSpacing & "' ")
-	lineageTag: 5df74cb1-236f-4523-9279-5af83ab8d99b
+	lineageTag: a33f3800-1b62-44f4-a1c4-338d75b9fa72
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
 	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__
 
 /// Comprehensive stroke attributes function
-/// @param {string} stroke – Stroke color (e.g., "#FF0000", "red")
-/// @param {int} strokeWidth – Stroke width
-/// @param {decimal} strokeOpacity – Stroke opacity (0-1)
-/// @param {string} strokeDasharray – Stroke dasharray pattern (e.g., "5,5" for dashed)
-/// @param {string} strokeDashoffset – Stroke dashoffset
-/// @param {string} strokeLinecap – Stroke linecap ("butt", "round", "square")
-/// @param {string} strokeLinejoin – Stroke linejoin ("miter", "round", "bevel")
-/// @param {string} strokeMiterlimit – Miter limit for stroke joins
-/// @param {string} markerStart – Marker for start of line (e.g., 'url(#arrowStart)')
-/// @param {string} markerMid – Marker for middle points of line
-/// @param {string} markerEnd – Marker for end of line (e.g., 'url(#arrowEnd)')
+/// @param {string} [stroke] – Stroke color (e.g., "#FF0000", "red"). Omitted if not specified
+/// @param {int} [strokeWidth] – Stroke width. Omitted if not specified
+/// @param {decimal} [strokeOpacity] – Stroke opacity (0-1). Omitted if not specified
+/// @param {string} [strokeDasharray] – Stroke dasharray pattern (e.g., "5,5" for dashed). Omitted if not specified
+/// @param {string} [strokeDashoffset] – Stroke dashoffset. Omitted if not specified
+/// @param {string} [strokeLinecap] – Stroke linecap ("butt", "round", "square"). Omitted if not specified
+/// @param {string} [strokeLinejoin] – Stroke linejoin ("miter", "round", "bevel"). Omitted if not specified
+/// @param {string} [strokeMiterlimit] – Miter limit for stroke joins. Omitted if not specified
+/// @param {string} [markerStart] – Marker for start of line (e.g., 'url(#arrowStart)'). Omitted if not specified
+/// @param {string} [markerMid] – Marker for middle points of line. Omitted if not specified
+/// @param {string} [markerEnd] – Marker for end of line (e.g., 'url(#arrowEnd)'). Omitted if not specified
 /// @returns {string} An attribute string that can be used directly in SVG elements
 function 'DaxLib.SVG.Attr.Stroke' =
 		(
@@ -2190,18 +2208,18 @@ function 'DaxLib.SVG.Attr.Stroke' =
 				_MarkerStart &
 				_MarkerMid &
 				_MarkerEnd
-	lineageTag: 675b1123-585d-42f2-a51c-38cac35244fe
+	lineageTag: ba6b06a2-6114-4153-9844-38279f8b7d20
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
 	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__
 
 /// Generates transform string for SVG elements
-/// @param {string} translate – Translation coordinates (e.g., "10,20")
-/// @param {string} rotate – Rotation with optional center point (e.g., "45" or "45 50 50")
-/// @param {string} scale – Scale factors (e.g., "2" or "2,1.5")
-/// @param {string} skewX – Horizontal skew angle in degrees
-/// @param {string} skewY – Vertical skew angle in degrees
+/// @param {string} [translate] – Translation coordinates (e.g., "10,20"). Omitted if not specified
+/// @param {string} [rotate] – Rotation with optional center point (e.g., "45" or "45 50 50"). Omitted if not specified
+/// @param {string} [scale] – Scale factors (e.g., "2" or "2,1.5"). Omitted if not specified
+/// @param {string} [skewX] – Horizontal skew angle in degrees. Omitted if not specified
+/// @param {string} [skewY] – Vertical skew angle in degrees. Omitted if not specified
 /// @returns {string} A transform attribute value that can be used with the transform attribute of SVG elements.
 function 'DaxLib.SVG.Transforms' =
 		(
@@ -2217,7 +2235,7 @@ function 'DaxLib.SVG.Transforms' =
 			IF(NOT ISBLANK(scale), "scale(" & scale & ") ") &
 			IF(NOT ISBLANK(skewX), "skewX(" & skewX & ") ") &
 			IF(NOT ISBLANK(skewY), "skewY(" & skewY & ") ")
-	lineageTag: 04c7f436-1373-47f6-b1bb-16ad7c39a1b6
+	lineageTag: 4efef760-9f41-42ae-aebf-c24970e618f7
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -2234,7 +2252,7 @@ function 'DaxLib.SVG.Element.Defs' =
 			"<defs>" &
 			defs &
 			"</defs>"
-	lineageTag: 9fb89bbb-5166-41f9-a7be-df6768c28a69
+	lineageTag: cf6c6dcd-4816-4e23-ba34-b63c175b0984
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -2243,7 +2261,7 @@ function 'DaxLib.SVG.Element.Defs' =
 /// Create a gradient stop element
 /// @param {string} offset – Stop position
 /// @param {string} color – color value (hex or named color)
-/// @param {string} opacity – Optional: opacity value
+/// @param {string} [opacity] – Optional: opacity value. Omitted if not specified
 /// @returns {string} <stop> element
 function 'DaxLib.SVG.Def.GradientStop' =
 		(
@@ -2256,7 +2274,7 @@ function 'DaxLib.SVG.Def.GradientStop' =
 			"' stop-color='" & color & "'" &
 			IF( NOT ISBLANK( opacity ), " stop-opacity='" & opacity & "'" ) &
 			"/>"
-	lineageTag: 6db1f6fd-472a-4525-b203-6713cdaf2978
+	lineageTag: f5350737-97b5-4577-8d7e-bdf3ccde8d48
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -2265,10 +2283,10 @@ function 'DaxLib.SVG.Def.GradientStop' =
 /// Create a linear gradient definition
 /// @param {string} defId – The unique identifier for the gradient
 /// @param {string} stops – Concatenated list of one or more DaxLib.SVG.Def.GradientStop elements
-/// @param {string} x1 – Optional: Start X position
-/// @param {string} y1 – Optional: Start Y position
-/// @param {string} x2 – Optional: End X position
-/// @param {string} y2 – Optional: End Y position
+/// @param {string} [x1] – Optional: Start X position. Omitted if not specified
+/// @param {string} [y1] – Optional: Start Y position. Omitted if not specified
+/// @param {string} [x2] – Optional: End X position. Omitted if not specified
+/// @param {string} [y2] – Optional: End Y position. Omitted if not specified
 /// @returns {string} <linearGradient> definition
 function 'DaxLib.SVG.Def.LinearGradient' =
 		(
@@ -2289,7 +2307,7 @@ function 'DaxLib.SVG.Def.LinearGradient' =
 			">" &
 			stops &
 			"</linearGradient>"
-	lineageTag: 68364ec1-9d59-475e-98de-d76c6efcd6a8
+	lineageTag: 39693a6c-9315-47c3-a818-9f68b84ddb39
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -2298,12 +2316,12 @@ function 'DaxLib.SVG.Def.LinearGradient' =
 /// Create a radial gradient definition
 /// @param {string} defId – The unique identifier for the gradient
 /// @param {string} stops – Concatenated list of one or more DaxLib.SVG.Def.GradientStop elements
-/// @param {string} cx – Optional: Center X position
-/// @param {string} cy – Optional: Center Y position
-/// @param {string} r – Optional: Radius
-/// @param {string} fx – Optional: Focus X position
-/// @param {string} fy – Optional: Focus Y position
-/// @param {string} fr – Optional: Focus radius
+/// @param {string} [cx] – Optional: Center X position. Omitted if not specified
+/// @param {string} [cy] – Optional: Center Y position. Omitted if not specified
+/// @param {string} [r] – Optional: Radius. Omitted if not specified
+/// @param {string} [fx] – Optional: Focus X position. Omitted if not specified
+/// @param {string} [fy] – Optional: Focus Y position. Omitted if not specified
+/// @param {string} [fr] – Optional: Focus radius. Omitted if not specified
 /// @returns {string} <radialGradient> definition
 function 'DaxLib.SVG.Def.RadialGradient' =
 		(
@@ -2328,7 +2346,7 @@ function 'DaxLib.SVG.Def.RadialGradient' =
 			">" &
 			stops &
 			"</radialGradient>"
-	lineageTag: fdd9bb79-21f5-4bc1-862b-38aa532eb9cc
+	lineageTag: 06950dab-9f93-49ed-899a-b21da4f4d06d
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -2347,7 +2365,7 @@ function 'DaxLib.SVG.Def.ClipPath' =
 			"<clipPath id='" & defId & "'>" &
 			contents &
 			"</clipPath>"
-	lineageTag: c383ff50-14e0-4f63-a23d-70c211af72cf
+	lineageTag: 74c58e3e-ca61-4107-b06b-416dfc772dff
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -2358,8 +2376,8 @@ function 'DaxLib.SVG.Def.ClipPath' =
 /// @param {string} cx – X center coordinate
 /// @param {string} cy – Y center coordinate
 /// @param {string} r – Radius
-/// @param {string} attributes – Optional: Direct SVG attributes to apply (e.g., "fill='none' stroke='blue'"), can generate with DaxLib.SVG.Attr.* or manually
-/// @param {string} transforms – Optional: transformation to apply (can be generated with DaxLib.SVG.Transforms)
+/// @param {string} [attributes] – Optional: Direct SVG attributes to apply (e.g., "fill='none' stroke='blue'"), can generate with DaxLib.SVG.Attr.* or manually. Omitted if not specified
+/// @param {string} [transforms] – Optional: transformation to apply (can be generated with DaxLib.SVG.Transforms). Omitted if not specified
 /// @returns {string} <circle> definition
 function 'DaxLib.SVG.Def.Circle' =
 		(
@@ -2378,7 +2396,7 @@ function 'DaxLib.SVG.Def.Circle' =
 			IF( NOT ISBLANK( attributes ), " " & attributes & " " ) &
 			IF( NOT ISBLANK( transforms ), " transform='" & transforms & "'" ) &
 			"/>"
-	lineageTag: a194e9ed-c92c-417c-8a40-df3c0d0d8f33
+	lineageTag: 46491155-ecaf-440b-8e34-b9fdc7b1ae3a
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -2388,10 +2406,10 @@ function 'DaxLib.SVG.Def.Circle' =
 /// @param {string} defId – The unique identifier for the rectangle
 /// @param {string} width – The width of the rectangle (pixels or percentage)
 /// @param {string} height – The height of the rectangle (pixels or percentage)
-/// @param {string} rx – Optional: x radius for rounded corners
-/// @param {string} ry – Optional: y radius for rounded corners
-/// @param {string} attributes – Optional: Direct SVG attributes to apply (e.g., "fill='none' stroke='blue'"), can generate with DaxLib.SVG.Attr.* or manually
-/// @param {string} transforms – Optional: transformation to apply (can be generated with DaxLib.SVG.Transforms)
+/// @param {string} [rx] – Optional: x radius for rounded corners. Omitted if not specified
+/// @param {string} [ry] – Optional: y radius for rounded corners. Omitted if not specified
+/// @param {string} [attributes] – Optional: Direct SVG attributes to apply (e.g., "fill='none' stroke='blue'"), can generate with DaxLib.SVG.Attr.* or manually. Omitted if not specified
+/// @param {string} [transforms] – Optional: transformation to apply (can be generated with DaxLib.SVG.Transforms). Omitted if not specified
 /// @returns {string} <rect> definition
 function 'DaxLib.SVG.Def.Rect' =
 		(
@@ -2412,7 +2430,7 @@ function 'DaxLib.SVG.Def.Rect' =
 			IF( NOT ISBLANK( attributes ), " " & attributes & " " ) &
 			IF( NOT ISBLANK( transforms ), " transform='" & transforms & "'" ) &
 			"/>"
-	lineageTag: dca0fe31-fb6d-4691-b1ee-ad4d8ff24984
+	lineageTag: 7b4164bb-8941-407c-be9f-f17a5c258d36
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -2424,8 +2442,8 @@ function 'DaxLib.SVG.Def.Rect' =
 /// @param {string} y1 – The y position of the start point
 /// @param {string} x2 – The x position of the end point
 /// @param {string} y2 – The y position of the end point
-/// @param {string} attributes – Optional: Direct SVG attributes to apply (e.g., "stroke-width='2' stroke='blue'"), can generate with DaxLib.SVG.Attr.* or manually
-/// @param {string} transforms – Optional: transformation to apply (can be generated with DaxLib.SVG.Transforms)
+/// @param {string} [attributes] – Optional: Direct SVG attributes to apply (e.g., "stroke-width='2' stroke='blue'"), can generate with DaxLib.SVG.Attr.* or manually. Omitted if not specified
+/// @param {string} [transforms] – Optional: transformation to apply (can be generated with DaxLib.SVG.Transforms). Omitted if not specified
 /// @returns {string} <line> definition
 function 'DaxLib.SVG.Def.Line' =
 		(
@@ -2446,7 +2464,7 @@ function 'DaxLib.SVG.Def.Line' =
 			IF( NOT ISBLANK( attributes ), " " & attributes & " " ) &
 			IF( NOT ISBLANK( transforms ), " transform='" & transforms & "'" ) &
 			"/>"
-	lineageTag: ef3ef8be-b281-492a-b6a4-358b574c87dc
+	lineageTag: b1471ecd-387c-4843-9477-eb64a7817801
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -2455,8 +2473,8 @@ function 'DaxLib.SVG.Def.Line' =
 /// Create a reusable path definition
 /// @param {string} defId – The unique identifier for the path
 /// @param {string} d – The path data string (e.g., "M10 10 L90 90")
-/// @param {string} attributes – Optional: Direct SVG attributes to apply (e.g., "fill='none' stroke='blue'"), can generate with DaxLib.SVG.Attr.* or manually
-/// @param {string} transforms – Optional: transformation to apply (can be generated with DaxLib.SVG.Transforms)
+/// @param {string} [attributes] – Optional: Direct SVG attributes to apply (e.g., "fill='none' stroke='blue'"), can generate with DaxLib.SVG.Attr.* or manually. Omitted if not specified
+/// @param {string} [transforms] – Optional: transformation to apply (can be generated with DaxLib.SVG.Transforms). Omitted if not specified
 /// @returns {string} <path> definition
 function 'DaxLib.SVG.Def.Paths' =
 		(
@@ -2471,7 +2489,7 @@ function 'DaxLib.SVG.Def.Paths' =
 			IF( NOT ISBLANK( attributes ), " " & attributes & " " ) &
 			IF( NOT ISBLANK( transforms ), " transform='" & transforms & "'" ) &
 			"/>"
-	lineageTag: 02188554-ad5d-4e96-b0b6-b619c0d3c06d
+	lineageTag: 0b0d4c68-ea82-4f8b-b422-2c4ad6177d73
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -2482,9 +2500,9 @@ function 'DaxLib.SVG.Def.Paths' =
 /// (e.g., DaxLib.SVG.Def.Circle, DaxLib.SVG.Def.Rect, DaxLib.SVG.Def.Paths, etc.). Instead of duplicating element definitions,
 /// use the appropriate DaxLib.SVG.Def.* function once and then reference it multiple times with DaxLib.SVG.Element.UseDef.
 /// @param {string} defId – The identifier of the defined element to use
-/// @param {string} x – X position where the element should be placed
-/// @param {string} y – Y position where the element should be placed
-/// @param {string} transforms – Optional: transformation to apply (can be generated with DaxLib.SVG.Transforms)
+/// @param {string} [x] – X position where the element should be placed. Omitted if not specified
+/// @param {string} [y] – Y position where the element should be placed. Omitted if not specified
+/// @param {string} [transforms] – Optional: transformation to apply (can be generated with DaxLib.SVG.Transforms). Omitted if not specified
 /// @returns {string} <use> element
 function 'DaxLib.SVG.Element.UseDef' =
 		(
@@ -2500,7 +2518,7 @@ function 'DaxLib.SVG.Element.UseDef' =
 			IF( NOT ISBLANK( y ), " y='" & y & "'" ) &
 			IF( NOT ISBLANK( transforms ), " transform='" & transforms & "'" ) &
 			"/>"
-	lineageTag: cf91a4e3-c3f8-4de2-a856-875b943316a9
+	lineageTag: c1f90938-81f2-4748-b624-372fdfc4c1d4
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -2509,8 +2527,8 @@ function 'DaxLib.SVG.Element.UseDef' =
 /// Generates SVG group element
 /// Transformations applied to the <g> element are performed on its child elements, and its attributes are inherited by its children. It can also group multiple elements to be referenced later with the <use> element.
 /// @param {string} contents – Content to group (recommend including all content in a single _SvgGroup variable defined upstream)
-/// @param {string} opacity – Optional: Opacity for entire group (0-1, optional)
-/// @param {string} transforms – Optional: Transform (e.g., "translate(50,50) rotate(45)") (can be generated with DaxLib.SVG.Transforms)
+/// @param {string} [opacity] – Optional: Opacity for entire group (0-1, optional). Omitted if not specified
+/// @param {string} [transforms] – Optional: Transform (e.g., "translate(50,50) rotate(45)") (can be generated with DaxLib.SVG.Transforms). Omitted if not specified
 /// @returns {string} <g> element
 function 'DaxLib.SVG.Element.Group' =
 		(
@@ -2523,7 +2541,7 @@ function 'DaxLib.SVG.Element.Group' =
 			IF( NOT ISBLANK( transforms ), " transform='" & transforms & "'" ) &
 			IF( NOT ISBLANK( opacity ), " opacity='" & opacity & "'" ) &
 			">" & contents & "</g>"
-	lineageTag: 0af2108c-cf14-4496-8e29-fb9ed4c4873d
+	lineageTag: 77f1143c-b2af-4710-8366-7ef32cd34134
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -2533,8 +2551,8 @@ function 'DaxLib.SVG.Element.Group' =
 /// @param {string} cx – The x position of the center
 /// @param {string} cy – The y position of the center
 /// @param {string} r – The radius
-/// @param {string} attributes – Optional: Direct SVG attributes to apply (e.g., "fill='red' stroke-width='2'"), can generate with DaxLib.SVG.Attr.* or manually
-/// @param {string} transforms – Optional: transformation to apply (can be generated with DaxLib.SVG.Transforms)
+/// @param {string} [attributes] – Optional: Direct SVG attributes to apply (e.g., "fill='red' stroke-width='2'"), can generate with DaxLib.SVG.Attr.* or manually. Omitted if not specified
+/// @param {string} [transforms] – Optional: transformation to apply (can be generated with DaxLib.SVG.Transforms). Omitted if not specified
 /// @returns {string} <circle> element
 function 'DaxLib.SVG.Element.Circle' =
 		(
@@ -2552,7 +2570,7 @@ function 'DaxLib.SVG.Element.Circle' =
 			IF( NOT ISBLANK( attributes ), " " & attributes & " " ) &
 			IF( NOT ISBLANK( transforms ), " transform='" & transforms & "'" ) &
 			"/>"
-	lineageTag: e6bfe270-4b5b-4e44-a250-574712bed42e
+	lineageTag: 09ab0943-6ec6-4c40-b19d-5e6a0b436716
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -2563,10 +2581,10 @@ function 'DaxLib.SVG.Element.Circle' =
 /// @param {string} y – The y position
 /// @param {string} width – The width (pixels or percentage)
 /// @param {string} height – The height (pixels or percentage)
-/// @param {string} rx – Optional: x radius for rounded corners
-/// @param {string} ry – Optional: y radius for rounded corners
-/// @param {string} attributes – Optional: Direct SVG attributes to apply (e.g., "fill='red' stroke-width='2'"), can generate with DaxLib.SVG.Attr.* or manually
-/// @param {string} transforms – Optional: transformation to apply (can be generated with DaxLib.SVG.Transforms)
+/// @param {string} [rx] – Optional: x radius for rounded corners. Omitted if not specified
+/// @param {string} [ry] – Optional: y radius for rounded corners. Omitted if not specified
+/// @param {string} [attributes] – Optional: Direct SVG attributes to apply (e.g., "fill='red' stroke-width='2'"), can generate with DaxLib.SVG.Attr.* or manually. Omitted if not specified
+/// @param {string} [transforms] – Optional: transformation to apply (can be generated with DaxLib.SVG.Transforms). Omitted if not specified
 /// @returns {string} <rect> element
 function 'DaxLib.SVG.Element.Rect' =
 		(
@@ -2590,7 +2608,7 @@ function 'DaxLib.SVG.Element.Rect' =
 			IF( NOT ISBLANK( attributes ), " " & attributes & " " ) &
 			IF( NOT ISBLANK( transforms ), " transform='" & transforms & "'" ) &
 			"/>"
-	lineageTag: 4e6fc1f8-4b01-4f63-8ba4-fc85861cea62
+	lineageTag: 947d1e9f-85bc-430c-8ebb-9e7247e012f1
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -2601,8 +2619,8 @@ function 'DaxLib.SVG.Element.Rect' =
 /// @param {string} y1 – Starting Y position (top edge is 0)
 /// @param {string} x2 – Ending X position (left edge is 0)
 /// @param {string} y2 – Ending Y position (top edge is 0)
-/// @param {string} attributes – Optional: Direct SVG attributes to apply (e.g., "stroke-dasharray='5,5' marker-end='url(#arrow)'"), can generate with DaxLib.SVG.Attr.* or manually
-/// @param {string} transforms – Optional: transformation to apply (can be generated with DaxLib.SVG.Transforms)
+/// @param {string} [attributes] – Optional: Direct SVG attributes to apply (e.g., "stroke-dasharray='5,5' marker-end='url(#arrow)'"), can generate with DaxLib.SVG.Attr.* or manually. Omitted if not specified
+/// @param {string} [transforms] – Optional: transformation to apply (can be generated with DaxLib.SVG.Transforms). Omitted if not specified
 /// @returns {string} <line> element
 function 'DaxLib.SVG.Element.Line' =
 		(
@@ -2622,7 +2640,7 @@ function 'DaxLib.SVG.Element.Line' =
 			IF( NOT ISBLANK( attributes ), " " & attributes & " " ) &
 			IF( NOT ISBLANK( transforms ), " transform='" & transforms & "'" ) &
 			"/>"
-	lineageTag: 82b05762-6884-43db-a037-67ddb3f44315
+	lineageTag: 9467fb90-d3ae-4e6d-babd-732638591a0c
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -2630,8 +2648,8 @@ function 'DaxLib.SVG.Element.Line' =
 
 /// Create an SVG path element
 /// @param {string} d – The path data string (e.g., "M10 10 L90 90")
-/// @param {string} attributes – Optional: Direct SVG attributes to apply (e.g., "pathLength='100' fill-rule='evenodd'"), can generate with DaxLib.SVG.Attr.* or manually
-/// @param {string} transforms – Optional: transformation to apply (can be generated with DaxLib.SVG.Transforms)
+/// @param {string} [attributes] – Optional: Direct SVG attributes to apply (e.g., "pathLength='100' fill-rule='evenodd'"), can generate with DaxLib.SVG.Attr.* or manually. Omitted if not specified
+/// @param {string} [transforms] – Optional: transformation to apply (can be generated with DaxLib.SVG.Transforms). Omitted if not specified
 /// @returns {string} <path> element
 function 'DaxLib.SVG.Element.Paths' =
 		(
@@ -2644,7 +2662,7 @@ function 'DaxLib.SVG.Element.Paths' =
 			IF( NOT ISBLANK( attributes ), " " & attributes & " " ) &
 			IF( NOT ISBLANK( transforms ), " transform='" & transforms & "'" ) &
 			"/>"
-	lineageTag: f4d8dc82-adc6-4c7a-9a00-677f75ba9ae5
+	lineageTag: bc9d2d59-247c-4e70-be03-d8a2760ee3e2
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -2655,8 +2673,8 @@ function 'DaxLib.SVG.Element.Paths' =
 /// @param {string} cy – The y position of the center
 /// @param {string} rx – The x radius
 /// @param {string} ry – The y radius
-/// @param {string} attributes – Optional: Direct SVG attributes to apply (e.g., "fill='none' stroke='blue'"), can generate with DaxLib.SVG.Attr.* or manually
-/// @param {string} transforms – Optional: transformation to apply (can be generated with DaxLib.SVG.Transforms)
+/// @param {string} [attributes] – Optional: Direct SVG attributes to apply (e.g., "fill='none' stroke='blue'"), can generate with DaxLib.SVG.Attr.* or manually. Omitted if not specified
+/// @param {string} [transforms] – Optional: transformation to apply (can be generated with DaxLib.SVG.Transforms). Omitted if not specified
 /// @returns {string} <ellipse> element
 function 'DaxLib.SVG.Element.Ellipse' =
 		(
@@ -2676,7 +2694,7 @@ function 'DaxLib.SVG.Element.Ellipse' =
 			IF( NOT ISBLANK( attributes ), " " & attributes & " " ) &
 			IF( NOT ISBLANK( transforms ), " transform='" & transforms & "'" ) &
 			"/>"
-	lineageTag: 0c61b87b-251b-4ce0-a18e-fa765e3356dd
+	lineageTag: c481bc72-1280-4124-bcec-0d01094f73a9
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -2684,8 +2702,8 @@ function 'DaxLib.SVG.Element.Ellipse' =
 
 /// Creates a polygon (closed shape)
 /// @param {string} points – Space-separated x,y coordinate pairs (e.g., "0,10 20,30 40,15")
-/// @param {string} attributes – Optional: Direct SVG attributes to apply (e.g., "fill-rule='nonzero' vector-effect='non-scaling-stroke'"), can generate with DaxLib.SVG.Attr.* or manually
-/// @param {string} transforms – Optional: transformation to apply (can be generated with DaxLib.SVG.Transforms)
+/// @param {string} [attributes] – Optional: Direct SVG attributes to apply (e.g., "fill-rule='nonzero' vector-effect='non-scaling-stroke'"), can generate with DaxLib.SVG.Attr.* or manually. Omitted if not specified
+/// @param {string} [transforms] – Optional: transformation to apply (can be generated with DaxLib.SVG.Transforms). Omitted if not specified
 /// @returns {string} <polygon> element
 function 'DaxLib.SVG.Element.Polygon' =
 		(
@@ -2699,7 +2717,7 @@ function 'DaxLib.SVG.Element.Polygon' =
 			IF( NOT ISBLANK( attributes ), " " & attributes & " " ) &
 			IF( NOT ISBLANK( transforms ), " transform='" & transforms & "'" ) &
 			"/>"
-	lineageTag: c17b9938-bfe9-450e-b8a3-1bb45f0a2e7e
+	lineageTag: 9371390c-e20f-49f5-b930-e42684c5b60e
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -2707,8 +2725,8 @@ function 'DaxLib.SVG.Element.Polygon' =
 
 /// Creates a polyline (connected points)
 /// @param {string} points – Space-separated x,y coordinate pairs (e.g., "0,10 20,30 40,15")
-/// @param {string} attributes – Optional: Direct SVG attributes to apply (e.g., "marker-start='url(#dot)' vector-effect='non-scaling-stroke'"), can generate with DaxLib.SVG.Attr.* or manually
-/// @param {string} transforms – Optional: transformation to apply (can be generated with DaxLib.SVG.Transforms)
+/// @param {string} [attributes] – Optional: Direct SVG attributes to apply (e.g., "marker-start='url(#dot)' vector-effect='non-scaling-stroke'"), can generate with DaxLib.SVG.Attr.* or manually. Omitted if not specified
+/// @param {string} [transforms] – Optional: transformation to apply (can be generated with DaxLib.SVG.Transforms). Omitted if not specified
 /// @returns {string} <polyline> element
 function 'DaxLib.SVG.Element.Polyline' =
 		(
@@ -2722,7 +2740,7 @@ function 'DaxLib.SVG.Element.Polyline' =
 			IF( NOT ISBLANK( attributes ), " " & attributes & " " ) &
 			IF( NOT ISBLANK( transforms ), " transform='" & transforms & "'" ) &
 			"/>"
-	lineageTag: f39940c5-a7b1-4163-b84d-b090a29fb88c
+	lineageTag: 321d3aea-8ee0-4895-b77e-c019623d0c7c
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -2732,10 +2750,10 @@ function 'DaxLib.SVG.Element.Polyline' =
 /// @param {string} x – The x position of the text
 /// @param {string} y – The y position of the text
 /// @param {string} txt – The text content
-/// @param {string} dx – Optional: x offset from position
-/// @param {string} dy – Optional: y offset from position
-/// @param {string} attributes – Optional: Direct SVG attributes to apply (e.g., "text-anchor='middle' dominant-baseline='middle'"), can generate with DaxLib.SVG.Attr.* or manually
-/// @param {string} transforms – Optional: additional transforms (e.g. "scale(1.2) translate(10,10)") (can be generated with DaxLib.SVG.Transforms)
+/// @param {string} [dx] – Optional: x offset from position. Omitted if not specified
+/// @param {string} [dy] – Optional: y offset from position. Omitted if not specified
+/// @param {string} [attributes] – Optional: Direct SVG attributes to apply (e.g., "text-anchor='middle' dominant-baseline='middle'"), can generate with DaxLib.SVG.Attr.* or manually. Omitted if not specified
+/// @param {string} [transforms] – Optional: additional transforms (e.g. "scale(1.2) translate(10,10)") (can be generated with DaxLib.SVG.Transforms). Omitted if not specified
 /// @returns {string} <text> element
 function 'DaxLib.SVG.Element.Txt' =
 		(
@@ -2757,7 +2775,7 @@ function 'DaxLib.SVG.Element.Txt' =
 			IF( NOT ISBLANK( transforms ), " transform='" & transforms & "'" ) &
 			">" & txt &
 			"</text>"
-	lineageTag: e1be1289-27c8-4497-9736-d9ba6a9b7da2
+	lineageTag: e71eb066-cc30-4301-955a-0f67d62049aa
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -2768,8 +2786,8 @@ function 'DaxLib.SVG.Element.Txt' =
 /// @param {int} y – The y position of compound
 /// @param {int} width – The width of the compound
 /// @param {int} height – The height of the compound
-/// @param {decimal} paddingX – The horizontal padding percentage (0.0-1.0, e.g., 0.1 = 10% padding)
-/// @param {decimal} paddingY – The vertical padding percentage (0.0-1.0, e.g., 0.1 = 10% padding)
+/// @param {decimal} [paddingX] – The horizontal padding percentage (0.0-1.0, e.g., 0.1 = 10% padding). Defaults to 0
+/// @param {decimal} [paddingY] – The vertical padding percentage (0.0-1.0, e.g., 0.1 = 10% padding). Defaults to 0
 /// @param {string} txt – The text to display
 /// @param {string} color – The hex color of the pill, e.g., "#01B8AA80"
 /// @returns {string} A pill-shaped SVG element with rounded corners and auto-sized centered text
@@ -2856,7 +2874,7 @@ function 'DaxLib.SVG.Compound.Pill' =
 		RETURN
 		
 			IF( NOT ISBLANK( txt ), _CombinedElements )
-	lineageTag: 036e0944-2177-401c-b3b3-e781228c8db6
+	lineageTag: 7d04cd19-e6d8-45c1-a16c-0d9163762c69
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -2974,13 +2992,15 @@ function 'DaxLib.SVG.Compound.Bar' =
 /// @param {int} y – The y position of the compound
 /// @param {int} width – The width of the compound
 /// @param {int} height – The height of the compound
-/// @param {decimal} paddingX – The horizontal padding percentage (0.0-1.0, e.g., 0.1 = 10% padding)
-/// @param {decimal} paddingY – The vertical padding percentage (0.0-1.0, e.g., 0.1 = 10% padding)
-/// @param {anyref} axisRef – The column that the measure will be evaluated against
-/// @param {numeric} measureRef – The measure to evaluate
-/// @param {string} barColor – The hex color of the bars, e.g., "#01B8AA"
-/// @param {boolean} showAxis – Optional: show axes when TRUE, defaults to FALSE
-/// @param {int} axisFontSize – Optional: axis label font size, defaults to 10
+/// @param {decimal} [paddingX] – The horizontal padding percentage (0.0-1.0, e.g., 0.1 = 10% padding). Defaults to 0
+/// @param {decimal} [paddingY] – The vertical padding percentage (0.0-1.0, e.g., 0.1 = 10% padding). Defaults to 0
+/// @param {anyref expr} axisRef – The column that the measure will be evaluated against
+/// @param {numeric expr} measureRef – The measure to evaluate
+/// @param {string} [barColor] – The hex color of the bars. Defaults to "#01B8AA"
+/// @param {string} [minMarkColor] – Optional: The hex color for the minimum value bar. Omitted if not specified
+/// @param {string} [maxMarkColor] – Optional: The hex color for the maximum value bar. Omitted if not specified
+/// @param {boolean} [showAxis] – Optional: show axes when TRUE, defaults to FALSE
+/// @param {int} [axisFontSize] – Optional: axis label font size, defaults to 10
 /// @returns {string} SVG markup string.
 function 'DaxLib.SVG.Compound.Bars' =
 		(
@@ -2993,6 +3013,8 @@ function 'DaxLib.SVG.Compound.Bars' =
 			axisRef: ANYREF EXPR,
 			measureRef: NUMERIC EXPR,
 			barColor: STRING,
+			minMarkColor: STRING,
+			maxMarkColor: STRING,
 			showAxis: BOOLEAN,
 			axisFontSize: INT64
 		) =>
@@ -3006,6 +3028,7 @@ function 'DaxLib.SVG.Compound.Bars' =
 			VAR _ShowAxis = IF( ISBLANK( showAxis ), FALSE(), showAxis )
 			VAR _AxisFontSize = IF( ISBLANK( axisFontSize ), 10, axisFontSize )
 			VAR _AxisIsDate = ISDATETIME( MAX( axisRef ) )
+			VAR _BarColor = IF( NOT ISBLANK( barColor ), barColor, "#01B8AA" )
 		
 			VAR _Data = DaxLib.SVG.Data.AxisMeasure( axisRef, measureRef, "Auto" )
 			VAR _DataNonBlank = FILTER( _Data, NOT ISBLANK( [@Value] ) )
@@ -3059,6 +3082,11 @@ function 'DaxLib.SVG.Compound.Bars' =
 			VAR _BaseX = MINX( _Baseline, [@BaseX] )
 			VAR _BaseY = MINX( _Baseline, [@BaseY] )
 		
+			// Determine min and max values for bar highlighting
+			VAR _VisibleMinValue = MINX( _DataVisible, [@Value] )
+			VAR _VisibleMaxValue = MAXX( _DataVisible, [@Value] )
+			VAR _CanHighlight = COUNTROWS( _DataNonBlank ) > 2 && _VisibleMinValue <> _VisibleMaxValue
+		
 		//Bars
 		VAR _Bars =
 			CONCATENATEX(
@@ -3068,6 +3096,10 @@ function 'DaxLib.SVG.Compound.Bars' =
 					VAR _SlotCenter = ( [@SlotIndex] + 0.5 ) * _SlotWidth
 					VAR _BarCategoryStart = _PlotX + _SlotCenter - _BarThickness / 2
 					VAR _ValueY = IF( _YMax = _YMin, _PlotY + _PlotHeight / 2, DaxLib.SVG.Scale.Normalize( [@Value], _YMin, _YMax, _PlotY + _PlotHeight, _PlotY ) )
+					VAR _ThisBarColor =
+						IF( _CanHighlight && NOT ISBLANK( minMarkColor ) && [@Value] = _VisibleMinValue, minMarkColor,
+						IF( _CanHighlight && NOT ISBLANK( maxMarkColor ) && [@Value] = _VisibleMaxValue, maxMarkColor,
+						_BarColor ) )
 		
 					RETURN
 						DaxLib.SVG.Element.Rect(
@@ -3078,7 +3110,7 @@ function 'DaxLib.SVG.Compound.Bars' =
 							0,
 							0,
 							DaxLib.SVG.Attr.Shapes(
-								IF( NOT ISBLANK( barColor ), barColor, "#01B8AA" ),
+							_ThisBarColor,
 								BLANK(),
 								BLANK(),
 								BLANK(),
@@ -3099,7 +3131,7 @@ function 'DaxLib.SVG.Compound.Bars' =
 		RETURN
 		
 				IF( NOT ISEMPTY( _DataNonBlank ) && _PlotWidth > 0 && _PlotHeight > 0, _Bars & _AxisElements )
-	lineageTag: e5262073-d4ae-4b9e-b887-6fe1af901e67
+	lineageTag: fb4c0fbb-15fd-48f1-9897-00af5c25b676
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -3110,15 +3142,15 @@ function 'DaxLib.SVG.Compound.Bars' =
 /// @param {int} y – The y position of the compound
 /// @param {int} width – The width of the compound
 /// @param {int} height – The height of the compound
-/// @param {decimal} paddingX – The horizontal padding percentage (0.0-1.0, e.g., 0.1 = 10% padding)
-/// @param {decimal} paddingY – The vertical padding percentage (0.0-1.0, e.g., 0.1 = 10% padding)
-/// @param {anyref} axisRef – The column that the measure will be evaluated against
-/// @param {numeric} measureRef – The measure to evaluate
-/// @param {string} lineColor – The hex color of the line, e.g., "#01B8AA"
-/// @param {string} minMarkColor – Optional: The hex color for the minimum value marker
-/// @param {string} maxMarkColor – Optional: The hex color for the maximum value marker
-/// @param {boolean} showAxis – Optional: show axes when TRUE, defaults to FALSE
-/// @param {int} axisFontSize – Optional: axis label font size, defaults to 10
+/// @param {decimal} [paddingX] – The horizontal padding percentage (0.0-1.0, e.g., 0.1 = 10% padding). Defaults to 0
+/// @param {decimal} [paddingY] – The vertical padding percentage (0.0-1.0, e.g., 0.1 = 10% padding). Defaults to 0
+/// @param {anyref expr} axisRef – The column that the measure will be evaluated against
+/// @param {numeric expr} measureRef – The measure to evaluate
+/// @param {string} [lineColor] – The hex color of the line. Defaults to "#01B8AA"
+/// @param {string} [minMarkColor] – Optional: The hex color for the minimum value marker. Omitted if not specified
+/// @param {string} [maxMarkColor] – Optional: The hex color for the maximum value marker. Omitted if not specified
+/// @param {boolean} [showAxis] – Optional: show axes when TRUE, defaults to FALSE
+/// @param {int} [axisFontSize] – Optional: axis label font size, defaults to 10
 /// @returns {string} An SVG line chart element that visualizes the measure across the specified axis.
 function 'DaxLib.SVG.Compound.Line' =
 		(
@@ -3286,7 +3318,7 @@ function 'DaxLib.SVG.Compound.Line' =
 			RETURN
 		
 				IF( NOT ISEMPTY( _DataNonBlank ) && _PlotWidth > 0 && _PlotHeight > 0, _CombinedElement & _MinMaxMarks & _AxisElements )
-	lineageTag: 4754b7b7-e31e-425d-be8a-1ab6c6b928a8
+	lineageTag: 328d218e-d692-4e9e-88a2-a66de777a869
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -3297,17 +3329,17 @@ function 'DaxLib.SVG.Compound.Line' =
 /// @param {int} y – The y position of the compound
 /// @param {int} width – The width of the compound
 /// @param {int} height – The height of the compound
-/// @param {decimal} paddingX – The horizontal padding percentage (0.0-1.0, e.g., 0.1 = 10% padding)
-/// @param {decimal} paddingY – The vertical padding percentage (0.0-1.0, e.g., 0.1 = 10% padding)
-/// @param {anyref} axisRef – The column that the measure will be evaluated against
-/// @param {numeric} measureRef – The measure to evaluate
+/// @param {decimal} [paddingX] – The horizontal padding percentage (0.0-1.0, e.g., 0.1 = 10% padding). Defaults to 0
+/// @param {decimal} [paddingY] – The vertical padding percentage (0.0-1.0, e.g., 0.1 = 10% padding). Defaults to 0
+/// @param {anyref expr} axisRef – The column that the measure will be evaluated against
+/// @param {numeric expr} measureRef – The measure to evaluate
 /// @param {string} fillColor – The color of the area fill, e.g., "#01B8AA"
-/// @param {numeric} fillOpacity – The opacity of the fill (0-1), defaults to 0.3
+/// @param {numeric} [fillOpacity] – The opacity of the fill (0-1). Defaults to 0.3
 /// @param {string} strokeColor – The color of the stroke line
-/// @param {string} minMarkColor – Optional: The hex color for the minimum value marker
-/// @param {string} maxMarkColor – Optional: The hex color for the maximum value marker
-/// @param {boolean} showAxis – Optional: show axes when TRUE, defaults to FALSE
-/// @param {int} axisFontSize – Optional: axis label font size, defaults to 10
+/// @param {string} [minMarkColor] – Optional: The hex color for the minimum value marker. Omitted if not specified
+/// @param {string} [maxMarkColor] – Optional: The hex color for the maximum value marker. Omitted if not specified
+/// @param {boolean} [showAxis] – Optional: show axes when TRUE, defaults to FALSE
+/// @param {int} [axisFontSize] – Optional: axis label font size, defaults to 10
 /// @returns {string} An SVG area chart element that visualizes the measure across the specified axis with filled area
 function 'DaxLib.SVG.Compound.Area' =
 		(
@@ -3541,7 +3573,7 @@ function 'DaxLib.SVG.Compound.Area' =
 			RETURN
 		
 				IF( NOT ISEMPTY( _DataNonBlank ) && _PlotWidth > 0 && _PlotHeight > 0, _CombinedElements & _MinMaxMarks & _AxisElements )
-	lineageTag: 34045dd3-8c48-4d23-ae8f-baa24a7d83f7
+	lineageTag: f42bbe02-2256-4872-8e33-30076b078645
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -3552,12 +3584,12 @@ function 'DaxLib.SVG.Compound.Area' =
 /// @param {int} y – The y position of the compound
 /// @param {int} width – The width of the compound
 /// @param {int} height – The height of the compound
-/// @param {decimal} paddingX – The horizontal padding percentage (0.0-1.0, e.g., 0.1 = 10% padding)
-/// @param {decimal} paddingY – The vertical padding percentage (0.0-1.0, e.g., 0.1 = 10% padding)
-/// @param {anyref} axisRef – The column that the measure will be evaluated against
-/// @param {numeric} measureRef – The measure to evaluate
+/// @param {decimal} [paddingX] – The horizontal padding percentage (0.0-1.0, e.g., 0.1 = 10% padding). Defaults to 0
+/// @param {decimal} [paddingY] – The vertical padding percentage (0.0-1.0, e.g., 0.1 = 10% padding). Defaults to 0
+/// @param {anyref expr} axisRef – The column that the measure will be evaluated against
+/// @param {numeric expr} measureRef – The measure to evaluate
 /// @param {string} pointColor – The hex color of the points (e.g., "#01B8AA")
-/// @param {decimal} jitterAmount – The amount of jitter as a percentage of height (0.0-1.0, defaults to 0.3)
+/// @param {decimal} [jitterAmount] – The amount of jitter as a percentage of height (0.0-1.0). Defaults to 0.3
 /// @returns {string} An SVG jitter plot showing data points with positioning based on values and jittering for visibility
 function 'DaxLib.SVG.Compound.Jitter' =
 		(
@@ -3643,7 +3675,7 @@ function 'DaxLib.SVG.Compound.Jitter' =
 			RETURN
 		
 				IF( NOT ISEMPTY( _Data ), _CircleElements )
-	lineageTag: 34fcab2c-468d-4fa4-a749-ee09cd66b315
+	lineageTag: fd1f731b-0b94-4ca4-b5e1-304cf95238a0
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -3764,13 +3796,13 @@ function 'DaxLib.SVG.Compound.Bullet' =
 /// @param {int} y – The y position of the compound
 /// @param {int} width – The width of the compound
 /// @param {int} height – The height of the compound
-/// @param {decimal} paddingX – Horizontal padding percentage (0.0-1.0)
-/// @param {decimal} paddingY – Vertical padding percentage (0.0-1.0)
-/// @param {numeric} valueRef – Value expression (the bar measure)
-/// @param {numeric} trackRef – Track measure (maximum value, can vary per context)
-/// @param {string} fillColor – Optional progress color
-/// @param {string} trackColor – Optional track color
-/// @param {string} orientation – "Horizontal" (default) or "Vertical"
+/// @param {decimal} [paddingX] – Horizontal padding percentage (0.0-1.0). Defaults to 0
+/// @param {decimal} [paddingY] – Vertical padding percentage (0.0-1.0). Defaults to 0
+/// @param {numeric expr} valueRef – Value expression (the bar measure)
+/// @param {numeric expr} [trackRef] – Track measure (maximum value, can vary per context). Defaults to MAX(1, ABS(valueRef))
+/// @param {string} [fillColor] – Optional progress color. Defaults to "#0F6CBD"
+/// @param {string} [trackColor] – Optional track color. Defaults to "#E1DFDD"
+/// @param {string} [orientation] – "Horizontal" or "Vertical". Defaults to "Horizontal"
 /// @returns {string} SVG progress bar elements
 function 'DaxLib.SVG.Compound.ProgressBar' =
 		(
@@ -3831,7 +3863,7 @@ function 'DaxLib.SVG.Compound.ProgressBar' =
 		
 			RETURN
 				IF( NOT ISBLANK( _Value ) && _Width > 0 && _Height > 0, _Track & _Fill )
-	lineageTag: 2e235491-3079-439e-b92d-657eca44ab4d
+	lineageTag: c8549da7-20c1-4e6c-a249-7be8b4af57e6
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -3842,14 +3874,14 @@ function 'DaxLib.SVG.Compound.ProgressBar' =
 /// @param {int} y – The y position of the compound
 /// @param {int} width – The width of the compound
 /// @param {int} height – The height of the compound
-/// @param {decimal} paddingX – The horizontal padding percentage (0.0-1.0, e.g., 0.1 = 10% padding)
-/// @param {decimal} paddingY – The vertical padding percentage (0.0-1.0, e.g., 0.1 = 10% padding)
-/// @param {anyref} axisRef – The column that the measure will be evaluated against
-/// @param {numeric} measureRef – The measure to evaluate
+/// @param {decimal} [paddingX] – The horizontal padding percentage (0.0-1.0, e.g., 0.1 = 10% padding). Defaults to 0
+/// @param {decimal} [paddingY] – The vertical padding percentage (0.0-1.0, e.g., 0.1 = 10% padding). Defaults to 0
+/// @param {anyref expr} axisRef – The column that the measure will be evaluated against
+/// @param {numeric expr} measureRef – The measure to evaluate
 /// @param {string} fillColor – Color for the box fill
 /// @param {string} strokeColor – Color for lines, whiskers, and median
 /// @param {boolean} showOutliers – Whether to show outlier points beyond whiskers
-/// @param {string} orientation – Optional: "Horizontal" (default) or "Vertical"
+/// @param {string} [orientation] – Optional: "Horizontal" (default) or "Vertical"
 /// @returns {string} An SVG box plot showing statistical distribution including quartiles, median, whiskers, and optionally outliers
 function 'DaxLib.SVG.Compound.Boxplot' =
 		(
@@ -4030,7 +4062,7 @@ function 'DaxLib.SVG.Compound.Boxplot' =
 			RETURN
 		
 				IF( NOT ISEMPTY( _Data ), _CombinedElements )
-	lineageTag: dd381cb5-bdd4-4d12-b602-fd468a2a78c7
+	lineageTag: 30ac5367-4fcb-4b67-b31f-b45faef2073a
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -4041,14 +4073,14 @@ function 'DaxLib.SVG.Compound.Boxplot' =
 /// @param {int} y – The y position of the compound
 /// @param {int} width – The width of the compound
 /// @param {int} height – The height of the compound
-/// @param {decimal} paddingX – The horizontal padding percentage (0.0-1.0, e.g., 0.1 = 10% padding)
-/// @param {decimal} paddingY – The vertical padding percentage (0.0-1.0, e.g., 0.1 = 10% padding)
-/// @param {anyref} axisRef – The column that the measure will be evaluated against
-/// @param {numeric} measureRef – The measure to evaluate
+/// @param {decimal} [paddingX] – The horizontal padding percentage (0.0-1.0, e.g., 0.1 = 10% padding). Defaults to 0
+/// @param {decimal} [paddingY] – The vertical padding percentage (0.0-1.0, e.g., 0.1 = 10% padding). Defaults to 0
+/// @param {anyref expr} axisRef – The column that the measure will be evaluated against
+/// @param {numeric expr} measureRef – The measure to evaluate
 /// @param {int} samples – Number of density calculation points
 /// @param {numeric} bandwidth – Kernel bandwidth for smoothing
 /// @param {string} color – Fill color for the violin shape
-/// @param {string} orientation – Optional: "Horizontal" (default) or "Vertical"
+/// @param {string} [orientation] – Optional: "Horizontal" (default) or "Vertical"
 /// @returns {string} An SVG violin plot showing the probability density of data using kernel density estimation
 function 'DaxLib.SVG.Compound.Violin' =
 		(
@@ -4174,19 +4206,43 @@ function 'DaxLib.SVG.Compound.Violin' =
 				ASC
 			)
 		
-		// Bottom/Left half curve (mirrored)
+		// Bottom/Left half curve (mirrored) – uses S Bézier for smooth mirror with control points
+		VAR _PointsWithNext =
+			NATURALLEFTOUTERJOIN(
+				_Points,
+				SELECTCOLUMNS(
+					_Points,
+					"Value", [Value] - 1,
+					"@NextX", [@X],
+					"@NextY", [@Y]
+				)
+			)
+		
 		VAR _BottomCurve =
 			CONCATENATEX(
-				_WithControlPoints,
-				VAR _MirroredY = IF( _Orientation = "Horizontal", _CenterY + (_CenterY - [@Y]), [@Y] )
-				VAR _MirroredCY = IF( _Orientation = "Horizontal", _CenterY + (_CenterY - [@CY]), [@CY] )
+				_PointsWithNext,
 				VAR _MirroredX = IF( _Orientation = "Horizontal", [@X], _CenterX + (_CenterX - [@X]) )
-				VAR _MirroredCX = IF( _Orientation = "Horizontal", [@CX], _CenterX + (_CenterX - [@CX]) )
+				VAR _MirroredY = IF( _Orientation = "Horizontal", _CenterY + (_CenterY - [@Y]), [@Y] )
+				VAR _MCX = IF( _Orientation = "Horizontal",
+					[@NextX] + ( [@X] - [@NextX] ) / 2,
+					_CenterX + ( _CenterX - ( [@NextX] + ( [@X] - [@NextX] ) / 2 ) )
+				)
+				VAR _MCY = IF( _Orientation = "Horizontal",
+					_CenterY + ( _CenterY - [@Y] ),
+					[@NextY] + ( [@Y] - [@NextY] ) / 2
+				)
 				RETURN
 					IF(
-						[Value] = 0,
-						"",
-						"S " & _MirroredCX & " " & _MirroredCY & ", " & _MirroredX & " " & _MirroredY
+						ISBLANK( [@NextX] ),
+						"L " & _MirroredX & " " & _MirroredY,
+						IF(
+							[Value] = 0,
+							IF( _Orientation = "Horizontal",
+								"S " & _MCX & " " & _CenterY & ", " & [@X] & " " & _CenterY,
+								"S " & _CenterX & " " & _MCY & ", " & _CenterX & " " & [@Y]
+							),
+							"S " & _MCX & " " & _MCY & ", " & _MirroredX & " " & _MirroredY
+						)
 					),
 				" ",
 				[Value],
@@ -4216,7 +4272,7 @@ function 'DaxLib.SVG.Compound.Violin' =
 			RETURN
 		
 				IF( NOT ISEMPTY( _Data ), _CombinedElements )
-	lineageTag: 698a3ba8-81d3-459d-9f71-a819c4051475
+	lineageTag: 9fb72c7e-7fe9-4eaf-8ea1-3d433ff8ca3f
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -4227,10 +4283,10 @@ function 'DaxLib.SVG.Compound.Violin' =
 /// @param {int} y – The y position of the compound
 /// @param {int} width – The width of the compound
 /// @param {int} height – The height of the compound
-/// @param {decimal} paddingX – The horizontal padding percentage (0.0-1.0, e.g., 0.1 = 10% padding)
-/// @param {decimal} paddingY – The vertical padding percentage (0.0-1.0, e.g., 0.1 = 10% padding)
-/// @param {anyref} axisRef – The column that the measure will be evaluated against
-/// @param {numeric} measureRef – The measure to evaluate
+/// @param {decimal} [paddingX] – The horizontal padding percentage (0.0-1.0, e.g., 0.1 = 10% padding). Defaults to 0
+/// @param {decimal} [paddingY] – The vertical padding percentage (0.0-1.0, e.g., 0.1 = 10% padding). Defaults to 0
+/// @param {anyref expr} axisRef – The column that the measure will be evaluated against
+/// @param {numeric expr} measureRef – The measure to evaluate
 /// @param {int} samples – Number of density calculation points (default 50)
 /// @param {numeric} bandwidth – Kernel bandwidth for smoothing (default auto-calculated)
 /// @param {string} color – The hex color for high density areas (e.g., "#01B8AA")
@@ -4358,7 +4414,7 @@ function 'DaxLib.SVG.Compound.Heatmap' =
 			RETURN
 		
 				IF( NOT ISEMPTY( _Data ), _CombinedElements )
-	lineageTag: 5b110244-9e87-4b7c-8534-421e9f2bedaf
+	lineageTag: 00871da4-efb8-4448-a87a-9bf93bbc5a89
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -4400,18 +4456,22 @@ function 'DaxLib.SVG.Viz.Bar' =
 	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__
 
 /// Renders a bar chart as an SVG data URI showing measure values across an axis
-/// @param {anyref} axisRefColumn – Axis reference column
-/// @param {numeric} measureRefExpr – Measure expression
-/// @param {string} color – Optional series color
-/// @param {boolean} showAxis – Optional axis toggle
-/// @param {int} width – Optional: SVG width, defaults to 120
-/// @param {int} height – Optional: SVG height, defaults to 48
+/// @param {anyref expr} axisRef – Axis reference column
+/// @param {numeric expr} measureRef – Measure expression
+/// @param {string} [color] – Optional series color. Defaults to theme color
+/// @param {string} [minMarkColor] – Optional: The hex color for the minimum value bar. Omitted if not specified
+/// @param {string} [maxMarkColor] – Optional: The hex color for the maximum value bar. Omitted if not specified
+/// @param {boolean} [showAxis] – Optional axis toggle. Defaults to FALSE
+/// @param {int} [width] – Optional: SVG width, defaults to 120
+/// @param {int} [height] – Optional: SVG height, defaults to 48
 /// @returns {string} SVG data URI with embedded bar chart
 function 'DaxLib.SVG.Viz.Bars' =
 		(
-			axisRefColumn: ANYREF EXPR,
-			measureRefExpr: NUMERIC EXPR,
+			axisRef: ANYREF EXPR,
+			measureRef: NUMERIC EXPR,
 			color: STRING,
+			minMarkColor: STRING,
+			maxMarkColor: STRING,
 			showAxis: BOOLEAN,
 			width: INT64,
 			height: INT64
@@ -4423,29 +4483,29 @@ function 'DaxLib.SVG.Viz.Bars' =
 			VAR _Marks =
 				DaxLib.SVG.Compound.Bars(
 					0, 0, _W, _H, 0, 0,
-					axisRefColumn, measureRefExpr, _Color, showAxis, 8
+					axisRef, measureRef, _Color, minMarkColor, maxMarkColor, showAxis, 8
 				)
 		
 			RETURN
 				IF( NOT ISBLANK( _Marks ), DaxLib.SVG.SVG( "100%", "100%", "0 0 " & _W & " " & _H, _Marks, BLANK() ) )
-	lineageTag: c1a194b3-1a7f-45ed-a6ec-b8078e0d972f
+	lineageTag: 18ab6eb2-8b93-4aef-a72b-cf6ddbfeffe5
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
 	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__
 
 /// Renders a line chart as an SVG data URI showing measure values across an axis
-/// @param {anyref} axisRefColumn – Axis reference column
-/// @param {numeric} measureRefExpr – Measure expression
-/// @param {string} color – Optional series color
-/// @param {boolean} showAxis – Optional axis toggle
-/// @param {int} width – Optional: SVG width, defaults to 120
-/// @param {int} height – Optional: SVG height, defaults to 48
+/// @param {anyref expr} axisRef – Axis reference column
+/// @param {numeric expr} measureRef – Measure expression
+/// @param {string} [color] – Optional series color. Defaults to theme color
+/// @param {boolean} [showAxis] – Optional axis toggle. Defaults to FALSE
+/// @param {int} [width] – Optional: SVG width, defaults to 120
+/// @param {int} [height] – Optional: SVG height, defaults to 48
 /// @returns {string} SVG data URI with embedded line chart
 function 'DaxLib.SVG.Viz.Line' =
 		(
-			axisRefColumn: ANYREF EXPR,
-			measureRefExpr: NUMERIC EXPR,
+			axisRef: ANYREF EXPR,
+			measureRef: NUMERIC EXPR,
 			color: STRING,
 			showAxis: BOOLEAN,
 			width: INT64,
@@ -4458,29 +4518,29 @@ function 'DaxLib.SVG.Viz.Line' =
 			VAR _Marks =
 				DaxLib.SVG.Compound.Line(
 					0, 0, _W, _H, 0, 0,
-					axisRefColumn, measureRefExpr, _Color, BLANK(), BLANK(), showAxis, 8
+					axisRef, measureRef, _Color, BLANK(), BLANK(), showAxis, 8
 				)
 		
 			RETURN
 				IF( NOT ISBLANK( _Marks ), DaxLib.SVG.SVG( "100%", "100%", "0 0 " & _W & " " & _H, _Marks, BLANK() ) )
-	lineageTag: 78bd5049-fa9f-4500-8447-af1d01e0b9f3
+	lineageTag: d1ec58ba-c9a8-4c48-80ab-1525887b43b7
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
 	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__
 
 /// Renders an area chart as an SVG data URI showing measure values across an axis with filled area
-/// @param {anyref} axisRefColumn – Axis reference column
-/// @param {numeric} measureRefExpr – Measure expression
-/// @param {string} color – Optional series color
-/// @param {boolean} showAxis – Optional axis toggle
-/// @param {int} width – Optional: SVG width, defaults to 120
-/// @param {int} height – Optional: SVG height, defaults to 48
+/// @param {anyref expr} axisRef – Axis reference column
+/// @param {numeric expr} measureRef – Measure expression
+/// @param {string} [color] – Optional series color. Defaults to theme color
+/// @param {boolean} [showAxis] – Optional axis toggle. Defaults to FALSE
+/// @param {int} [width] – Optional: SVG width, defaults to 120
+/// @param {int} [height] – Optional: SVG height, defaults to 48
 /// @returns {string} SVG data URI with embedded area chart
 function 'DaxLib.SVG.Viz.Area' =
 		(
-			axisRefColumn: ANYREF EXPR,
-			measureRefExpr: NUMERIC EXPR,
+			axisRef: ANYREF EXPR,
+			measureRef: NUMERIC EXPR,
 			color: STRING,
 			showAxis: BOOLEAN,
 			width: INT64,
@@ -4493,12 +4553,12 @@ function 'DaxLib.SVG.Viz.Area' =
 			VAR _Marks =
 				DaxLib.SVG.Compound.Area(
 					0, 0, _W, _H, 0, 0,
-					axisRefColumn, measureRefExpr, _Color, 0.24, _Color, BLANK(), BLANK(), showAxis, 8
+					axisRef, measureRef, _Color, 0.24, _Color, BLANK(), BLANK(), showAxis, 8
 				)
 		
 			RETURN
 				IF( NOT ISBLANK( _Marks ), DaxLib.SVG.SVG( "100%", "100%", "0 0 " & _W & " " & _H, _Marks, BLANK() ) )
-	lineageTag: a489ae39-780e-41fd-b1bb-b7776e731585
+	lineageTag: e65a6ff6-d925-48cd-bd51-7d6b38c977a8
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -4544,12 +4604,12 @@ function 'DaxLib.SVG.Viz.Bullet' =
 	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__
 
 /// Renders a progress bar as an SVG data URI showing value progression
-/// @param {numeric} valueRefExpr – Value expression
-/// @param {numeric} trackRefExpr – Track measure (maximum value, can vary per context)
-/// @param {string} color – Optional fill color
-/// @param {string} orientation – Optional orientation: "Horizontal" or "Vertical"
-/// @param {int} width – Optional: SVG width, defaults to 120
-/// @param {int} height – Optional: SVG height, defaults to 48
+/// @param {numeric expr} valueRefExpr – Value expression
+/// @param {numeric expr} trackRefExpr – Track measure (maximum value)
+/// @param {string} [color] – Optional fill color. Defaults to theme color
+/// @param {string} [orientation] – Optional orientation: "Horizontal" or "Vertical". Defaults to "Horizontal"
+/// @param {int} [width] – Optional: SVG width, defaults to 120
+/// @param {int} [height] – Optional: SVG height, defaults to 48
 /// @returns {string} SVG data URI with embedded progress bar
 function 'DaxLib.SVG.Viz.ProgressBar' =
 		(
@@ -4572,7 +4632,7 @@ function 'DaxLib.SVG.Viz.ProgressBar' =
 		
 			RETURN
 				IF( NOT ISBLANK( _Marks ), DaxLib.SVG.SVG( "100%", "100%", "0 0 " & _W & " " & _H, _Marks, BLANK() ) )
-	lineageTag: 22fd157e-e8ad-4d33-a0f7-31a0e3c9cc3f
+	lineageTag: 4d74c948-d15e-4206-a9d9-10a5a58b2541
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -4580,9 +4640,9 @@ function 'DaxLib.SVG.Viz.ProgressBar' =
 
 /// Renders a pill-shaped badge as an SVG data URI with centered text
 /// @param {string} txt – The text to display
-/// @param {string} color – Optional pill color
-/// @param {int} width – Optional: SVG width, defaults to 120
-/// @param {int} height – Optional: SVG height, defaults to 48
+/// @param {string} [color] – Optional pill color. Defaults to theme color
+/// @param {int} [width] – Optional: SVG width, defaults to 120
+/// @param {int} [height] – Optional: SVG height, defaults to 48
 /// @returns {string} SVG data URI with a pill-shaped badge
 function 'DaxLib.SVG.Viz.Pill' =
 		(
@@ -4602,24 +4662,24 @@ function 'DaxLib.SVG.Viz.Pill' =
 		
 			RETURN
 				IF( NOT ISBLANK( _Marks ), DaxLib.SVG.SVG( "100%", "100%", "0 0 " & _W & " " & _H, _Marks, BLANK() ) )
-	lineageTag: c9122266-41ab-4761-9058-ac4c8d4ff75d
+	lineageTag: 05fabae8-38e4-4f72-8784-31acd7227c8c
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
 	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__
 
 /// Renders a box plot as an SVG data URI showing statistical distribution
-/// @param {anyref} axisRefColumn – Axis reference column
-/// @param {numeric} measureRefExpr – Measure expression
-/// @param {string} color – Optional box fill color
-/// @param {boolean} showOutliers – Optional: show outlier points
-/// @param {int} width – Optional: SVG width, defaults to 120
-/// @param {int} height – Optional: SVG height, defaults to 48
+/// @param {anyref expr} axisRef – Axis reference column
+/// @param {numeric expr} measureRef – Measure expression
+/// @param {string} [color] – Optional box fill color. Defaults to theme color
+/// @param {boolean} [showOutliers] – Optional: show outlier points. Defaults to FALSE
+/// @param {int} [width] – Optional: SVG width, defaults to 120
+/// @param {int} [height] – Optional: SVG height, defaults to 48
 /// @returns {string} SVG data URI with embedded box plot
 function 'DaxLib.SVG.Viz.Boxplot' =
 		(
-			axisRefColumn: ANYREF EXPR,
-			measureRefExpr: NUMERIC EXPR,
+			axisRef: ANYREF EXPR,
+			measureRef: NUMERIC EXPR,
 			color: STRING,
 			showOutliers: BOOLEAN,
 			width: INT64,
@@ -4632,28 +4692,28 @@ function 'DaxLib.SVG.Viz.Boxplot' =
 			VAR _Marks =
 				DaxLib.SVG.Compound.Boxplot(
 					0, 0, _W, _H, 0, 0,
-					axisRefColumn, measureRefExpr, _Color, "#605E5C", showOutliers, BLANK()
+					axisRef, measureRef, _Color, "#605E5C", showOutliers, BLANK()
 				)
 		
 			RETURN
 				IF( NOT ISBLANK( _Marks ), DaxLib.SVG.SVG( "100%", "100%", "0 0 " & _W & " " & _H, _Marks, BLANK() ) )
-	lineageTag: c85c14c0-6e36-4f67-a5de-6a5368e504a8
+	lineageTag: 7c665f23-3c87-4253-adf6-60b5599e36fc
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
 	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__
 
 /// Renders a jitter plot as an SVG data URI showing value distribution as scattered points
-/// @param {anyref} axisRefColumn – Axis reference column
-/// @param {numeric} measureRefExpr – Measure expression
-/// @param {string} color – Optional point color
-/// @param {int} width – Optional: SVG width, defaults to 120
-/// @param {int} height – Optional: SVG height, defaults to 48
+/// @param {anyref expr} axisRef – Axis reference column
+/// @param {numeric expr} measureRef – Measure expression
+/// @param {string} [color] – Optional point color. Defaults to theme color
+/// @param {int} [width] – Optional: SVG width, defaults to 120
+/// @param {int} [height] – Optional: SVG height, defaults to 48
 /// @returns {string} SVG data URI with embedded jitter plot
 function 'DaxLib.SVG.Viz.Jitter' =
 		(
-			axisRefColumn: ANYREF EXPR,
-			measureRefExpr: NUMERIC EXPR,
+			axisRef: ANYREF EXPR,
+			measureRef: NUMERIC EXPR,
 			color: STRING,
 			width: INT64,
 			height: INT64
@@ -4665,28 +4725,28 @@ function 'DaxLib.SVG.Viz.Jitter' =
 			VAR _Marks =
 				DaxLib.SVG.Compound.Jitter(
 					0, 0, _W, _H, 0, 0,
-					axisRefColumn, measureRefExpr, _Color, BLANK()
+					axisRef, measureRef, _Color, BLANK()
 				)
 		
 			RETURN
 				IF( NOT ISBLANK( _Marks ), DaxLib.SVG.SVG( "100%", "100%", "0 0 " & _W & " " & _H, _Marks, BLANK() ) )
-	lineageTag: cfd5cd57-1261-4aa7-9a16-e8c8140b1212
+	lineageTag: ff59b8a2-0e4b-411c-b36d-eeaad1db1102
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
 	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__
 
 /// Renders a heatmap as an SVG data URI showing data density using kernel density estimation
-/// @param {anyref} axisRefColumn – Axis reference column
-/// @param {numeric} measureRefExpr – Measure expression
-/// @param {string} color – Optional color for high density areas
-/// @param {int} width – Optional: SVG width, defaults to 120
-/// @param {int} height – Optional: SVG height, defaults to 48
+/// @param {anyref expr} axisRef – Axis reference column
+/// @param {numeric expr} measureRef – Measure expression
+/// @param {string} [color] – Optional color for high density areas. Defaults to theme color
+/// @param {int} [width] – Optional: SVG width, defaults to 120
+/// @param {int} [height] – Optional: SVG height, defaults to 48
 /// @returns {string} SVG data URI with embedded heatmap
 function 'DaxLib.SVG.Viz.Heatmap' =
 		(
-			axisRefColumn: ANYREF EXPR,
-			measureRefExpr: NUMERIC EXPR,
+			axisRef: ANYREF EXPR,
+			measureRef: NUMERIC EXPR,
 			color: STRING,
 			width: INT64,
 			height: INT64
@@ -4698,28 +4758,28 @@ function 'DaxLib.SVG.Viz.Heatmap' =
 			VAR _Marks =
 				DaxLib.SVG.Compound.Heatmap(
 					0, 0, _W, _H, 0, 0,
-					axisRefColumn, measureRefExpr, 50, 1, _Color
+					axisRef, measureRef, 50, 1, _Color
 				)
 		
 			RETURN
 				IF( NOT ISBLANK( _Marks ), DaxLib.SVG.SVG( "100%", "100%", "0 0 " & _W & " " & _H, _Marks, BLANK() ) )
-	lineageTag: 2fbe0781-c70f-4b1b-96ae-a87ebc572774
+	lineageTag: 145554d8-443f-457a-89a6-c439d4501b7a
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
 	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__
 
 /// Renders a violin plot as an SVG data URI showing probability density distribution
-/// @param {anyref} axisRefColumn – Axis reference column
-/// @param {numeric} measureRefExpr – Measure expression
-/// @param {string} color – Optional fill color
-/// @param {int} width – Optional: SVG width, defaults to 120
-/// @param {int} height – Optional: SVG height, defaults to 48
+/// @param {anyref expr} axisRef – Axis reference column
+/// @param {numeric expr} measureRef – Measure expression
+/// @param {string} [color] – Optional fill color. Defaults to theme color
+/// @param {int} [width] – Optional: SVG width, defaults to 120
+/// @param {int} [height] – Optional: SVG height, defaults to 48
 /// @returns {string} SVG data URI with embedded violin plot
 function 'DaxLib.SVG.Viz.Violin' =
 		(
-			axisRefColumn: ANYREF EXPR,
-			measureRefExpr: NUMERIC EXPR,
+			axisRef: ANYREF EXPR,
+			measureRef: NUMERIC EXPR,
 			color: STRING,
 			width: INT64,
 			height: INT64
@@ -4731,12 +4791,12 @@ function 'DaxLib.SVG.Viz.Violin' =
 			VAR _Marks =
 				DaxLib.SVG.Compound.Violin(
 					0, 0, _W, _H, 0, 0,
-					axisRefColumn, measureRefExpr, 50, 1, _Color, BLANK()
+					axisRef, measureRef, 50, 1, _Color, BLANK()
 				)
 		
 			RETURN
 				IF( NOT ISBLANK( _Marks ), DaxLib.SVG.SVG( "100%", "100%", "0 0 " & _W & " " & _H, _Marks, BLANK() ) )
-	lineageTag: d4ed4daf-d54b-4d65-ac40-6b3ad1ea0426
+	lineageTag: 68aeb942-d970-40a2-bc2e-36ad6ef6213f
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -4897,15 +4957,15 @@ function 'DaxLib.SVG.Color.Theme' =
 				)
 		
 			RETURN SelectedColor
-	lineageTag: fe9667ba-e644-4926-b9cd-0b01959e8c0c
+	lineageTag: dfd9c51c-0291-49c9-8733-3291f215d7d9
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
 	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__
 
 /// Returns a color for the specified performance level and theme
-/// @param {string} themeName – The theme name: "Stoplight", "Colorblind", "Corporate", "Pastel", or "Grayscale"
-/// @param {string} variant – The performance level ("veryBad", "bad", "neutral", "good", "veryGood")
+/// @param {string} [themeName] – The theme name: "Stoplight", "Colorblind", "Corporate", "Pastel", or "Grayscale". Defaults to "Stoplight"
+/// @param {string} [variant] – The performance level ("veryBad", "bad", "neutral", "good", "veryGood"). Defaults to "neutral"
 /// @returns {string} hex color code representing the performance level
 function 'DaxLib.SVG.Color.PerformanceTheme' =
 		(
@@ -4966,7 +5026,7 @@ function 'DaxLib.SVG.Color.PerformanceTheme' =
 				)
 		
 			RETURN SelectedColor
-	lineageTag: 1289b144-29f7-4c84-b8b4-06249d198d2a
+	lineageTag: a0c747bb-ad63-4337-a12c-e46aad507115
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -4974,7 +5034,7 @@ function 'DaxLib.SVG.Color.PerformanceTheme' =
 
 /// Int to Hex conversion
 /// @param {int} number – The integer to convert
-/// @param {int} padTo – Optional: Minimum number of characters in result
+/// @param {int} [padTo] – Optional: Minimum number of characters in result. Defaults to minimum digits needed
 /// @returns {string} Hexadecimal representation of the integer
 function 'DaxLib.SVG.Color.Int.ToHex' =
 		(
@@ -4997,7 +5057,7 @@ function 'DaxLib.SVG.Color.Int.ToHex' =
 				)
 		
 			RETURN Hex
-	lineageTag: 5a60d054-c395-40ef-8170-33b4d337ea9f
+	lineageTag: 3cb8de7f-eb19-4fa0-aa2b-c1034b17e70c
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -5023,7 +5083,7 @@ function 'DaxLib.SVG.Color.Hex.ToInt' =
 				)
 		
 			RETURN Result
-	lineageTag: 7991f9d1-b04e-4064-911f-7b698300b2e8
+	lineageTag: 06fab31c-97a9-483b-8405-c5a3f748ed27
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -5033,7 +5093,7 @@ function 'DaxLib.SVG.Color.Hex.ToInt' =
 /// @param {int} red – The red value (0-255)
 /// @param {int} green – The green value (0-255)
 /// @param {int} blue – The blue value (0-255)
-/// @param {decimal} alpha – Optional: The alpha value (0-1)
+/// @param {decimal} [alpha] – Optional: The alpha value (0-1). Omitted if not specified
 /// @returns {string} hex color code
 function 'DaxLib.SVG.Color.RGB.ToHex' =
 		(
@@ -5048,7 +5108,7 @@ function 'DaxLib.SVG.Color.RGB.ToHex' =
 			DaxLib.SVG.Color.Int.ToHex( green, 2 ) &
 			DaxLib.SVG.Color.Int.ToHex( blue, 2 ) &
 			IF( NOT ISBLANK( alpha ), DaxLib.SVG.Color.Int.ToHex( alpha * 255, 2 ) )
-	lineageTag: 1de84847-524a-41db-893b-f88d45a79438
+	lineageTag: 2d0cb4e5-a5f0-48b0-8b83-5214050d283b
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -5096,7 +5156,7 @@ function 'DaxLib.SVG.Color.Hex.Interpolate' =
 				)
 		
 			RETURN result
-	lineageTag: 1e11a23b-7d15-4d69-920f-98fd1f66d2df
+	lineageTag: e2fbdc07-517c-4806-907c-a12fd9c6cb53
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 

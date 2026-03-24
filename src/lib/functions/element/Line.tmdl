@@ -1,0 +1,30 @@
+/// Generates SVG line element
+/// @param {string} x1 – Starting X position (left edge is 0)
+/// @param {string} y1 – Starting Y position (top edge is 0)
+/// @param {string} x2 – Ending X position (left edge is 0)
+/// @param {string} y2 – Ending Y position (top edge is 0)
+/// @param {string} [attributes] – Optional: Direct SVG attributes to apply (e.g., "stroke-dasharray='5,5' marker-end='url(#arrow)'"), can generate with `DaxLib.SVG.Attr.*` or manually
+/// @param {string} [transforms] – Optional: Transformation to apply (can be generated with `DaxLib.SVG.Transforms`)
+/// @returns {string} <line> element
+function 'DaxLib.SVG.Element.Line' =
+		(
+			x1: STRING,
+			y1: STRING,
+			x2: STRING,
+			y2: STRING,
+			attributes: STRING,
+			transforms: STRING
+		) =>  
+			
+			"<line" &
+			" x1='" & x1 & "'" &
+			" y1='" & y1 & "'" &
+			" x2='" & x2 & "'" &
+			" y2='" & y2 & "'" &
+			IF( NOT ISBLANK( attributes ), " " & attributes & " " ) &
+			IF( NOT ISBLANK( transforms ), " transform='" & transforms & "'" ) & 
+			"/>"
+
+	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
+
+	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__

@@ -4,10 +4,10 @@
   "position": {
     "x": 15.041097461188988,
     "y": 179.644061862275,
-    "z": 15000,
+    "z": 11000,
     "height": 181.25,
     "width": 157.5,
-    "tabOrder": 6000
+    "tabOrder": 4000
   },
   "visual": {
     "visualType": "advancedSlicerVisual",
@@ -831,37 +831,5 @@
       ]
     },
     "drillFilterOtherVisuals": true
-  },
-  "filterConfig": {
-    "filters": [
-      {
-        "name": "6b89bd25ecad00bc2d8b",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "_Measures"
-              }
-            },
-            "Property": "Theme Colour"
-          }
-        },
-        "type": "Advanced"
-      },
-      {
-        "name": "21247c808e737183392b",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "Variant"
-              }
-            },
-            "Property": "Variant"
-          }
-        },
-        "type": "Advanced"
-      }
-    ]
   }
 }

@@ -517,16 +517,14 @@ table _Measures
 			            MAX( Theme[Theme] ),
 			            MIN( Variant[Variant] )
 			        ),                  // lineColor
-			        BLANK(),
-			        BLANK(),
-			        // DaxLib.SVG.Color.PerformanceTheme(
-			        //    "Stoplight",
-			        //     "veryBad"
-			        // ),                  // minMarkColor
-			        // DaxLib.SVG.Color.PerformanceTheme(
-			        //    "Stoplight",
-			        //     "veryGood"
-			        // ),                  // maxMarkColor
+			        DaxLib.SVG.Color.PerformanceTheme(
+			           "Stoplight",
+			            "veryBad"
+			        ),                  // minMarkColor
+			        DaxLib.SVG.Color.PerformanceTheme(
+			           "Stoplight",
+			            "veryGood"
+			        ),                  // maxMarkColor
 			        [Axes Toggle],      // showAxis
 			        8                  // axisFontSize
 			    )
@@ -880,6 +878,14 @@ table _Measures
 			            MAX( Theme[Theme] ),
 			            MIN( Variant[Variant] )
 			        ),                 // barColor
+			        DaxLib.SVG.Color.PerformanceTheme(
+			           "Stoplight",
+			            "veryBad"
+			        ),                  // minMarkColor
+			        DaxLib.SVG.Color.PerformanceTheme(
+			           "Stoplight",
+			            "veryGood"
+			        ),                  // maxMarkColor
 			        [Axes Toggle],     // showAxis
 			        8                  // axisFontSize
 			    )
@@ -993,6 +999,14 @@ table _Measures
 			    Dates[Date],
 			    [Total Cost],
 			    DaxLib.SVG.Color.Theme( MAX( Theme[Theme] ), MIN( Variant[Variant] ) ),
+			    DaxLib.SVG.Color.PerformanceTheme(
+			        "Stoplight",
+			        "veryBad"
+			    ),                  // minMarkColor
+			    DaxLib.SVG.Color.PerformanceTheme(
+			        "Stoplight",
+			        "veryGood"
+			    ),                  // maxMarkColor
 			    FALSE(),
 			    100,
 			    20

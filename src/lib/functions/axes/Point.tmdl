@@ -1,0 +1,45 @@
+/// Maps axis/value data to plot coordinates honoring orientation
+/// @param {string} orientation – "Horizontal" or "Vertical"
+/// @param {numeric val} axisIndex – The axis index value to map
+/// @param {numeric val} measureValue – The measure value to map
+/// @param {numeric val} xMin – X-axis minimum value
+/// @param {numeric val} xMax – X-axis maximum value
+/// @param {numeric val} yMin – Y-axis minimum value
+/// @param {numeric val} yMax – Y-axis maximum value
+/// @param {numeric val} plotX – Plot area X origin
+/// @param {numeric val} plotY – Plot area Y origin
+/// @param {numeric val} plotWidth – Plot area width
+/// @param {numeric val} plotHeight – Plot area height
+/// @returns {table} Single-row table with `@X` and `@Y`
+function 'DaxLib.SVG.Axes.Point' =
+		(
+			orientation: STRING,
+			axisIndex: NUMERIC VAL,
+			measureValue: NUMERIC VAL,
+			xMin: NUMERIC VAL,
+			xMax: NUMERIC VAL,
+			yMin: NUMERIC VAL,
+			yMax: NUMERIC VAL,
+			plotX: NUMERIC VAL,
+			plotY: NUMERIC VAL,
+			plotWidth: NUMERIC VAL,
+			plotHeight: NUMERIC VAL
+		) =>
+
+			VAR _Orientation = IF( orientation = "Horizontal", "Horizontal", "Vertical" )
+
+			VAR _AxisX = IF( xMax = xMin, plotX, DaxLib.SVG.Scale.Normalize( axisIndex, xMin, xMax, plotX, plotX + plotWidth ) )
+			VAR _AxisY = IF( xMax = xMin, plotY + plotHeight, DaxLib.SVG.Scale.Normalize( axisIndex, xMin, xMax, plotY + plotHeight, plotY ) )
+
+			VAR _ValueX = IF( yMax = yMin, plotX, DaxLib.SVG.Scale.Normalize( measureValue, yMin, yMax, plotX, plotX + plotWidth ) )
+			VAR _ValueY = IF( yMax = yMin, plotY + plotHeight, DaxLib.SVG.Scale.Normalize( measureValue, yMin, yMax, plotY + plotHeight, plotY ) )
+
+			RETURN
+				ROW(
+					"@X", IF( _Orientation = "Horizontal", _ValueX, _AxisX ),
+					"@Y", IF( _Orientation = "Horizontal", _AxisY, _ValueY )
+				)
+
+	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
+
+	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__

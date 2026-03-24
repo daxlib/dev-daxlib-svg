@@ -1,0 +1,41 @@
+/// Calculates axis-aware plot area bounds
+/// @param {numeric val} x – Content x
+/// @param {numeric val} y – Content y
+/// @param {numeric val} width – Content width
+/// @param {numeric val} height – Content height
+/// @param {boolean} [showAxis] – Optional: Whether axes are enabled. Defaults to FALSE
+/// @param {int} [axisFontSize] – Optional: Axis font size. Defaults to 10
+/// @param {numeric val} maxTickLabelWidth – Estimated max y-label width
+/// @returns {table} Single-row table with `@PlotX`, `@PlotY`, `@PlotWidth`, `@PlotHeight`
+function 'DaxLib.SVG.Axes.Layout' =
+		(
+			x: NUMERIC VAL,
+			y: NUMERIC VAL,
+			width: NUMERIC VAL,
+			height: NUMERIC VAL,
+			showAxis: BOOLEAN,
+			axisFontSize: INT64,
+			maxTickLabelWidth: NUMERIC VAL
+		) =>
+
+			VAR _ShowAxis = IF( ISBLANK( showAxis ), FALSE(), showAxis )
+			VAR _AxisFontSize = IF( ISBLANK( axisFontSize ), 10, axisFontSize )
+			VAR _TickLength = 3
+			VAR _TickPadding = 4
+			VAR _AxisLinePadding = 2
+
+			VAR _ReservedXAxisHeight = IF( _ShowAxis, _AxisFontSize + _TickLength + _TickPadding + _AxisLinePadding, 0 )
+			VAR _ReservedYAxisWidth = IF( _ShowAxis, maxTickLabelWidth + _TickLength + _TickPadding + _AxisLinePadding, 0 )
+			VAR _ReservedTopPadding = IF( _ShowAxis, _AxisFontSize / 2, 0 )
+
+			RETURN
+				ROW(
+					"@PlotX", x + _ReservedYAxisWidth,
+					"@PlotY", y + _ReservedTopPadding,
+					"@PlotWidth", MAX( 0, width - _ReservedYAxisWidth ),
+					"@PlotHeight", MAX( 0, height - _ReservedXAxisHeight - _ReservedTopPadding )
+				)
+
+	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
+
+	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__

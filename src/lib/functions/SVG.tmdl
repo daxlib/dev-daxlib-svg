@@ -1,0 +1,28 @@
+/// Wraps content in SVG container for Power BI visualization
+/// @param {string} width – width (pixels or percentage)
+/// @param {string} height – height (pixels or percentage)
+/// @param {string} [viewbox] – Optional: viewBox (e.g., "0 0 100 100")
+/// @param {string} contents – To include one or more SVG elements (e.g., from DaxLib.SVG.Element functions)
+/// @param {numeric} [sortValue] – Optional: Sort value for ordering in tables
+/// @returns {string} SVG string
+function 'DaxLib.SVG.SVG' =
+		(
+			width : STRING,
+			height : STRING, 
+			viewbox : STRING,
+			contents : STRING,
+			sortValue : NUMERIC
+		) =>
+
+			"data:image/svg+xml;utf8," &
+			"<svg " & 
+			"width='" & width & "' height='" & height & "' " &
+			IF( NOT ISBLANK( viewbox ), "viewBox='" & viewbox & "' " ) &
+			"xmlns='http://www.w3.org/2000/svg'>" &
+			IF( NOT ISBLANK( sortValue ), "<desc>" & FORMAT( sortValue, "000000000000" ) & "</desc>" ) &
+			contents &
+			"</svg>"
+
+	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
+
+	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__

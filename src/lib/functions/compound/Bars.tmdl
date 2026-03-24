@@ -1,0 +1,148 @@
+/// Creates a Bars compound SVG Visual showing a bar chart across an axis
+/// @param {int} x – The x position of the compound
+/// @param {int} y – The y position of the compound
+/// @param {int} width – The width of the compound
+/// @param {int} height – The height of the compound
+/// @param {decimal} [paddingX] – Optional: The horizontal padding percentage (0.0-1.0, e.g., 0.1 = 10% padding). Defaults to 0
+/// @param {decimal} [paddingY] – Optional: The vertical padding percentage (0.0-1.0, e.g., 0.1 = 10% padding). Defaults to 0
+/// @param {anyref expr} axisRef – The column that the measure will be evaluated against
+/// @param {numeric expr} measureRef – The measure to evaluate
+/// @param {string} [barColor] – The hex color of the bars. Defaults to "#01B8AA"
+/// @param {string} [minMarkColor] – Optional: The hex color for the minimum value bar. Omitted if not specified
+/// @param {string} [maxMarkColor] – Optional: The hex color for the maximum value bar. Omitted if not specified
+/// @param {boolean} [showAxis] – Optional: Show axes when TRUE. Defaults to FALSE
+/// @param {int} [axisFontSize] – Optional: Axis label font size. Defaults to 10
+/// @returns {string} SVG Bar Chart
+function 'DaxLib.SVG.Compound.Bars' = 
+		(
+			x: INT64,
+			y: INT64,
+			width: INT64,
+			height: INT64,
+			paddingX: DOUBLE,
+			paddingY: DOUBLE,
+			axisRef: ANYREF EXPR,
+			measureRef: NUMERIC EXPR,
+			barColor: STRING,
+			minMarkColor: STRING,
+			maxMarkColor: STRING,
+			showAxis: BOOLEAN,
+			axisFontSize: INT64
+		) =>
+
+			// Apply padding to dimensions
+			VAR _X = 			x + (width * (IF(ISBLANK(paddingX), 0, paddingX) / 2))
+			VAR _Y = 			y + (height * (IF(ISBLANK(paddingY), 0, paddingY) / 2))
+			VAR _Width = 		width * (1 - IF(ISBLANK(paddingX), 0, paddingX))
+			VAR _Height = 		height * (1 - IF(ISBLANK(paddingY), 0, paddingY))
+
+			VAR _ShowAxis = IF( ISBLANK( showAxis ), FALSE(), showAxis )
+			VAR _AxisFontSize = IF( ISBLANK( axisFontSize ), 10, axisFontSize )
+			VAR _AxisIsDate = ISDATETIME( MAX( axisRef ) )
+			VAR _BarColor = IF( NOT ISBLANK( barColor ), barColor, "#01B8AA" )
+		
+			VAR _Data = DaxLib.SVG.Data.AxisMeasure( axisRef, measureRef, "Auto" )
+			VAR _DataNonBlank = FILTER( _Data, NOT ISBLANK( [@Value] ) )
+			VAR _RawYMin = MINX( _DataNonBlank, [@Value] )
+			VAR _RawYMax = MAXX( _DataNonBlank, [@Value] )
+			VAR _Range = DaxLib.SVG.Data.Range( _RawYMin, _RawYMax, TRUE() )
+
+			// Global axis range — only values with data, consistent across table rows
+			VAR _GlobalAxisRef = CALCULATETABLE( FILTER( VALUES( axisRef ), NOT ISBLANK( measureRef ) ), ALLSELECTED() )
+			VAR _GlobalAxisCount = COUNTROWS( _GlobalAxisRef )
+			VAR _AxisIsNumericRange = ISNUMBER( MAX( axisRef ) ) || _AxisIsDate
+
+			// Axis bounds from global data range (not the full calendar/dimension table)
+			VAR _XMin = IF( _AxisIsNumericRange, MINX( _GlobalAxisRef, axisRef ), 1 )
+			VAR _XMax = IF( _AxisIsNumericRange, MAXX( _GlobalAxisRef, axisRef ), _GlobalAxisCount )
+			VAR _RawYMin2 = MINX( _Range, [@Baseline] )
+			VAR _RawYMax2 = MAXX( _Range, [@Max] )
+
+			// Compute nice range for value axis
+			VAR _NiceY = DaxLib.SVG.Scale.NiceRange( _RawYMin2, _RawYMax2, 5, TRUE() )
+			VAR _YMin = MINX( _NiceY, [@NiceMin] )
+			VAR _YMax = MINX( _NiceY, [@NiceMax] )
+			VAR _YTickCount = MINX( _NiceY, [@NiceTickCount] )
+
+			// Axis layout
+			VAR _MaxTickLabelWidth = DaxLib.SVG.Axes.MaxTickLabelWidth( _YMin, _YMax, _YTickCount, _AxisFontSize, 0.56, FALSE() )
+			VAR _Layout = DaxLib.SVG.Axes.Layout( _X, _Y, _Width, _Height, _ShowAxis, _AxisFontSize, _MaxTickLabelWidth )
+			VAR _PlotX = MINX( _Layout, [@PlotX] )
+			VAR _PlotY = MINX( _Layout, [@PlotY] )
+			VAR _PlotWidth = MINX( _Layout, [@PlotWidth] )
+			VAR _PlotHeight = MINX( _Layout, [@PlotHeight] )
+		
+			// Cap bar count by canvas width (minimum 2px per bar)
+			VAR _CategoryDimension = _PlotWidth
+			VAR _MinBarPx = 2
+			VAR _MaxBars = MAX( 1, INT( _CategoryDimension / _MinBarPx ) )
+			VAR _SlotCount = MIN( _GlobalAxisCount, _MaxBars )
+			VAR _SlotWidth = DIVIDE( _CategoryDimension, MAX( 1, _SlotCount ) )
+			VAR _BarThickness = MAX( 1, _SlotWidth * 0.8 )
+
+			// Assign global ordinal position (0-based) for consistent bar placement
+			VAR _DataRanked =
+				ADDCOLUMNS(
+					_DataNonBlank,
+					"@SlotIndex",
+						RANKX( _GlobalAxisRef, axisRef, [@AxisValue], ASC, DENSE ) - 1
+				)
+			VAR _DataVisible = FILTER( _DataRanked, [@SlotIndex] < _SlotCount )
+
+			VAR _Baseline = DaxLib.SVG.Axes.Baseline( "Vertical", _YMin, _YMax, _PlotX, _PlotY, _PlotWidth, _PlotHeight )
+			VAR _BaseX = MINX( _Baseline, [@BaseX] )
+			VAR _BaseY = MINX( _Baseline, [@BaseY] )
+
+			// Determine min and max values for bar highlighting
+			VAR _VisibleMinValue = MINX( _DataVisible, [@Value] )
+			VAR _VisibleMaxValue = MAXX( _DataVisible, [@Value] )
+			VAR _CanHighlight = COUNTROWS( _DataNonBlank ) > 2 && _VisibleMinValue <> _VisibleMaxValue
+		
+		//Bars
+		VAR _Bars = 
+			CONCATENATEX(
+				_DataVisible,
+				IF( 
+					NOT ISBLANK( [@Value] ), 
+					VAR _SlotCenter = ( [@SlotIndex] + 0.5 ) * _SlotWidth
+					VAR _BarCategoryStart = _PlotX + _SlotCenter - _BarThickness / 2
+					VAR _ValueY = IF( _YMax = _YMin, _PlotY + _PlotHeight / 2, DaxLib.SVG.Scale.Normalize( [@Value], _YMin, _YMax, _PlotY + _PlotHeight, _PlotY ) )
+					VAR _ThisBarColor =
+						IF( _CanHighlight && NOT ISBLANK( minMarkColor ) && [@Value] = _VisibleMinValue, minMarkColor,
+						IF( _CanHighlight && NOT ISBLANK( maxMarkColor ) && [@Value] = _VisibleMaxValue, maxMarkColor,
+						_BarColor ) )
+
+					RETURN
+						DaxLib.SVG.Element.Rect(
+							_BarCategoryStart,
+							MIN( _BaseY, _ValueY ),
+							_BarThickness,
+							ABS( _BaseY - _ValueY ),
+							0,
+							0,
+							DaxLib.SVG.Attr.Shapes(
+							_ThisBarColor,
+								BLANK(),
+								BLANK(),
+								BLANK(),
+								1,
+								BLANK(),
+								BLANK()
+							),
+							BLANK()
+						)
+				),
+				" ",
+				[@SlotIndex],
+				ASC
+			)
+
+			VAR _AxisElements = DaxLib.SVG.Axes.Render( _PlotX, _PlotY, _PlotWidth, _PlotHeight, _XMin, _XMax, _YMin, _YMax, _ShowAxis, _AxisFontSize, _AxisIsDate, FALSE(), 5, _YTickCount )
+            
+        RETURN
+				
+				IF( NOT ISEMPTY( _DataNonBlank ) && _PlotWidth > 0 && _PlotHeight > 0, _Bars & _AxisElements )
+
+	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
+
+	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__

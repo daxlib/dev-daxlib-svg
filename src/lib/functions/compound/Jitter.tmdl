@@ -1,0 +1,100 @@
+/// Creates a Jitter Plot compound SVG Visual showing values as points with x-position based on value and y-position jittered around center
+/// @param {int} x – The x position of the compound
+/// @param {int} y – The y position of the compound
+/// @param {int} width – The width of the compound
+/// @param {int} height – The height of the compound
+/// @param {decimal} [paddingX] – Optional: The horizontal padding percentage (0.0-1.0, e.g., 0.1 = 10% padding). Defaults to 0
+/// @param {decimal} [paddingY] – Optional: The vertical padding percentage (0.0-1.0, e.g., 0.1 = 10% padding). Defaults to 0
+/// @param {anyref expr} axisRef – The column that the measure will be evaluated against
+/// @param {numeric expr} measureRef – The measure to evaluate
+/// @param {string} [pointColor] – Optional: The hex color of the points (e.g., "#01B8AA")
+/// @param {decimal} [jitterAmount] – Optional: The amount of jitter as a percentage of height (0.0-1.0). Defaults to 0.3
+/// @returns {string} SVG Jitter Plot
+function 'DaxLib.SVG.Compound.Jitter' = 
+		(
+			x: INT64,
+			y: INT64,
+			width: INT64,
+			height: INT64,
+			paddingX: DOUBLE,
+			paddingY: DOUBLE,
+			axisRef: ANYREF EXPR,
+			measureRef: NUMERIC EXPR,
+			pointColor: STRING,
+			jitterAmount: DOUBLE
+		) =>
+			
+			// Apply padding to dimensions
+			VAR _X = 			x + (width * (IF(ISBLANK(paddingX), 0, paddingX) / 2))
+			VAR _Y = 			y + (height * (IF(ISBLANK(paddingY), 0, paddingY) / 2))
+			VAR _Width = 		width * (1 - IF(ISBLANK(paddingX), 0, paddingX))
+			VAR _Height = 		height * (1 - IF(ISBLANK(paddingY), 0, paddingY))
+
+			// Check if Axis is numeric
+			VAR axisSample = 	MAX( axisRef )
+			VAR axisIsNumeric = ISNUMERIC( axisSample ) || ISDATETIME( axisSample )
+			
+			// For totals
+			VAR _Data = 
+				ADDCOLUMNS(
+					FILTER(
+						VALUES( axisRef ),
+						NOT ISBLANK( measureRef )
+					),
+					"@AxisIndex", 	
+						IF(
+							axisIsNumeric,
+							axisRef,
+							RANK( DENSE, CALCULATETABLE( VALUES( axisRef ), ALLSELECTED() ) )
+						),
+					"@Value", measureRef
+				)
+					
+			VAR _RawXMin = 	MINX( _Data, [@Value] )
+			VAR _XMin = 	IF( _RawXMin > 0, 0, _RawXMin )
+			VAR _XMax = 	MAXX( _Data, [@Value] )
+		
+			// Points
+			VAR _CenterY = 		_Y + _Height * 0.5
+			VAR _JitterRange = 	_Height * IF( ISBLANK( jitterAmount ), 0.3, jitterAmount )
+			VAR _CircleElements = 
+				CONCATENATEX(
+					_Data,
+					IF( 
+						NOT ISBLANK( [@Value] ),
+						VAR _Seed = 		ABS( [@Value] * 12345 ) + ABS( [@AxisIndex] * 67890 ) + ABS( LEN( FORMAT( [@Value], "0.000000" ) ) * 9876 )
+						VAR _PseudoRandom = MOD( _Seed, 10000 ) / 10000
+						VAR _JitterOffset = ( _PseudoRandom - 0.5 ) * _JitterRange
+						VAR _CX = DaxLib.SVG.Scale.Normalize( [@Value], _XMin, _XMax, _X, _X + _Width )
+						VAR _CY = _CenterY + _JitterOffset
+						VAR _ClampedCX = MAX( _X, MIN( _X + _Width, _CX ) )
+						VAR _ClampedCY = MAX( _Y, MIN( _Y + _Height, _CY ) )
+						RETURN
+							DaxLib.SVG.Element.Circle(
+								_ClampedCX, // cx
+								_ClampedCY,          // cy
+								2,         			// r
+								DaxLib.SVG.Attr.Shapes(
+									pointColor,   	// fill
+									0.5,            // fillOpacity
+									BLANK(),        // fillRule
+									pointColor,   	// stroke
+									1,              // strokeWidth
+									0.9,            // strokeOpacity
+									BLANK()         // opacity
+								),
+								BLANK()             // transforms
+							)
+					),
+					" ",
+					[@AxisIndex],
+					ASC
+				)
+
+			RETURN
+				
+				IF( NOT ISEMPTY( _Data ), _CircleElements )
+
+	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
+
+	annotation DAXLIB_PackageVersion = __PLACEHOLDER_PACKAGE_VERSION__

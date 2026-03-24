@@ -4,10 +4,10 @@
   "position": {
     "x": 14.455979974634062,
     "y": 730.19755558098211,
-    "z": 18000,
+    "z": 14000,
     "height": 72.000190034285353,
     "width": 156.64906210162084,
-    "tabOrder": 17000
+    "tabOrder": 13000
   },
   "visual": {
     "visualType": "slicer",
@@ -235,23 +235,5 @@
       ]
     },
     "drillFilterOtherVisuals": true
-  },
-  "filterConfig": {
-    "filters": [
-      {
-        "name": "cbd15297bcb43e009d1d",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "Orientation"
-              }
-            },
-            "Property": "Orientation"
-          }
-        },
-        "type": "Categorical"
-      }
-    ]
   }
 }
