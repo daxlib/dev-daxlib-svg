@@ -12,8 +12,8 @@ function 'DaxLib.SVG.Element.Ellipse' =
 			cy: STRING,
 			rx: STRING,
 			ry: STRING,
-			attributes: STRING,
-			transforms: STRING
+			attributes: STRING = BLANK(),
+			transforms: STRING = BLANK()
 		) =>
 
 			"<ellipse" &

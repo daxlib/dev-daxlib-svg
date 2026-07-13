@@ -7,8 +7,8 @@
 function 'DaxLib.SVG.Element.Group' =
 		(
 			contents : STRING,
-			opacity : STRING,
-			transforms : STRING
+			opacity : STRING = BLANK(),
+			transforms : STRING = BLANK()
 		) =>
 
 			"<g" &

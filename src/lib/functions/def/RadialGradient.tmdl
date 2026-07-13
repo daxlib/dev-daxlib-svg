@@ -12,12 +12,12 @@ function 'DaxLib.SVG.Def.RadialGradient' =
 		(
 			defId: STRING,
 			stops: STRING,
-			cx: STRING,
-			cy: STRING,
-			r: STRING,
-			fx: STRING,
-			fy: STRING,
-			fr: STRING
+			cx: STRING = BLANK(),
+			cy: STRING = BLANK(),
+			r: STRING = BLANK(),
+			fx: STRING = BLANK(),
+			fy: STRING = BLANK(),
+			fr: STRING = BLANK()
 		) =>
 
 			"<radialGradient" & 

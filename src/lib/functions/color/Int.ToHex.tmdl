@@ -5,7 +5,7 @@
 function 'DaxLib.SVG.Color.Int.ToHex' =
 		(
 			number: INT64,
-			padTo: INT64
+			padTo: INT64 = BLANK()
 		) =>
 		
 			VAR MinPadding = IF( number = 0, 1, CEILING( LOG( number + 1, 16 ), 1 ) )

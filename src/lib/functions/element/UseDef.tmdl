@@ -10,9 +10,9 @@
 function 'DaxLib.SVG.Element.UseDef' = 
 		(
 			defId: STRING,
-			x: STRING,
-			y: STRING,
-			transforms: STRING
+			x: STRING = BLANK(),
+			y: STRING = BLANK(),
+			transforms: STRING = BLANK()
 		) =>
 
 			"<use" &

@@ -7,11 +7,11 @@
 /// @returns {string} A transform attribute value that can be used with the transform attribute of SVG elements.
 function 'DaxLib.SVG.Transforms' = 
 		(
-			translate: STRING,
-			rotate: STRING,
-			scale: STRING,
-			skewX: STRING,
-			skewY: STRING
+			translate: STRING = BLANK(),
+			rotate: STRING = BLANK(),
+			scale: STRING = BLANK(),
+			skewX: STRING = BLANK(),
+			skewY: STRING = BLANK()
 		) =>
 
 			IF(NOT ISBLANK(translate), "translate(" & translate & ") ") &

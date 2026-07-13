@@ -7,21 +7,18 @@
 function 'DaxLib.SVG.Viz.Pill' =
 		(
 			txt: STRING,
-			color: STRING,
-			width: INT64,
-			height: INT64
+			color: STRING = BLANK(),
+			width: INT64 = 120,
+			height: INT64 = 48
 		) =>
 
-			VAR _W = IF( ISBLANK( width ), 120, width )
-			VAR _H = IF( ISBLANK( height ), 48, height )
-			VAR _Color = IF( NOT ISBLANK( color ), color, DaxLib.SVG.Color.Theme( "Power BI", 1 ) )
 			VAR _Marks =
 				DaxLib.SVG.Compound.Pill(
-					0, 0, _W, _H, 0, 0, txt, _Color
+					0, 0, width, height, txt, color
 				)
 
 			RETURN
-				IF( NOT ISBLANK( _Marks ), DaxLib.SVG.SVG( "100%", "100%", "0 0 " & _W & " " & _H, _Marks, BLANK() ) )
+				IF( NOT ISBLANK( _Marks ), DaxLib.SVG.SVG( "100%", "100%", _Marks, "0 0 " & width & " " & height ) )
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 

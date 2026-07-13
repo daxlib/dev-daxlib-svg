@@ -3,13 +3,13 @@
 /// @param {int} y – The y position of the compound
 /// @param {int} width – The width of the compound
 /// @param {int} height – The height of the compound
-/// @param {decimal} [paddingX] – Optional: The horizontal padding percentage (0.0-1.0, e.g., 0.1 = 10% padding). Defaults to 0
-/// @param {decimal} [paddingY] – Optional: The vertical padding percentage (0.0-1.0, e.g., 0.1 = 10% padding). Defaults to 0
 /// @param {anyref expr} axisRef – The column that the measure will be evaluated against
 /// @param {numeric expr} measureRef – The measure to evaluate
 /// @param {int} samples – Number of density calculation points (default 50)
 /// @param {numeric} bandwidth – Kernel bandwidth for smoothing (default auto-calculated)
-/// @param {string} color – The hex color for high density areas (e.g., "#01B8AA")
+/// @param {string} [color] – Optional: The hex color for high density areas (e.g., "#01B8AA"). Defaults to "#01B8AA"
+/// @param {decimal} [paddingX] – Optional: The horizontal padding percentage (0.0-1.0, e.g., 0.1 = 10% padding). Defaults to 0.05
+/// @param {decimal} [paddingY] – Optional: The vertical padding percentage (0.0-1.0, e.g., 0.1 = 10% padding). Defaults to 0.02
 /// @returns {string} SVG Heatmap
 function 'DaxLib.SVG.Compound.Heatmap' =
 		(
@@ -17,13 +17,13 @@ function 'DaxLib.SVG.Compound.Heatmap' =
 			y: INT64,
 			width: INT64,
 			height: INT64,
-			paddingX: DOUBLE,
-			paddingY: DOUBLE,
 			axisRef: ANYREF EXPR,
 			measureRef: NUMERIC EXPR,
 			samples: INT64,
 			bandwidth: NUMERIC,
-			color: STRING
+			color: STRING = BLANK(),
+			paddingX: DOUBLE = 0.05,
+			paddingY: DOUBLE = 0.02
 		) =>
 		
 			// Apply padding to dimensions
@@ -31,6 +31,8 @@ function 'DaxLib.SVG.Compound.Heatmap' =
 			VAR _Y = 			y + (height * (IF(ISBLANK(paddingY), 0, paddingY) / 2))
 			VAR _Width = 		width * (1 - IF(ISBLANK(paddingX), 0, paddingX))
 			VAR _Height = 		height * (1 - IF(ISBLANK(paddingY), 0, paddingY))
+
+			VAR _Color = IF( NOT ISBLANK( color ), color, "#01B8AA" )
 
 			// Check if Axis is numeric
 			VAR axisSample = 	MAX( axisRef )
@@ -87,7 +89,7 @@ function 'DaxLib.SVG.Compound.Heatmap' =
 					VAR _StopColor = 
 						DaxLib.SVG.Color.Hex.Interpolate(
 							"#FFFFFF",
-							color,
+							_Color,
 							_Intensity
 						)
 					RETURN
@@ -108,22 +110,13 @@ function 'DaxLib.SVG.Compound.Heatmap' =
 			// Create rectangle with gradient fill
 			VAR _HeatmapRect = 
 				DaxLib.SVG.Element.Rect(
-					_X,                         // x
-					_Y,                         // y
-					_Width,                     // width
-					_Height,                    // height
-					0,                          // rx
-					0,                          // ry
-					DaxLib.SVG.Attr.Shapes(
-						"url(#kde-gradient)", 	// fill
-						BLANK(),                // fillOpacity
-						BLANK(),                // fillRule
-						BLANK(),                // stroke
-						BLANK(),                // strokeWidth
-						BLANK(),                // strokeOpacity
-						BLANK()                 // opacity
-					),
-					BLANK()                     // transforms
+					_X,
+					_Y,
+					_Width,
+					_Height,
+					0,
+					0,
+					DaxLib.SVG.Attr.Shapes( "url(#kde-gradient)" )
 				)
 			
 			// Combined elements

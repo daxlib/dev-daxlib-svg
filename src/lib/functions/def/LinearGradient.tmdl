@@ -10,10 +10,10 @@ function 'DaxLib.SVG.Def.LinearGradient' =
 		(
 			defId: STRING,
 			stops: STRING,
-			x1: STRING,
-			y1: STRING,
-			x2: STRING,
-			y2: STRING
+			x1: STRING = BLANK(),
+			y1: STRING = BLANK(),
+			x2: STRING = BLANK(),
+			y2: STRING = BLANK()
 		) =>
 			
 			"<linearGradient" & 

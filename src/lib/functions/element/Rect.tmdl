@@ -14,10 +14,10 @@ function 'DaxLib.SVG.Element.Rect' =
 			y: STRING,
 			width: STRING,
 			height: STRING,
-			rx: STRING,
-			ry: STRING,
-			attributes: STRING,
-			transforms: STRING
+			rx: STRING = BLANK(),
+			ry: STRING = BLANK(),
+			attributes: STRING = BLANK(),
+			transforms: STRING = BLANK()
 		) =>
 
 			"<rect" &

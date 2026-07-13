@@ -3,9 +3,9 @@
 /// @param {numeric val} y – Content y
 /// @param {numeric val} width – Content width
 /// @param {numeric val} height – Content height
+/// @param {numeric val} maxTickLabelWidth – Estimated max y-label width
 /// @param {boolean} [showAxis] – Optional: Whether axes are enabled. Defaults to FALSE
 /// @param {int} [axisFontSize] – Optional: Axis font size. Defaults to 10
-/// @param {numeric val} maxTickLabelWidth – Estimated max y-label width
 /// @returns {table} Single-row table with `@PlotX`, `@PlotY`, `@PlotWidth`, `@PlotHeight`
 function 'DaxLib.SVG.Axes.Layout' =
 		(
@@ -13,20 +13,18 @@ function 'DaxLib.SVG.Axes.Layout' =
 			y: NUMERIC VAL,
 			width: NUMERIC VAL,
 			height: NUMERIC VAL,
-			showAxis: BOOLEAN,
-			axisFontSize: INT64,
-			maxTickLabelWidth: NUMERIC VAL
+			maxTickLabelWidth: NUMERIC VAL,
+			showAxis: BOOLEAN = FALSE(),
+			axisFontSize: INT64 = 10
 		) =>
 
-			VAR _ShowAxis = IF( ISBLANK( showAxis ), FALSE(), showAxis )
-			VAR _AxisFontSize = IF( ISBLANK( axisFontSize ), 10, axisFontSize )
 			VAR _TickLength = 3
 			VAR _TickPadding = 4
 			VAR _AxisLinePadding = 2
 
-			VAR _ReservedXAxisHeight = IF( _ShowAxis, _AxisFontSize + _TickLength + _TickPadding + _AxisLinePadding, 0 )
-			VAR _ReservedYAxisWidth = IF( _ShowAxis, maxTickLabelWidth + _TickLength + _TickPadding + _AxisLinePadding, 0 )
-			VAR _ReservedTopPadding = IF( _ShowAxis, _AxisFontSize / 2, 0 )
+			VAR _ReservedXAxisHeight = IF( showAxis, axisFontSize + _TickLength + _TickPadding + _AxisLinePadding, 0 )
+			VAR _ReservedYAxisWidth = IF( showAxis, maxTickLabelWidth + _TickLength + _TickPadding + _AxisLinePadding, 0 )
+			VAR _ReservedTopPadding = IF( showAxis, axisFontSize / 2, 0 )
 
 			RETURN
 				ROW(

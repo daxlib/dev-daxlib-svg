@@ -11,15 +11,15 @@
 /// @returns {string} An attribute string that can be used directly in SVG text elements
 function 'DaxLib.SVG.Attr.Txt' = 
 		(
-			fontFamily: STRING,
-			fontSize: INT64,
-			fontWeight: STRING,
-			fontStyle: STRING,
-			textAnchor: STRING,
-			baseline: STRING,
-			textDecoration: STRING,
-			letterSpacing: STRING,
-			wordSpacing: STRING
+			fontFamily: STRING = BLANK(),
+			fontSize: INT64 = BLANK(),
+			fontWeight: STRING = BLANK(),
+			fontStyle: STRING = BLANK(),
+			textAnchor: STRING = BLANK(),
+			baseline: STRING = BLANK(),
+			textDecoration: STRING = BLANK(),
+			letterSpacing: STRING = BLANK(),
+			wordSpacing: STRING = BLANK()
 		) =>
 
 			IF( NOT ISBLANK( fontFamily ),     "font-family='" & fontFamily & "' ") &

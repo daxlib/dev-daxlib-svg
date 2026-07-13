@@ -7,7 +7,7 @@ function 'DaxLib.SVG.Data.Range' =
 		(
 			dataMin: NUMERIC VAL,
 			dataMax: NUMERIC VAL,
-			includeZero: BOOLEAN
+			includeZero: BOOLEAN = FALSE()
 		) =>
 
 			VAR _IncludeZero = IF( ISBLANK( includeZero ), FALSE(), includeZero )

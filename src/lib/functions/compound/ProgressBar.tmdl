@@ -3,13 +3,13 @@
 /// @param {int} y – The y position of the compound
 /// @param {int} width – The width of the compound
 /// @param {int} height – The height of the compound
-/// @param {decimal} [paddingX] – Optional: Horizontal padding percentage (0.0-1.0). Defaults to 0
-/// @param {decimal} [paddingY] – Optional: Vertical padding percentage (0.0-1.0). Defaults to 0
 /// @param {numeric expr} valueRef – Value expression (the bar measure)
 /// @param {numeric expr} [trackRef] – Optional: Track measure (maximum value, can vary per context). Defaults to MAX(1, ABS(valueRef))
 /// @param {string} [fillColor] – Optional: Progress color. Defaults to "#0F6CBD"
 /// @param {string} [trackColor] – Optional: Track color. Defaults to "#E1DFDD"
 /// @param {string} [orientation] – "Horizontal" or "Vertical". Defaults to "Horizontal"
+/// @param {decimal} [paddingX] – Optional: Horizontal padding percentage (0.0-1.0). Defaults to 0.05
+/// @param {decimal} [paddingY] – Optional: Vertical padding percentage (0.0-1.0). Defaults to 0.02
 /// @returns {string} SVG Progress Bar
 function 'DaxLib.SVG.Compound.ProgressBar' =
 		(
@@ -17,13 +17,13 @@ function 'DaxLib.SVG.Compound.ProgressBar' =
 			y: INT64,
 			width: INT64,
 			height: INT64,
-			paddingX: DOUBLE,
-			paddingY: DOUBLE,
 			valueRef: NUMERIC EXPR,
-			trackRef: NUMERIC EXPR,
-			fillColor: STRING,
-			trackColor: STRING,
-			orientation: STRING
+			trackRef: NUMERIC EXPR = BLANK(),
+			fillColor: STRING = "#0F6CBD",
+			trackColor: STRING = "#E1DFDD",
+			orientation: STRING = "Horizontal",
+			paddingX: DOUBLE = 0.05,
+			paddingY: DOUBLE = 0.02
 		) =>
 
 			VAR _X = x + (width * (IF(ISBLANK(paddingX), 0, paddingX) / 2))
@@ -47,8 +47,7 @@ function 'DaxLib.SVG.Compound.ProgressBar' =
 					_Height,
 					3,
 					3,
-					DaxLib.SVG.Attr.Shapes( _TrackColor, 1, BLANK(), _TrackColor, 1, BLANK(), BLANK() ),
-					BLANK()
+					DaxLib.SVG.Attr.Shapes( _TrackColor, 1, BLANK(), _TrackColor, 1 )
 				)
 
 			VAR _FillW = IF( _Orientation = "Horizontal", _Width * _Pct, _Width )
@@ -64,8 +63,7 @@ function 'DaxLib.SVG.Compound.ProgressBar' =
 					_FillH,
 					3,
 					3,
-					DaxLib.SVG.Attr.Shapes( _FillColor, 0.95, BLANK(), _FillColor, 1, BLANK(), BLANK() ),
-					BLANK()
+					DaxLib.SVG.Attr.Shapes( _FillColor, 0.95, BLANK(), _FillColor, 1 )
 				)
 
 			RETURN
