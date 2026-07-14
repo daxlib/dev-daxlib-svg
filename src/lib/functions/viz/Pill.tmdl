@@ -14,7 +14,12 @@ function 'DaxLib.SVG.Viz.Pill' =
 
 			VAR _Marks =
 				DaxLib.SVG.Compound.Pill(
-					0, 0, width, height, txt, color
+					0, 
+                    0, 
+                    width, 
+                    height, 
+                    txt, 
+                    color
 				)
 
 			RETURN

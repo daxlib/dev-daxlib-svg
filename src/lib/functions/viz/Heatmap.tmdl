@@ -16,8 +16,15 @@ function 'DaxLib.SVG.Viz.Heatmap' =
 
 			VAR _Marks =
 				DaxLib.SVG.Compound.Heatmap(
-					0, 0, width, height,
-					axisRef, measureRef, 50, 1, color
+					0, 
+                    0, 
+                    width, 
+                    height,
+					axisRef, 
+                    measureRef, 
+                    50, 
+                    1, 
+                    color
 				)
 
 			RETURN

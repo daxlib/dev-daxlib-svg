@@ -18,8 +18,13 @@ function 'DaxLib.SVG.Viz.Boxplot' =
 
 			VAR _Marks =
 				DaxLib.SVG.Compound.Boxplot(
-					0, 0, width, height,
-					axisRef, measureRef, color, "#605E5C"
+					0, 
+                    0, 
+                    width, 
+                    height,
+					axisRef,
+                    measureRef, 
+                    color
 				)
 
 			RETURN

@@ -2926,9 +2926,18 @@ createOrReplace
 
 				VAR _Marks =
 					DaxLib.SVG.Compound.Area(
-						0, 0, width, height,
-						axisRef, measureRef, color, color,
-						, , , , , showAxis, 8
+						0,          // x
+						0,          // y
+						width,      // width
+						height,     // height
+						axisRef,    // axisRef
+						measureRef, // measureRef
+						color,      // fillColor
+						color,      // strokeColor
+						,           // fillOpacity
+						,           // minMarkColor
+						,           // maxMarkColor
+						showAxis    // showAxis
 					)
 
 				RETURN
@@ -2962,9 +2971,16 @@ createOrReplace
 
 				VAR _Marks =
 					DaxLib.SVG.Compound.Bars(
-						0, 0, width, height,
-						axisRef, measureRef,
-						, , color, , , showAxis, 8
+						0, 
+						0, 
+						width, 
+						height,
+						axisRef,
+						measureRef,
+						color, 
+						minMarkColor, 
+						maxMarkColor, 
+						showAxis
 					)
 
 				RETURN
@@ -2994,8 +3010,13 @@ createOrReplace
 
 				VAR _Marks =
 					DaxLib.SVG.Compound.Boxplot(
-						0, 0, width, height,
-						axisRef, measureRef, color, "#605E5C"
+						0, 
+						0, 
+						width, 
+						height,
+						axisRef,
+						measureRef, 
+						color
 					)
 
 				RETURN
@@ -3023,8 +3044,15 @@ createOrReplace
 
 				VAR _Marks =
 					DaxLib.SVG.Compound.Heatmap(
-						0, 0, width, height,
-						axisRef, measureRef, 50, 1, color
+						0, 
+						0, 
+						width, 
+						height,
+						axisRef, 
+						measureRef, 
+						50, 
+						1, 
+						color
 					)
 
 				RETURN
@@ -3052,8 +3080,13 @@ createOrReplace
 
 				VAR _Marks =
 					DaxLib.SVG.Compound.Jitter(
-						0, 0, width, height,
-						axisRef, measureRef, color
+						0, 
+						0, 
+						width, 
+						height,
+						axisRef, 
+						measureRef, 
+						color
 					)
 
 				RETURN
@@ -3110,7 +3143,12 @@ createOrReplace
 
 				VAR _Marks =
 					DaxLib.SVG.Compound.Pill(
-						0, 0, width, height, txt, color
+						0, 
+						0, 
+						width, 
+						height, 
+						txt, 
+						color
 					)
 
 				RETURN
@@ -3140,8 +3178,15 @@ createOrReplace
 
 				VAR _Marks =
 					DaxLib.SVG.Compound.ProgressBar(
-						0, 0, width, height,
-						valueRefExpr, trackRefExpr, color, "#E1DFDD", orientation
+						0, 
+						0, 
+						width, 
+						height,
+						valueRefExpr,
+						trackRefExpr, 
+						color, 
+						"#E1DFDD",
+						orientation
 					)
 
 				RETURN

@@ -1486,7 +1486,7 @@ function 'DaxLib.SVG.Attr.Shapes' =
 			IF( NOT ISBLANK( strokeWidth ),   "stroke-width='" & strokeWidth & "' ") &
 			IF( NOT ISBLANK( strokeOpacity ), "stroke-opacity='" & strokeOpacity & "' ") &
 			IF( NOT ISBLANK( opacity ),       "opacity='" & opacity & "' ")
-	lineageTag: 6d5b310b-eb02-4560-a64d-cc22d66a2431
+	lineageTag: 0c22d391-af96-408e-bf4b-d084e6902ec3
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -1543,7 +1543,7 @@ function 'DaxLib.SVG.Attr.Stroke' =
 				_MarkerStart &
 				_MarkerMid &
 				_MarkerEnd
-	lineageTag: caf27151-5a61-403f-8037-9c9cf147a738
+	lineageTag: b0ba9515-88b7-4138-8b4a-d791dcff93ea
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -1582,7 +1582,7 @@ function 'DaxLib.SVG.Attr.Txt' =
 			IF( NOT ISBLANK( textDecoration ), "text-decoration='" & textDecoration & "' ") &
 			IF( NOT ISBLANK( letterSpacing ),  "letter-spacing='" & letterSpacing & "' ") &
 			IF( NOT ISBLANK( wordSpacing ),    "word-spacing='" & wordSpacing & "' ")
-	lineageTag: 81481380-1e49-4d99-a31f-f0f263aa11f9
+	lineageTag: 07a5959f-51c4-4ab8-b620-f5d297055f60
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -1616,7 +1616,7 @@ function 'DaxLib.SVG.Axes.Baseline' =
 					"@BaseX", IF( orientation = "Horizontal", _BaseX, plotX ),
 					"@BaseY", IF( orientation = "Horizontal", plotY, _BaseY )
 				)
-	lineageTag: 2ea8a99c-87f0-4ffb-bda3-b2da45fc3906
+	lineageTag: 66ecbbda-8f3e-41dc-b70b-f00154becec4
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -1657,7 +1657,7 @@ function 'DaxLib.SVG.Axes.Layout' =
 					"@PlotWidth", MAX( 0, width - _ReservedYAxisWidth ),
 					"@PlotHeight", MAX( 0, height - _ReservedXAxisHeight - _ReservedTopPadding )
 				)
-	lineageTag: 970ee268-a21d-4ab3-800f-f8c5f59f6c27
+	lineageTag: 921275cd-17e0-4069-b465-b8225ac53abd
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -1713,7 +1713,7 @@ function 'DaxLib.SVG.Axes.MaxTickLabelWidth' =
 		
 			RETURN
 				MAXX( _MeasuredLabelTable, [@EstimatedWidth] )
-	lineageTag: 742584ee-7db8-40d4-ab1d-e70cc8d00b3c
+	lineageTag: 6f151ad8-d03b-4706-a4d6-da62eb83fba2
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -1758,7 +1758,7 @@ function 'DaxLib.SVG.Axes.Point' =
 					"@X", IF( orientation = "Horizontal", _ValueX, _AxisX ),
 					"@Y", IF( orientation = "Horizontal", _AxisY, _ValueY )
 				)
-	lineageTag: e30f35fe-dd37-43f1-bef1-226ccf8135ac
+	lineageTag: 20a65c5f-28e4-41e2-b4e1-9c8675feb9fc
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -1964,7 +1964,7 @@ function 'DaxLib.SVG.Axes.Render' =
 		
 			RETURN
 				IF( showAxis, _XAxisLine & _YAxisLine & _XTicks & _YTicks )
-	lineageTag: 15416793-d663-464c-b6af-e712712f5988
+	lineageTag: a9ace897-e865-4023-9c07-5492e7468b73
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -2012,7 +2012,7 @@ function 'DaxLib.SVG.Color.Hex.Interpolate' =
 				)
 		
 			RETURN result
-	lineageTag: df933d06-c8e2-4ee9-bff6-fc05eee2c857
+	lineageTag: 22893333-4abb-455d-8ed7-eb5db2d50ee7
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -2038,7 +2038,7 @@ function 'DaxLib.SVG.Color.Hex.ToInt' =
 				)
 		
 			RETURN Result
-	lineageTag: 1151517c-da47-4865-a45f-433bf23eecde
+	lineageTag: b0619ab1-bed2-484e-b033-4c88f8410069
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -2069,7 +2069,7 @@ function 'DaxLib.SVG.Color.Int.ToHex' =
 				)
 		
 			RETURN Hex
-	lineageTag: bc26b4a3-a56a-41a8-ae23-f27ab2db8a59
+	lineageTag: f2be1462-37a9-4664-8324-b614e55e52b1
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -2138,7 +2138,7 @@ function 'DaxLib.SVG.Color.PerformanceTheme' =
 				)
 		
 			RETURN SelectedColor
-	lineageTag: 6c92a67f-9e8e-4ccd-af7e-4cda96ae578b
+	lineageTag: 194aa171-43f8-4c95-9384-751160cdd7a5
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -2163,7 +2163,7 @@ function 'DaxLib.SVG.Color.RGB.ToHex' =
 			DaxLib.SVG.Color.Int.ToHex( green, 2 ) &
 			DaxLib.SVG.Color.Int.ToHex( blue, 2 ) &
 			IF( NOT ISBLANK( alpha ), DaxLib.SVG.Color.Int.ToHex( alpha * 255, 2 ) )
-	lineageTag: 3b1d58dd-9b9c-49c2-aef4-1a5a1db243c6
+	lineageTag: f30dfc68-23e8-4659-b8ba-02156522d14c
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -2324,7 +2324,7 @@ function 'DaxLib.SVG.Color.Theme' =
 				)
 		
 			RETURN SelectedColor
-	lineageTag: 3365172f-33d8-4d19-b234-b411f938d9d8
+	lineageTag: a0f1addf-9c39-4b00-a16e-47f01d030eb6
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -2558,7 +2558,7 @@ function 'DaxLib.SVG.Compound.Area' =
 			RETURN
 		
 				IF( NOT ISEMPTY( _DataNonBlank ) && _PlotWidth > 0 && _PlotHeight > 0, _CombinedElements & _MinMaxMarks & _AxisElements )
-	lineageTag: 397ddb95-cb40-4c5c-8962-e97d7d20a58f
+	lineageTag: b3679762-53ac-4f8c-a571-5f596759004c
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -2699,7 +2699,7 @@ function 'DaxLib.SVG.Compound.Bars' =
 		RETURN
 		
 				IF( NOT ISEMPTY( _DataNonBlank ) && _PlotWidth > 0 && _PlotHeight > 0, _Bars & _AxisElements )
-	lineageTag: 2f90d3f1-99e4-40f6-b5e6-bd62f4eb3e9d
+	lineageTag: 39f52a9a-58c5-491d-bae8-d41f9a0d7ffa
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -2891,7 +2891,7 @@ function 'DaxLib.SVG.Compound.Boxplot' =
 			RETURN
 		
 				IF( NOT ISEMPTY( _Data ), _CombinedElements )
-	lineageTag: ece6fc9d-e26b-4abb-be84-33773c5a1928
+	lineageTag: 62b79fd3-4415-4e83-af8a-40c0f9b71ca4
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -3024,7 +3024,7 @@ function 'DaxLib.SVG.Compound.Heatmap' =
 			RETURN
 		
 				IF( NOT ISEMPTY( _Data ), _CombinedElements )
-	lineageTag: 1ee62291-38c0-46c9-b28b-0c01df681aaf
+	lineageTag: 789ea207-3a0a-496b-9d18-06d1affc3712
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -3124,7 +3124,7 @@ function 'DaxLib.SVG.Compound.Jitter' =
 			RETURN
 		
 				IF( NOT ISEMPTY( _Data ), _CircleElements )
-	lineageTag: 4e578206-53c3-4cc0-b2f2-6c647ef0ce73
+	lineageTag: 4ee4913c-1bf5-4142-b31e-93c8165782a1
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -3295,7 +3295,7 @@ function 'DaxLib.SVG.Compound.Line' =
 			RETURN
 		
 				IF( NOT ISEMPTY( _DataNonBlank ) && _PlotWidth > 0 && _PlotHeight > 0, _CombinedElement & _MinMaxMarks & _AxisElements )
-	lineageTag: 3e4b7b20-a185-4d83-8000-925ade133a85
+	lineageTag: 2eadc3ce-b8cf-46e7-a8fb-6bedcaf6f83b
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -3379,7 +3379,7 @@ function 'DaxLib.SVG.Compound.Pill' =
 		RETURN
 		
 			IF( NOT ISBLANK( txt ), _CombinedElements )
-	lineageTag: e77c9d3d-50ec-4082-b1af-4023c183e9e6
+	lineageTag: 5786042c-dfc1-4741-a3da-a14f1a08b163
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -3455,7 +3455,7 @@ function 'DaxLib.SVG.Compound.ProgressBar' =
 		
 			RETURN
 				IF( NOT ISBLANK( _Value ) && _Width > 0 && _Height > 0, _Track & _Fill )
-	lineageTag: f1bff6c7-e1da-4814-85c1-3316a3208fb5
+	lineageTag: b9fd356d-7966-4402-a1c2-429a27b36bee
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -3662,7 +3662,7 @@ function 'DaxLib.SVG.Compound.Violin' =
 			RETURN
 		
 				IF( NOT ISEMPTY( _Data ), _CombinedElements )
-	lineageTag: 93b689a8-a76f-4a9b-b1dd-2949ef422773
+	lineageTag: 3c33e3c0-0f0a-4f20-b821-7cc99d0f0664
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -3721,7 +3721,7 @@ function 'DaxLib.SVG.Data.AxisMeasure' =
 					[@AxisIndex], ASC,
 					[@AxisValue], ASC
 				)
-	lineageTag: 811f20b2-74c3-42e0-a5ae-cbb871c4b0e0
+	lineageTag: 6fb64370-ac4e-4987-bb5c-abe33008bdd0
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -3750,7 +3750,7 @@ function 'DaxLib.SVG.Data.Range' =
 					"@Max", _Max,
 					"@Baseline", _Baseline
 				)
-	lineageTag: af601862-105f-471a-9f10-3bd9f298bb05
+	lineageTag: 723b608e-975b-41ab-a523-89898a8f4f33
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -3781,7 +3781,7 @@ function 'DaxLib.SVG.Def.Circle' =
 			IF( NOT ISBLANK( attributes ), " " & attributes & " " ) &
 			IF( NOT ISBLANK( transforms ), " transform='" & transforms & "'" ) &
 			"/>"
-	lineageTag: 3b6e52e4-cf12-4eea-8668-acf616842bcf
+	lineageTag: 8e16b2fa-f12d-45a8-a28c-1caf8ed1eba3
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -3800,7 +3800,7 @@ function 'DaxLib.SVG.Def.ClipPath' =
 			"<clipPath id='" & defId & "'>" &
 			contents &
 			"</clipPath>"
-	lineageTag: 758d5bc0-49a5-4d16-b41d-8014bcde2584
+	lineageTag: ee3cb251-afe5-4fa4-8694-0e5d545f0b32
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -3822,7 +3822,7 @@ function 'DaxLib.SVG.Def.GradientStop' =
 			"' stop-color='" & color & "'" &
 			IF( NOT ISBLANK( opacity ), " stop-opacity='" & opacity & "'" ) &
 			"/>"
-	lineageTag: 283f6ac0-f68a-41a7-8ad2-28f78b2828c4
+	lineageTag: 4e79b43f-188e-46d3-b2ed-94bf9ae7feee
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -3856,7 +3856,7 @@ function 'DaxLib.SVG.Def.Line' =
 			IF( NOT ISBLANK( attributes ), " " & attributes & " " ) &
 			IF( NOT ISBLANK( transforms ), " transform='" & transforms & "'" ) &
 			"/>"
-	lineageTag: 03b01086-b1e4-4d2a-91f2-2cd5ec31a77a
+	lineageTag: c13bf23a-51a4-40d3-9027-a983d8c8a9ae
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -3889,7 +3889,7 @@ function 'DaxLib.SVG.Def.LinearGradient' =
 			">" &
 			stops &
 			"</linearGradient>"
-	lineageTag: 81920c56-4319-475c-9633-fe72fb5df70f
+	lineageTag: d5740e3a-5859-4afc-a854-c4d2e6608aee
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -3914,7 +3914,7 @@ function 'DaxLib.SVG.Def.Paths' =
 			IF( NOT ISBLANK( attributes ), " " & attributes & " " ) &
 			IF( NOT ISBLANK( transforms ), " transform='" & transforms & "'" ) &
 			"/>"
-	lineageTag: 3f2467e3-05e8-416a-88aa-eecf76ee8ae5
+	lineageTag: 76c52ccf-8a6f-4cdb-97cb-c606d1324b0c
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -3953,7 +3953,7 @@ function 'DaxLib.SVG.Def.RadialGradient' =
 			">" &
 			stops &
 			"</radialGradient>"
-	lineageTag: a9e070ee-5e1a-4439-b3d4-adfddae6e919
+	lineageTag: 3a792f73-8a42-47dd-87b7-ef0ef5000d12
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -3987,7 +3987,7 @@ function 'DaxLib.SVG.Def.Rect' =
 			IF( NOT ISBLANK( attributes ), " " & attributes & " " ) &
 			IF( NOT ISBLANK( transforms ), " transform='" & transforms & "'" ) &
 			"/>"
-	lineageTag: 047da85d-a3ae-46af-a63d-23e0cb67682f
+	lineageTag: 58b27043-fc9b-42ab-b317-70b62adcd9df
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -4016,7 +4016,7 @@ function 'DaxLib.SVG.Element.Circle' =
 			IF( NOT ISBLANK( attributes ), " " & attributes & " " ) &
 			IF( NOT ISBLANK( transforms ), " transform='" & transforms & "'" ) &
 			"/>"
-	lineageTag: e4fe1280-3cdb-4f9e-b49f-6feaf1249832
+	lineageTag: 0b0a1b05-f88d-4827-9a12-77d3dd99d171
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -4033,7 +4033,7 @@ function 'DaxLib.SVG.Element.Defs' =
 			"<defs>" &
 			defs &
 			"</defs>"
-	lineageTag: 607c7b15-aae0-4c70-bc16-9cffd5ae0ead
+	lineageTag: 7bff70b9-890a-4706-b15e-c0b2b2308292
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -4065,7 +4065,7 @@ function 'DaxLib.SVG.Element.Ellipse' =
 			IF( NOT ISBLANK( attributes ), " " & attributes & " " ) &
 			IF( NOT ISBLANK( transforms ), " transform='" & transforms & "'" ) &
 			"/>"
-	lineageTag: 595676e6-32ff-44ce-95e0-ebc2fa6ad4e8
+	lineageTag: 41f22c4b-4b77-429a-95c9-2c3e53d8c9c4
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -4088,7 +4088,7 @@ function 'DaxLib.SVG.Element.Group' =
 			IF( NOT ISBLANK( transforms ), " transform='" & transforms & "'" ) &
 			IF( NOT ISBLANK( opacity ), " opacity='" & opacity & "'" ) &
 			">" & contents & "</g>"
-	lineageTag: 9dd7a9b1-706e-46ab-96a7-7774e614e91f
+	lineageTag: 7c62ea33-c2fe-4566-b91f-d413d3e076fe
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -4120,7 +4120,7 @@ function 'DaxLib.SVG.Element.Line' =
 			IF( NOT ISBLANK( attributes ), " " & attributes & " " ) &
 			IF( NOT ISBLANK( transforms ), " transform='" & transforms & "'" ) &
 			"/>"
-	lineageTag: 4e51e284-63ff-4da1-8df9-1db15dbf1a67
+	lineageTag: 983e86b6-0624-42da-be6e-933748bb9c2c
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -4142,7 +4142,7 @@ function 'DaxLib.SVG.Element.Paths' =
 			IF( NOT ISBLANK( attributes ), " " & attributes & " " ) &
 			IF( NOT ISBLANK( transforms ), " transform='" & transforms & "'" ) &
 			"/>"
-	lineageTag: 362f4a8f-bbd0-48eb-9046-9042dfebe52d
+	lineageTag: 484b8f08-9e13-40e0-bc0e-31afdb04ad33
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -4165,7 +4165,7 @@ function 'DaxLib.SVG.Element.Polygon' =
 			IF( NOT ISBLANK( attributes ), " " & attributes & " " ) &
 			IF( NOT ISBLANK( transforms ), " transform='" & transforms & "'" ) &
 			"/>"
-	lineageTag: bd7603ef-be45-457d-9d81-f3c26741fe1e
+	lineageTag: 8f274df4-5ac5-4875-a4f5-cf05ff16858d
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -4188,7 +4188,7 @@ function 'DaxLib.SVG.Element.Polyline' =
 			IF( NOT ISBLANK( attributes ), " " & attributes & " " ) &
 			IF( NOT ISBLANK( transforms ), " transform='" & transforms & "'" ) &
 			"/>"
-	lineageTag: f5ee3172-a604-4e1b-9419-f5ee3c2280f0
+	lineageTag: afaf694d-fa43-4269-b812-3f47b4503c99
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -4226,7 +4226,7 @@ function 'DaxLib.SVG.Element.Rect' =
 			IF( NOT ISBLANK( attributes ), " " & attributes & " " ) &
 			IF( NOT ISBLANK( transforms ), " transform='" & transforms & "'" ) &
 			"/>"
-	lineageTag: 2e25d7a5-7557-4162-a77e-8b7acf84eb9b
+	lineageTag: 098b3b98-14ba-4fb2-85d2-aba8e76ab0ba
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -4272,7 +4272,7 @@ function 'DaxLib.SVG.Element.Txt' =
 				IF( NOT ISBLANK( transforms ), " transform='" & transforms & "'" ) &
 				">" & _Txt &
 				"</text>"
-	lineageTag: 169d52b6-ffa6-4be6-8ca0-5c7a06c57551
+	lineageTag: d23ce1dc-bf99-4fd5-a926-be80acb49c7c
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -4301,7 +4301,7 @@ function 'DaxLib.SVG.Element.UseDef' =
 			IF( NOT ISBLANK( y ), " y='" & y & "'" ) &
 			IF( NOT ISBLANK( transforms ), " transform='" & transforms & "'" ) &
 			"/>"
-	lineageTag: d67543a2-4166-49dd-9948-f04a7c68cd95
+	lineageTag: 526c37bc-4710-4b46-be90-140e2be7ba0f
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -4335,7 +4335,7 @@ function 'DaxLib.SVG.Scale.NiceNum' =
 		
 			RETURN
 				_NiceFraction * POWER( 10, _Exponent )
-	lineageTag: 7df66207-2d8c-40aa-a890-adc15788eb7f
+	lineageTag: fc44cab1-3171-4173-b50f-a0fc6827b6f2
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -4382,7 +4382,7 @@ function 'DaxLib.SVG.Scale.NiceRange' =
 					"@NiceInterval", _NiceInterval,
 					"@NiceTickCount", _NiceTickCount
 				)
-	lineageTag: cf60b289-1a59-4a9f-a665-63b2e6d5ce90
+	lineageTag: 975d1bb9-e4f8-43f0-a2fd-80590d42e6c0
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -4406,7 +4406,7 @@ function 'DaxLib.SVG.Scale.Normalize' =
 		) =>
 		
 			( ( inputValue - fromMin ) / ( fromMax - fromMin ) ) * ( toMax - toMin ) + toMin
-	lineageTag: 916e50ed-aada-4526-a81c-1cb39dd194b5
+	lineageTag: 57840af6-d131-4d50-aa97-5d7c2188cae5
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -4432,14 +4432,23 @@ function 'DaxLib.SVG.Viz.Area' =
 		
 			VAR _Marks =
 				DaxLib.SVG.Compound.Area(
-					0, 0, width, height,
-					axisRef, measureRef, color, color,
-					, , , , , showAxis, 8
+					0,          // x
+					0,          // y
+					width,      // width
+					height,     // height
+					axisRef,    // axisRef
+					measureRef, // measureRef
+					color,      // fillColor
+					color,      // strokeColor
+					,           // fillOpacity
+					,           // minMarkColor
+					,           // maxMarkColor
+					showAxis    // showAxis
 				)
 		
 			RETURN
 				IF( NOT ISBLANK( _Marks ), DaxLib.SVG.SVG( "100%", "100%", _Marks, "0 0 " & width & " " & height ) )
-	lineageTag: f3ead8d8-16a3-460a-948e-051f761d9beb
+	lineageTag: 19ec7ab4-953b-4caa-9914-c0a7aea03384
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -4469,14 +4478,21 @@ function 'DaxLib.SVG.Viz.Bars' =
 		
 			VAR _Marks =
 				DaxLib.SVG.Compound.Bars(
-					0, 0, width, height,
-					axisRef, measureRef,
-					, , color, , , showAxis, 8
+					0,
+					0,
+					width,
+					height,
+					axisRef,
+					measureRef,
+					color,
+					minMarkColor,
+					maxMarkColor,
+					showAxis
 				)
 		
 			RETURN
 				IF( NOT ISBLANK( _Marks ), DaxLib.SVG.SVG( "100%", "100%", _Marks, "0 0 " & width & " " & height ) )
-	lineageTag: bf3f400e-1422-4a88-9a5c-e5cb972dd8f7
+	lineageTag: e05ac361-36e2-4445-ac8e-40003546fdb7
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -4508,7 +4524,7 @@ function 'DaxLib.SVG.Viz.Boxplot' =
 		
 			RETURN
 				IF( NOT ISBLANK( _Marks ), DaxLib.SVG.SVG( "100%", "100%", _Marks, "0 0 " & width & " " & height ) )
-	lineageTag: 087f718f-dea3-459f-867c-f27e73fb5817
+	lineageTag: d93b3269-9088-42ab-973d-719c6f41519f
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -4538,7 +4554,7 @@ function 'DaxLib.SVG.Viz.Heatmap' =
 		
 			RETURN
 				IF( NOT ISBLANK( _Marks ), DaxLib.SVG.SVG( "100%", "100%", _Marks, "0 0 " & width & " " & height ) )
-	lineageTag: c9c304cb-cd31-4083-a21e-eb8a8862de28
+	lineageTag: d61b2192-34c6-4f86-a109-2516f140c585
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -4568,7 +4584,7 @@ function 'DaxLib.SVG.Viz.Jitter' =
 		
 			RETURN
 				IF( NOT ISBLANK( _Marks ), DaxLib.SVG.SVG( "100%", "100%", _Marks, "0 0 " & width & " " & height ) )
-	lineageTag: c95d214e-a21e-4e84-8b76-c45abe551ada
+	lineageTag: a8104be3-0beb-4c1a-a82f-c9c3368f7b7f
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -4600,7 +4616,7 @@ function 'DaxLib.SVG.Viz.Line' =
 		
 			RETURN
 				IF( NOT ISBLANK( _Marks ), DaxLib.SVG.SVG( "100%", "100%", _Marks, "0 0 " & width & " " & height ) )
-	lineageTag: 4b3f8563-c4f0-4b68-8eec-3355e6801a6c
+	lineageTag: c053ba75-bcd5-4af0-93ba-028d976d4211
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -4627,7 +4643,7 @@ function 'DaxLib.SVG.Viz.Pill' =
 		
 			RETURN
 				IF( NOT ISBLANK( _Marks ), DaxLib.SVG.SVG( "100%", "100%", _Marks, "0 0 " & width & " " & height ) )
-	lineageTag: 397095d1-ccc6-4c9b-8d90-ffea774ff5b7
+	lineageTag: 2d11d8ae-7ef4-475f-ba91-e6378fb0542c
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -4659,7 +4675,7 @@ function 'DaxLib.SVG.Viz.ProgressBar' =
 		
 			RETURN
 				IF( NOT ISBLANK( _Marks ), DaxLib.SVG.SVG( "100%", "100%", _Marks, "0 0 " & width & " " & height ) )
-	lineageTag: 144f91ab-8826-484d-b2a1-71eca5d90790
+	lineageTag: 491a5541-19f2-4b1f-9f3c-33538317024f
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -4689,7 +4705,7 @@ function 'DaxLib.SVG.Viz.Violin' =
 		
 			RETURN
 				IF( NOT ISBLANK( _Marks ), DaxLib.SVG.SVG( "100%", "100%", _Marks, "0 0 " & width & " " & height ) )
-	lineageTag: 7a7471ce-354c-4006-8691-d09f425f0f82
+	lineageTag: 1b483367-bbb8-4f23-b35b-4fd16e95308a
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -4719,7 +4735,7 @@ function 'DaxLib.SVG.SVG' =
 			IF( NOT ISBLANK( sortValue ), "<desc>" & FORMAT( sortValue, "000000000000" ) & "</desc>" ) &
 			contents &
 			"</svg>"
-	lineageTag: cef54056-8c66-41a2-ab31-0279e824ea20
+	lineageTag: 97b6cae5-d48b-427a-b94e-243cede9cc33
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 
@@ -4746,7 +4762,7 @@ function 'DaxLib.SVG.Transforms' =
 			IF(NOT ISBLANK(scale), "scale(" & scale & ") ") &
 			IF(NOT ISBLANK(skewX), "skewX(" & skewX & ") ") &
 			IF(NOT ISBLANK(skewY), "skewY(" & skewY & ") ")
-	lineageTag: cebfcebe-70bc-417a-b27a-25a43cd36f28
+	lineageTag: f9fbe1f2-e3fc-4389-b32f-3e5525a3b7fb
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
 

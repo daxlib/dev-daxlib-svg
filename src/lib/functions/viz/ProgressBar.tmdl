@@ -18,8 +18,15 @@ function 'DaxLib.SVG.Viz.ProgressBar' =
 
 			VAR _Marks =
 				DaxLib.SVG.Compound.ProgressBar(
-					0, 0, width, height,
-					valueRefExpr, trackRefExpr, color, "#E1DFDD", orientation
+					0, 
+                    0, 
+                    width, 
+                    height,
+					valueRefExpr,
+                    trackRefExpr, 
+                    color, 
+                    "#E1DFDD",
+                    orientation
 				)
 
 			RETURN

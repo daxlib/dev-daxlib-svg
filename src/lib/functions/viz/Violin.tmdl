@@ -16,8 +16,15 @@ function 'DaxLib.SVG.Viz.Violin' =
 
 			VAR _Marks =
 				DaxLib.SVG.Compound.Violin(
-					0, 0, width, height,
-					axisRef, measureRef, 50, 1, color
+					0,
+                    0, 
+                    width, 
+                    height,
+					axisRef,
+                    measureRef, 
+                    50, 
+                    1, 
+                    color
 				)
 
 			RETURN

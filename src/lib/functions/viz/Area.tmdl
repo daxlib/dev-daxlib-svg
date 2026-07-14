@@ -18,9 +18,18 @@ function 'DaxLib.SVG.Viz.Area' =
 
 			VAR _Marks =
 				DaxLib.SVG.Compound.Area(
-					0, 0, width, height,
-					axisRef, measureRef, color, color,
-					, , , , , showAxis, 8
+					0,          // x
+                    0,          // y
+                    width,      // width
+                    height,     // height
+					axisRef,    // axisRef
+                    measureRef, // measureRef
+                    color,      // fillColor
+                    color,      // strokeColor
+					,           // fillOpacity
+                    ,           // minMarkColor
+                    ,           // maxMarkColor
+                    showAxis    // showAxis
 				)
 
 			RETURN

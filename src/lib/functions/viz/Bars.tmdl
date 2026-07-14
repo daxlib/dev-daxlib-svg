@@ -22,9 +22,16 @@ function 'DaxLib.SVG.Viz.Bars' =
 
 			VAR _Marks =
 				DaxLib.SVG.Compound.Bars(
-					0, 0, width, height,
-					axisRef, measureRef,
-					, , color, , , showAxis, 8
+					0, 
+                    0, 
+                    width, 
+                    height,
+					axisRef,
+                    measureRef,
+					color, 
+                    minMarkColor, 
+                    maxMarkColor, 
+                    showAxis
 				)
 
 			RETURN

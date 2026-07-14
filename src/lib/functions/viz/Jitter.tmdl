@@ -16,8 +16,13 @@ function 'DaxLib.SVG.Viz.Jitter' =
 
 			VAR _Marks =
 				DaxLib.SVG.Compound.Jitter(
-					0, 0, width, height,
-					axisRef, measureRef, color
+					0, 
+                    0, 
+                    width, 
+                    height,
+					axisRef, 
+                    measureRef, 
+                    color
 				)
 
 			RETURN
