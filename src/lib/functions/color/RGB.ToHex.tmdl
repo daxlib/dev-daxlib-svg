@@ -9,7 +9,7 @@ function 'DaxLib.SVG.Color.RGB.ToHex' =
 			red: INT64,
 			green: INT64,
 			blue: INT64,
-			alpha: DOUBLE
+			alpha: DOUBLE = BLANK()
 		) =>
 		
 			"#" &

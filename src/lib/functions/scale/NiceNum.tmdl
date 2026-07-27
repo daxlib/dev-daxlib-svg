@@ -6,7 +6,7 @@
 function 'DaxLib.SVG.Scale.NiceNum' =
 		(
 			rawValue: NUMERIC VAL,
-			roundMode: BOOLEAN
+			roundMode: BOOLEAN = TRUE()
 		) =>
 
 			VAR _Value = ABS( rawValue )

@@ -12,8 +12,8 @@ function 'DaxLib.SVG.Def.Circle' =
 			cx: STRING,
 			cy: STRING,  
 			r: STRING,
-			attributes: STRING,
-			transforms: STRING
+			attributes: STRING = BLANK(),
+			transforms: STRING = BLANK()
 		) =>
 
 			"<circle id='" & defId & "'" &

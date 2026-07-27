@@ -8,8 +8,8 @@ function 'DaxLib.SVG.Def.Paths' =
 		(
 			defId: STRING,
 			d: STRING,
-			attributes: STRING,
-			transforms: STRING
+			attributes: STRING = BLANK(),
+			transforms: STRING = BLANK()
 		) =>
 
 			"<path id='" & defId & "'" &

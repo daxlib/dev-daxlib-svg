@@ -3,14 +3,14 @@
 /// @param {int} y – The y position of the compound
 /// @param {int} width – The width of the compound
 /// @param {int} height – The height of the compound
-/// @param {decimal} [paddingX] – Optional: The horizontal padding percentage (0.0-1.0, e.g., 0.1 = 10% padding). Defaults to 0
-/// @param {decimal} [paddingY] – Optional: The vertical padding percentage (0.0-1.0, e.g., 0.1 = 10% padding). Defaults to 0
 /// @param {anyref expr} axisRef – The column that the measure will be evaluated against
 /// @param {numeric expr} measureRef – The measure to evaluate
 /// @param {int} samples – Number of density calculation points
 /// @param {numeric} bandwidth – Kernel bandwidth for smoothing
-/// @param {string} color – Fill color for the violin shape
+/// @param {string} [color] – Optional: Fill color for the violin shape. Defaults to "#01B8AA"
 /// @param {string} [orientation] – Optional: "Horizontal" (default) or "Vertical"
+/// @param {decimal} [paddingX] – Optional: The horizontal padding percentage (0.0-1.0, e.g., 0.1 = 10% padding). Defaults to 0.05
+/// @param {decimal} [paddingY] – Optional: The vertical padding percentage (0.0-1.0, e.g., 0.1 = 10% padding). Defaults to 0.02
 /// @returns {string} SVG Violin Plot
 function 'DaxLib.SVG.Compound.Violin' =
 		(
@@ -18,14 +18,14 @@ function 'DaxLib.SVG.Compound.Violin' =
 			y: INT64,
 			width: INT64,
 			height: INT64,
-			paddingX: DOUBLE,
-			paddingY: DOUBLE,
 			axisRef: ANYREF EXPR,
 			measureRef: NUMERIC EXPR,
 			samples: INT64,
 			bandwidth: NUMERIC,
-			color: STRING,
-			orientation: STRING
+			color: STRING = BLANK(),
+			orientation: STRING = "Horizontal",
+			paddingX: DOUBLE = 0.05,
+			paddingY: DOUBLE = 0.02
 		) =>
 		
 			// Apply padding to dimensions
@@ -33,6 +33,8 @@ function 'DaxLib.SVG.Compound.Violin' =
 			VAR _Y = 			y + (height * (IF(ISBLANK(paddingY), 0, paddingY) / 2))
 			VAR _Width = 		width * (1 - IF(ISBLANK(paddingX), 0, paddingX))
 			VAR _Height = 		height * (1 - IF(ISBLANK(paddingY), 0, paddingY))
+
+			VAR _Color = IF( NOT ISBLANK( color ), color, "#01B8AA" )
 
 			// Check if Axis is numeric
 			VAR axisSample = 	MAX( axisRef )
@@ -186,17 +188,14 @@ function 'DaxLib.SVG.Compound.Violin' =
 			// Combined Elements
 			VAR _CombinedElements = 
 				DaxLib.SVG.Element.Paths(
-					_ViolinPath, // d
+					_ViolinPath,
 					DaxLib.SVG.Attr.Shapes(
-						color,          // fill
-						0.5,          	// fillOpacity
-						BLANK(),        // fillRule
-						color,          // stroke
-						1,              // strokeWidth
-						BLANK(),        // strokeOpacity
-						BLANK()         // opacity
-					),
-					BLANK()             // transforms
+						_Color,
+						0.5,
+						BLANK(),
+						_Color,
+						1
+					)
 				)
 
 			RETURN

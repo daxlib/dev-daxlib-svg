@@ -3,14 +3,14 @@
 /// @param {int} y – The y position of the compound
 /// @param {int} width – The width of the compound
 /// @param {int} height – The height of the compound
-/// @param {decimal} [paddingX] – Optional: The horizontal padding percentage (0.0-1.0, e.g., 0.1 = 10% padding). Defaults to 0
-/// @param {decimal} [paddingY] – Optional: The vertical padding percentage (0.0-1.0, e.g., 0.1 = 10% padding). Defaults to 0
 /// @param {anyref expr} axisRef – The column that the measure will be evaluated against
 /// @param {numeric expr} measureRef – The measure to evaluate
-/// @param {string} fillColor – Color for the box fill
-/// @param {string} strokeColor – Color for lines, whiskers, and median
-/// @param {boolean} showOutliers – Whether to show outlier points beyond whiskers
+/// @param {string} [fillColor] – Optional: Color for the box fill. Defaults to "#01B8AA"
+/// @param {string} [strokeColor] – Optional: Color for lines, whiskers, and median. Defaults to "#605E5C"
+/// @param {boolean} showOutliers – Whether to show outlier points beyond whiskers. Defaults to FALSE
 /// @param {string} [orientation] – Optional: "Horizontal" (default) or "Vertical"
+/// @param {decimal} [paddingX] – Optional: The horizontal padding percentage (0.0-1.0, e.g., 0.1 = 10% padding). Defaults to 0.05
+/// @param {decimal} [paddingY] – Optional: The vertical padding percentage (0.0-1.0, e.g., 0.1 = 10% padding). Defaults to 0.02
 /// @returns {string} SVG Box Plot
 function 'DaxLib.SVG.Compound.Boxplot' =
 		(
@@ -18,14 +18,14 @@ function 'DaxLib.SVG.Compound.Boxplot' =
 			y: INT64,
 			width: INT64,
 			height: INT64,
-			paddingX: DOUBLE,
-			paddingY: DOUBLE,
 			axisRef: ANYREF EXPR,
 			measureRef: NUMERIC EXPR,
-			fillColor: STRING,
-			strokeColor: STRING,
-			showOutliers: BOOLEAN,
-			orientation: STRING
+			fillColor: STRING = BLANK(),
+			strokeColor: STRING = BLANK(),
+			showOutliers: BOOLEAN = FALSE(),
+			orientation: STRING = "Horizontal",
+            paddingX: DOUBLE = 0.05,
+			paddingY: DOUBLE = 0.02
 		) =>
 
 			// Apply padding to dimensions
@@ -33,6 +33,9 @@ function 'DaxLib.SVG.Compound.Boxplot' =
 			VAR _Y = 			y + (height * (IF(ISBLANK(paddingY), 0, paddingY) / 2))
 			VAR _Width = 		width * (1 - IF(ISBLANK(paddingX), 0, paddingX))
 			VAR _Height = 		height * (1 - IF(ISBLANK(paddingY), 0, paddingY))
+
+			VAR _FillColor = IF( NOT ISBLANK( fillColor ), fillColor, "#01B8AA" )
+			VAR _StrokeColor = IF( NOT ISBLANK( strokeColor ), strokeColor, "#605E5C" )
 
 			// Check if Axis is numeric
 			VAR axisSample = 	MAX( axisRef )
@@ -104,8 +107,7 @@ function 'DaxLib.SVG.Compound.Boxplot' =
 							IF( _Orientation = "Horizontal", DaxLib.SVG.Scale.Normalize( [@Value], _XMin, _XMax, _PrimLow, _PrimHigh ), _CenterCross ),
 							IF( _Orientation = "Horizontal", _CenterCross, DaxLib.SVG.Scale.Normalize( [@Value], _XMin, _XMax, _PrimLow, _PrimHigh ) ),
 							2,
-							DaxLib.SVG.Attr.Shapes( strokeColor, BLANK(), BLANK(), BLANK(), BLANK(), BLANK(), BLANK() ),
-							BLANK()
+							DaxLib.SVG.Attr.Shapes( _StrokeColor )
 						),
 						""
 					)
@@ -118,8 +120,7 @@ function 'DaxLib.SVG.Compound.Boxplot' =
 					IF( _Orientation = "Horizontal", _CenterCross, _LowerWhiskerP ),
 					IF( _Orientation = "Horizontal", _Q1P, _CenterCross ),
 					IF( _Orientation = "Horizontal", _CenterCross, _Q1P ),
-					DaxLib.SVG.Attr.Shapes( BLANK(), BLANK(), BLANK(), strokeColor, 1, BLANK(), BLANK() ),
-					BLANK()
+					DaxLib.SVG.Attr.Shapes( BLANK(), BLANK(), BLANK(), _StrokeColor, 1 )
 				)
 
 			// Upper whisker line (along primary axis)
@@ -129,8 +130,7 @@ function 'DaxLib.SVG.Compound.Boxplot' =
 					IF( _Orientation = "Horizontal", _CenterCross, _Q3P ),
 					IF( _Orientation = "Horizontal", _UpperWhiskerP, _CenterCross ),
 					IF( _Orientation = "Horizontal", _CenterCross, _UpperWhiskerP ),
-					DaxLib.SVG.Attr.Shapes( BLANK(), BLANK(), BLANK(), strokeColor, 1, BLANK(), BLANK() ),
-					BLANK()
+					DaxLib.SVG.Attr.Shapes( BLANK(), BLANK(), BLANK(), _StrokeColor, 1 )
 				)
 
 			// Lower whisker cap (across cross axis)
@@ -140,8 +140,7 @@ function 'DaxLib.SVG.Compound.Boxplot' =
 					IF( _Orientation = "Horizontal", _BoxCross, _LowerWhiskerP ),
 					IF( _Orientation = "Horizontal", _LowerWhiskerP, _BoxCross + _BoxCrossLen ),
 					IF( _Orientation = "Horizontal", _BoxCross + _BoxCrossLen, _LowerWhiskerP ),
-					DaxLib.SVG.Attr.Shapes( BLANK(), BLANK(), BLANK(), strokeColor, 1, BLANK(), BLANK() ),
-					BLANK()
+					DaxLib.SVG.Attr.Shapes( BLANK(), BLANK(), BLANK(), _StrokeColor, 1 )
 				)
 
 			// Upper whisker cap (across cross axis)
@@ -151,8 +150,7 @@ function 'DaxLib.SVG.Compound.Boxplot' =
 					IF( _Orientation = "Horizontal", _BoxCross, _UpperWhiskerP ),
 					IF( _Orientation = "Horizontal", _UpperWhiskerP, _BoxCross + _BoxCrossLen ),
 					IF( _Orientation = "Horizontal", _BoxCross + _BoxCrossLen, _UpperWhiskerP ),
-					DaxLib.SVG.Attr.Shapes( BLANK(), BLANK(), BLANK(), strokeColor, 1, BLANK(), BLANK() ),
-					BLANK()
+					DaxLib.SVG.Attr.Shapes( BLANK(), BLANK(), BLANK(), _StrokeColor, 1 )
 				)
 
 			// Main box (Q1 to Q3)
@@ -163,8 +161,7 @@ function 'DaxLib.SVG.Compound.Boxplot' =
 					IF( _Orientation = "Horizontal", ABS( _Q3P - _Q1P ), _BoxCrossLen ),
 					IF( _Orientation = "Horizontal", _BoxCrossLen, ABS( _Q3P - _Q1P ) ),
 					2, 2,
-					DaxLib.SVG.Attr.Shapes( fillColor, 0.5, BLANK(), strokeColor, 1, BLANK(), BLANK() ),
-					BLANK()
+					DaxLib.SVG.Attr.Shapes( _FillColor, 0.5, BLANK(), _StrokeColor, 1 )
 				)
 
 			// Median line (across cross axis)
@@ -174,8 +171,7 @@ function 'DaxLib.SVG.Compound.Boxplot' =
 					IF( _Orientation = "Horizontal", _BoxCross, _MedianP ),
 					IF( _Orientation = "Horizontal", _MedianP, _BoxCross + _BoxCrossLen ),
 					IF( _Orientation = "Horizontal", _BoxCross + _BoxCrossLen, _MedianP ),
-					DaxLib.SVG.Attr.Shapes( BLANK(), BLANK(), BLANK(), strokeColor, 2, BLANK(), BLANK() ),
-					BLANK()
+					DaxLib.SVG.Attr.Shapes( BLANK(), BLANK(), BLANK(), _StrokeColor, 2 )
 				)
 
 			// Combined elements

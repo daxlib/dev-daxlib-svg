@@ -12,10 +12,10 @@ function 'DaxLib.SVG.Def.Rect' =
 			defId: STRING,
 			width: STRING,
 			height: STRING,
-			rx: STRING,
-			ry: STRING,
-			attributes: STRING,
-			transforms: STRING
+			rx: STRING = BLANK(),
+			ry: STRING = BLANK(),
+			attributes: STRING = BLANK(),
+			transforms: STRING = BLANK()
 		) =>
 
 			"<rect id='" & defId & "'" &

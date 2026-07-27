@@ -9,8 +9,6 @@ table _Measures
 			        SELECTEDVALUE( y[y], 0 ), // y
 			        SELECTEDVALUE( Width[Width], 100 ), // width
 			        SELECTEDVALUE( Height[Height], 20), // height
-			        0.05,               // paddingX
-			        0.02,               // paddingY
 			        MAX( Products[Brand] ), // txt
 			        DaxLib.SVG.Color.Theme(
 			            MAX( Theme[Theme] ),
@@ -24,9 +22,7 @@ table _Measures
 			        DaxLib.SVG.SVG(
 			            SELECTEDVALUE( Width[Width], 100 ), // width
 			            SELECTEDVALUE( Height[Height], 20), // height
-			            BLANK(),
-			            Compound,
-			            BLANK()
+			            Compound
 			        )
 			    )
 			```
@@ -39,7 +35,6 @@ table _Measures
 			DaxLib.SVG.SVG( 
 			    100,                // width
 			    20,                 // height
-			    BLANK(),            // viewbox
 			    DaxLib.SVG.Element.Txt(
 			        10,             // x
 			        10, 	        // y
@@ -48,18 +43,10 @@ table _Measures
 			        0,              // dy
 			        DaxLib.SVG.Attr.Txt(
 			            "Arial",    // fontFamily
-			            12,         // fontSize
-			            BLANK(),    // fontWeight
-			            BLANK(),    // fontStyle
-			            BLANK(),    // textAnchor
-			            BLANK(),    // baseline
-			            BLANK(),    // textDecoration
-			            BLANK(),    // letterSpacing
-			            BLANK()     // wordSpacing
+			            12         // fontSize
 			         ),             // attributes
 			        BLANK()			// transforms
-			    ),                  // contents
-			    BLANK()             // sortValue
+			    )                   // contents
 			)
 			```
 		displayFolder: SVG\Elements
@@ -71,7 +58,6 @@ table _Measures
 			DaxLib.SVG.SVG( 
 			    100,                // width
 			    20,                 // height
-			    BLANK(),            // viewbox
 			    DaxLib.SVG.Element.Rect(
 			        "50%",          // x
 			        "0%",           // y
@@ -101,8 +87,7 @@ table _Measures
 			            -20,        // skewX
 			            BLANK()     // skewY
 			        )               // transforms
-			    ),                  // contents
-			    BLANK()             // sortValue
+			    )                   // contents
 			)
 			```
 		displayFolder: SVG\Elements
@@ -114,7 +99,6 @@ table _Measures
 			DaxLib.SVG.SVG(
 			    100,                // width
 			    20,                 // height
-			    BLANK(),            // viewbox
 			    DaxLib.SVG.Element.Line(
 			        1,              // x1
 			        5,              // y1
@@ -133,8 +117,7 @@ table _Measures
 			            BLANK()     // opacity
 			        ),              // attributes
 			        BLANK()         // transforms
-			    ),                  // contents
-			    BLANK()             // sortValue
+			    )                   // contents
 			)
 		displayFolder: SVG\Elements
 		lineageTag: 37190c4a-0a1d-46c7-8d8a-0ccf9f2e8303
@@ -145,7 +128,6 @@ table _Measures
 			DaxLib.SVG.SVG(
 			    100,                // width
 			    20,                 // height
-			    BLANK(),            // viewbox
 			    DaxLib.SVG.Element.Paths(
 			        "M10 10 L30 5 C50 0 70 20 90 15 L100 0", // d
 			        DaxLib.SVG.Attr.Shapes(
@@ -161,8 +143,7 @@ table _Measures
 			            BLANK()     // opacity
 			        ),              // attributes
 			        BLANK()		    // transforms
-			    ),                  // contents
-			    BLANK()             // sortValue
+			    )                   // contents
 			)
 		displayFolder: SVG\Elements
 		lineageTag: b09066a5-dce4-49d1-b3f1-a0afd85d05f9
@@ -173,7 +154,6 @@ table _Measures
 			DaxLib.SVG.SVG(
 			    100,                // width
 			    20,                 // height
-			    BLANK(),            // viewbox
 			    DaxLib.SVG.Element.Circle(
 			        50,             // cx
 			        10,             // cy
@@ -194,8 +174,7 @@ table _Measures
 			            BLANK()     // opacity
 			        ),              // attributes
 			        BLANK()         // transforms
-			    ),                  // contents
-			    BLANK()             // sortValue
+			    )                   // contents
 			)
 			```
 		displayFolder: SVG\Elements
@@ -311,9 +290,7 @@ table _Measures
 			DaxLib.SVG.SVG(
 			    100,                // width
 			    20,                 // height
-			    BLANK(),            // viewbox
-			    _Contents,          // contents
-			    BLANK()             // sortValue
+			    _Contents           // contents
 			)
 			```
 		displayFolder: SVG\Elements
@@ -333,7 +310,6 @@ table _Measures
 			DaxLib.SVG.SVG(
 			    100,
 			    20,
-			    BLANK(),
 			    DaxLib.SVG.Element.Defs(
 			        DaxLib.SVG.Def.LinearGradient(
 			            "myGradient",   // id
@@ -376,8 +352,7 @@ table _Measures
 			            BLANK()         // opacity
 			        ),                  // attributes
 			        BLANK()             // transforms
-			    ),
-			    BLANK()                 // sortValue               
+			    )             
 			)
 			```
 		displayFolder: SVG\Defs
@@ -389,7 +364,6 @@ table _Measures
 			DaxLib.SVG.SVG(
 			    100,                    // width
 			    20,                     // height
-			    BLANK(),                // viewbox
 			    DaxLib.SVG.Element.Defs(
 			        DaxLib.SVG.Def.RadialGradient(
 			            "myGradient",   // id
@@ -439,8 +413,7 @@ table _Measures
 			            BLANK()         // opacity
 			        ),                  // attributes
 			        BLANK()             // transforms
-			    ),                      // contents
-			    BLANK()                 // sortODer
+			    )                       // contents
 			)
 			```
 		displayFolder: SVG\Defs
@@ -491,10 +464,8 @@ table _Measures
 			DaxLib.SVG.SVG(
 			    100,                // width
 			    20,                 // height
-			    BLANK(),            // viewbox
 			    _Defs &             // definitions including clipPath
-			    _Rectangle,         // clipped rectangle
-			    BLANK()             // sortValue
+			    _Rectangle          // clipped rectangle
 			)
 			```
 		displayFolder: SVG\Defs
@@ -509,8 +480,6 @@ table _Measures
 			        SELECTEDVALUE( y[y], 0 ), // y
 			        SELECTEDVALUE( Width[Width], 100 ), // width
 			        SELECTEDVALUE( Height[Height], 20), // height
-			        0.05,               // paddingX
-			        0.1,               // paddingY
 			        Dates[Date],        // axisRef
 			        [Total Cost],       // measureRef
 			        DaxLib.SVG.Color.Theme(
@@ -535,9 +504,7 @@ table _Measures
 			        DaxLib.SVG.SVG(
 			            SELECTEDVALUE( Width[Width], 100 ), // width
 			            SELECTEDVALUE( Height[Height], 20), // height
-			            BLANK(),
-			            Compound,
-			            BLANK()
+			            Compound
 			        )
 			    )
 			```
@@ -563,19 +530,17 @@ table _Measures
 			        SELECTEDVALUE( y[y], 0 ), // y
 			        SELECTEDVALUE( Width[Width], 100 ), // width
 			        SELECTEDVALUE( Height[Height], 20), // height
-			        0.05,           // paddingX
-			        0.02,           // paddingY
 			        Dates[Date],    // axisRef
 			        [Total Cost],   // measureRef
 			        DaxLib.SVG.Color.Theme(
 			            MAX( Theme[Theme] ),
 			            MIN( Variant[Variant] )
 			        ),              // fillColor
-			        0.2,            // fillOpacity
 			        DaxLib.SVG.Color.Theme(
 			            MAX( Theme[Theme] ),
 			            MIN( Variant[Variant] )
 			        ),              // strokeColor
+			        0.2,            // fillOpacity
 			        DaxLib.SVG.Color.PerformanceTheme(
 			           "Stoplight",
 			            "veryBad"
@@ -594,9 +559,7 @@ table _Measures
 			        DaxLib.SVG.SVG(
 			            SELECTEDVALUE( Width[Width], 100 ), // width
 			            SELECTEDVALUE( Height[Height], 20), // height
-			            BLANK(),
-			            Compound,
-			            BLANK()
+			            Compound
 			        )
 			    )
 			```
@@ -612,8 +575,6 @@ table _Measures
 			        SELECTEDVALUE( y[y], 0 ), // y
 			        SELECTEDVALUE( Width[Width], 100 ), // width
 			        SELECTEDVALUE( Height[Height], 20), // height
-			        0.05,               // paddingX
-			        0.02,               // paddingY
 			        Dates[Date],        // axisRef
 			        [Total Cost],       // measureRef
 			        DaxLib.SVG.Color.Theme(
@@ -624,8 +585,8 @@ table _Measures
 			            MAX( Theme[Theme] ),
 			            MIN( Variant[Variant] )
 			        ),                   // strokeColor
-			        TRUE,                // showOutliers
-			        SELECTEDVALUE( Orientation[Orientation]) // orientation
+			        TRUE,               // showOutliers
+			        SELECTEDVALUE( Orientation[Orientation] ) // orientation
 			    )
 			RETURN
 			
@@ -634,9 +595,7 @@ table _Measures
 			        DaxLib.SVG.SVG(
 			            SELECTEDVALUE( Width[Width], 100 ), // width
 			            SELECTEDVALUE( Height[Height], 20), // height
-			            BLANK(),
-			            Compound,                 
-			            BLANK()
+			            Compound
 			        )
 			    )
 			```
@@ -652,8 +611,6 @@ table _Measures
 			        SELECTEDVALUE( y[y], 0 ), // y
 			        SELECTEDVALUE( Width[Width], 100 ), // width
 			        SELECTEDVALUE( Height[Height], 20), // height
-			        0.05,               // paddingX
-			        0.02,               // paddingY
 			        Dates[Date],        // axisRef
 			        [Total Cost],       // measureRef
 			        MAX( Samples[Samples] ), // samples
@@ -671,9 +628,7 @@ table _Measures
 			        DaxLib.SVG.SVG(
 			            SELECTEDVALUE( Width[Width], 100 ), // width
 			            SELECTEDVALUE( Height[Height], 20), // height
-			            BLANK(),
-			            Compound,
-			            BLANK()
+			            Compound
 			        )
 			    )
 			```
@@ -689,8 +644,6 @@ table _Measures
 			        SELECTEDVALUE( y[y], 0 ), // y
 			        SELECTEDVALUE( Width[Width], 100 ), // width
 			        SELECTEDVALUE( Height[Height], 20), // height
-			        0.05,               // paddingX
-			        0.02,               // paddingY
 			        Dates[Date],        // axisRef
 			        [Total Cost],       // measureRef
 			        DaxLib.SVG.Color.Theme(
@@ -706,9 +659,7 @@ table _Measures
 			        DaxLib.SVG.SVG(
 			            SELECTEDVALUE( Width[Width], 100 ), // width
 			            SELECTEDVALUE( Height[Height], 20), // height
-			            BLANK(),
-			            Compound,
-			            BLANK()
+			            Compound
 			        )
 			    )
 		displayFolder: SVG\Compound
@@ -723,8 +674,6 @@ table _Measures
 			        SELECTEDVALUE( y[y], 0 ), // y
 			        SELECTEDVALUE( Width[Width], 100 ), // width
 			        SELECTEDVALUE( Height[Height], 20), // height
-			        0.05,               // paddingX
-			        0.02,               // paddingY
 			        Dates[Date],        // axisRef
 			        [Total Cost],       // measureRef
 			        MAX( Samples[Samples] ), // samples
@@ -741,9 +690,7 @@ table _Measures
 			        DaxLib.SVG.SVG(
 			            SELECTEDVALUE( Width[Width], 100 ), // width
 			            SELECTEDVALUE( Height[Height], 20), // height
-			            BLANK(),
-			            Compound,                 
-			            BLANK()
+			            Compound               
 			        )
 			    )
 			```
@@ -759,8 +706,6 @@ table _Measures
 			        0,                  // y
 			        100,                // width
 			        20,                 // height
-			        0.05,               // paddingX
-			        0.02,               // paddingY
 			        Dates[Date],        // axisRef
 			        [Total Cost],       // measureRef
 			        DaxLib.SVG.Color.Theme(
@@ -775,8 +720,6 @@ table _Measures
 			        0,                  // y
 			        100,                // width
 			        20,                 // height
-			        0.05,               // paddingX
-			        0.02,               // paddingY
 			        Dates[Date],        // axisRef
 			        [Total Cost],       // measureRef
 			        MAX( Samples[Samples] ), // samples
@@ -796,9 +739,7 @@ table _Measures
 			        DaxLib.SVG.SVG(
 			            100,
 			            20,
-			            BLANK(),
-			            Combined,                 
-			            BLANK()
+			            Combined
 			        )
 			    )
 			```
@@ -814,8 +755,6 @@ table _Measures
 			        0,                  // y
 			        100,                // width
 			        20,                 // height
-			        0.05,               // paddingX
-			        0.02,               // paddingY
 			        Dates[Date],        // axisRef
 			        [Total Cost],       // measureRef
 			        DaxLib.SVG.Color.Theme(
@@ -830,8 +769,6 @@ table _Measures
 			        0,                  // y
 			        100,                // width
 			        20,                 // height
-			        0.05,               // paddingX
-			        0.02,               // paddingY
 			        Dates[Date],        // axisRef
 			        [Total Cost],       // measureRef
 			        MAX( Samples[Samples] ), // samples
@@ -852,9 +789,7 @@ table _Measures
 			        DaxLib.SVG.SVG(
 			            100,
 			            20,
-			            BLANK(),
-			            Combined,                 
-			            BLANK()
+			            Combined
 			        )
 			    )
 			```
@@ -870,8 +805,6 @@ table _Measures
 			        SELECTEDVALUE( y[y], 0 ), // y
 			        SELECTEDVALUE( Width[Width], 100 ), // width
 			        SELECTEDVALUE( Height[Height], 20), // height
-			        0.05,               // paddingX
-			        0.04,               // paddingY
 			        Dates[Date],        // axisRef
 			        [Total Cost],       // measureRef
 			        DaxLib.SVG.Color.Theme(
@@ -896,9 +829,7 @@ table _Measures
 			        DaxLib.SVG.SVG(
 			            SELECTEDVALUE( Width[Width], 100 ), // width
 			            SELECTEDVALUE( Height[Height], 20), // height
-			            BLANK(),
-			            Compound,
-			            BLANK()
+			            Compound
 			        )
 			    )
 			```
@@ -1026,8 +957,6 @@ table _Measures
 			        SELECTEDVALUE( y[y], 0 ), // y
 			        SELECTEDVALUE( Width[Width], 100 ), // width
 			        SELECTEDVALUE( Height[Height], 20), // height
-			        0.05,               // paddingX
-			        0.02,               // paddingY
 			        [Total Cost],       // valueRef
 			        [Total Cost] * ( RANDBETWEEN( 50, 150 ) / 100 ), // trackRef
 			        DaxLib.SVG.Color.Theme(
@@ -1044,9 +973,7 @@ table _Measures
 			        DaxLib.SVG.SVG(
 			            SELECTEDVALUE( Width[Width], 100 ), // width
 			            SELECTEDVALUE( Height[Height], 20), // height
-			            BLANK(),
-			            Compound,
-			            BLANK()
+			            Compound
 			        )
 			    )
 			```

@@ -6,8 +6,8 @@
 function 'DaxLib.SVG.Element.Polygon' =
 		(
 			points: STRING,
-			attributes: STRING,
-			transforms: STRING
+			attributes: STRING = BLANK(),
+			transforms: STRING = BLANK()
 		) =>
 
 			"<polygon" &

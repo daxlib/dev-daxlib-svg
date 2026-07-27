@@ -18,14 +18,13 @@ function 'DaxLib.SVG.Axes.Baseline' =
 			plotHeight: NUMERIC VAL
 		) =>
 
-			VAR _Orientation = IF( orientation = "Horizontal", "Horizontal", "Vertical" )
 			VAR _BaseX = IF( yMax = yMin, plotX, DaxLib.SVG.Scale.Normalize( yMin, yMin, yMax, plotX, plotX + plotWidth ) )
 			VAR _BaseY = IF( yMax = yMin, plotY + plotHeight, DaxLib.SVG.Scale.Normalize( yMin, yMin, yMax, plotY + plotHeight, plotY ) )
 
 			RETURN
 				ROW(
-					"@BaseX", IF( _Orientation = "Horizontal", _BaseX, plotX ),
-					"@BaseY", IF( _Orientation = "Horizontal", plotY, _BaseY )
+					"@BaseX", IF( orientation = "Horizontal", _BaseX, plotX ),
+					"@BaseY", IF( orientation = "Horizontal", plotY, _BaseY )
 				)
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__

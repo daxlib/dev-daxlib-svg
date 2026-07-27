@@ -12,8 +12,8 @@ function 'DaxLib.SVG.Element.Line' =
 			y1: STRING,
 			x2: STRING,
 			y2: STRING,
-			attributes: STRING,
-			transforms: STRING
+			attributes: STRING = BLANK(),
+			transforms: STRING = BLANK()
 		) =>  
 			
 			"<line" &

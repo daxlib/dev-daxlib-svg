@@ -10,27 +10,23 @@ function 'DaxLib.SVG.Axes.MaxTickLabelWidth' =
 		(
 			axisMin: NUMERIC VAL,
 			axisMax: NUMERIC VAL,
-			tickCount: INT64,
-			axisFontSize: INT64,
-			labelWidthFactor: DOUBLE,
-			axisIsDate: BOOLEAN
+			tickCount: INT64 = 1,
+			axisFontSize: INT64 = 10,
+			labelWidthFactor: DOUBLE = 0.56,
+			axisIsDate: BOOLEAN = FALSE()
 		) =>
 
-			VAR _TickCount = IF( ISBLANK( tickCount ) || tickCount < 1, 1, tickCount )
-			VAR _AxisFontSize = IF( ISBLANK( axisFontSize ), 10, axisFontSize )
-			VAR _LabelWidthFactor = IF( ISBLANK( labelWidthFactor ), 0.56, labelWidthFactor )
-			VAR _AxisIsDate = IF( ISBLANK( axisIsDate ), FALSE(), axisIsDate )
 			VAR _NumericSpan = ABS( axisMax - axisMin )
 			VAR _NumericDecimals = IF( _NumericSpan >= 100, 0, IF( _NumericSpan >= 10, 1, 2 ) )
 
 			VAR _TickBase =
 				ADDCOLUMNS(
-					GENERATESERIES( 0, _TickCount - 1, 1 ),
+					GENERATESERIES( 0, tickCount - 1, 1 ),
 					"@TickValue",
 						IF(
-							_TickCount = 1,
+							tickCount = 1,
 							axisMin,
-							axisMin + DIVIDE( [Value], _TickCount - 1, 0 ) * ( axisMax - axisMin )
+							axisMin + DIVIDE( [Value], tickCount - 1, 0 ) * ( axisMax - axisMin )
 						)
 				)
 
@@ -39,19 +35,15 @@ function 'DaxLib.SVG.Axes.MaxTickLabelWidth' =
 					_TickBase,
 					"@Label",
 						FORMAT(
-							IF(
-								_AxisIsDate,
-								[@TickValue],
-								ROUND( [@TickValue], _NumericDecimals )
-							),
-							IF( _AxisIsDate, "dd-mmm-yy", "General Number" )
+							IF( axisIsDate, [@TickValue], ROUND( [@TickValue], _NumericDecimals )),
+							IF( axisIsDate, "dd-mmm-yy", "General Number")
 						)
 				)
 
 			VAR _MeasuredLabelTable =
 				ADDCOLUMNS(
 					_LabelTable,
-					"@EstimatedWidth", LEN( [@Label] ) * _AxisFontSize * _LabelWidthFactor
+					"@EstimatedWidth", LEN( [@Label] ) * axisFontSize * labelWidthFactor
 				)
 
 			RETURN

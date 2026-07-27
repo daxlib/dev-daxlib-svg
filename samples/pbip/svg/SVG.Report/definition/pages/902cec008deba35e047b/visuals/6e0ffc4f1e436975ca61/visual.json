@@ -1,5 +1,5 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.7.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.11.0/schema.json",
   "name": "6e0ffc4f1e436975ca61",
   "position": {
     "x": 204.14978471708781,
@@ -215,10 +215,10 @@
                     "Entity": "_Measures"
                   }
                 },
-                "Property": "Total Cost"
+                "Property": "Compound.Bars"
               }
             },
-            "direction": "Descending"
+            "direction": "Ascending"
           }
         ]
       }

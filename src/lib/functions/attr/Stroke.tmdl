@@ -13,17 +13,17 @@
 /// @returns {string} An attribute string that can be used directly in SVG elements
 function 'DaxLib.SVG.Attr.Stroke' = 
 		(
-			stroke: STRING,
-			strokeWidth: INT64,
-			strokeOpacity: DOUBLE,
-			strokeDasharray: STRING,
-			strokeDashoffset: STRING,
-			strokeLinecap: STRING,
-			strokeLinejoin: STRING,
-			strokeMiterlimit: STRING,
-			markerStart: STRING,
-			markerMid: STRING,
-			markerEnd: STRING
+			stroke: STRING = BLANK(),
+			strokeWidth: INT64 = BLANK(),
+			strokeOpacity: DOUBLE = BLANK(),
+			strokeDasharray: STRING = BLANK(),
+			strokeDashoffset: STRING = BLANK(),
+			strokeLinecap: STRING = BLANK(),
+			strokeLinejoin: STRING = BLANK(),
+			strokeMiterlimit: STRING = BLANK(),
+			markerStart: STRING = BLANK(),
+			markerMid: STRING = BLANK(),
+			markerEnd: STRING = BLANK()
 		) =>
 			VAR _Stroke =           IF(NOT ISBLANK(stroke),           "stroke='" & stroke & "' ")
 			VAR _StrokeWidth =      IF(NOT ISBLANK(strokeWidth),      "stroke-width='" & strokeWidth & "' ")

@@ -7,7 +7,7 @@ function 'DaxLib.SVG.Def.GradientStop' =
 		(
 			offset: STRING,
 			color: STRING,
-			opacity: STRING
+			opacity: STRING = BLANK()
 		) =>
 
 			"<stop offset='" & offset & 

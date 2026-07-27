@@ -9,13 +9,13 @@
 /// @returns {string} An attribute string that can be used directly in SVG elements
 function 'DaxLib.SVG.Attr.Shapes' = 
 		(
-			fill: STRING,
-			fillOpacity: DOUBLE,
-			fillRule: STRING,
-			stroke: STRING,
-			strokeWidth: INT64,
-			strokeOpacity: DOUBLE,
-			opacity: DOUBLE
+			fill: STRING = BLANK(),
+			fillOpacity: DOUBLE = BLANK(),
+			fillRule: STRING = BLANK(),
+			stroke: STRING = BLANK(),
+			strokeWidth: INT64 = BLANK(),
+			strokeOpacity: DOUBLE = BLANK(),
+			opacity: DOUBLE = BLANK()
 		) =>
 
 			IF( NOT ISBLANK( fill ),          "fill='" & fill & "' ") &

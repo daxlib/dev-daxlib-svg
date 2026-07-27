@@ -26,8 +26,6 @@ function 'DaxLib.SVG.Axes.Point' =
 			plotHeight: NUMERIC VAL
 		) =>
 
-			VAR _Orientation = IF( orientation = "Horizontal", "Horizontal", "Vertical" )
-
 			VAR _AxisX = IF( xMax = xMin, plotX, DaxLib.SVG.Scale.Normalize( axisIndex, xMin, xMax, plotX, plotX + plotWidth ) )
 			VAR _AxisY = IF( xMax = xMin, plotY + plotHeight, DaxLib.SVG.Scale.Normalize( axisIndex, xMin, xMax, plotY + plotHeight, plotY ) )
 
@@ -36,8 +34,8 @@ function 'DaxLib.SVG.Axes.Point' =
 
 			RETURN
 				ROW(
-					"@X", IF( _Orientation = "Horizontal", _ValueX, _AxisX ),
-					"@Y", IF( _Orientation = "Horizontal", _AxisY, _ValueY )
+					"@X", IF( orientation = "Horizontal", _ValueX, _AxisX ),
+					"@Y", IF( orientation = "Horizontal", _AxisY, _ValueY )
 				)
 
 	annotation DAXLIB_PackageId = __PLACEHOLDER_PACKAGE_ID__
